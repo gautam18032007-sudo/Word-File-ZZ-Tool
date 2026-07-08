@@ -1,0 +1,13 @@
+[
+  {
+    "contractNo": "ZZ-EMP-2026-0009",
+    "type": "employee",
+    "partyName": "John Doe",
+    "generatedAt": "2026-07-08T11:05:35.919Z",
+    "docx": "ZZ-EMP-2026-0009_JOHN_DOE.docx",
+    "pdf": null,
+    "folder": "employees",
+    "annualCTC": 600000,
+    "designation": "Software Engineer"
+  }
+]
