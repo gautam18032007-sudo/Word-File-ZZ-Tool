@@ -8,8 +8,10 @@ import { appendContract } from '@/lib/store';
 import { calcSalary } from '@/lib/salary';
 import { formatINR, numberToWords, formatDate } from '@/lib/formatting';
 import type { EmployeeRow } from '@/lib/types';
+import { logger } from '@/lib/logger';
+import { writableDir } from '@/lib/paths';
 
-const OUTPUT_DIR = path.resolve(process.cwd(), '..', 'output', 'employees');
+const OUTPUT_DIR = path.join(writableDir('output'), 'employees');
 
 interface EmployeeGeneratePayload {
   employee: EmployeeRow;
@@ -23,11 +25,19 @@ export async function POST(req: NextRequest) {
   let payload: EmployeeGeneratePayload;
   try {
     payload = await req.json();
-  } catch {
+    logger.gen(`[API/generate/employee] Received generate request for employee: "${payload.employee?.name || 'Unknown'}"`);
+  } catch (err) {
+    logger.error(`[API/generate/employee] Invalid payload JSON: ${err}`);
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { employee: e, annualCTC, joiningDate, pfEnabled, gender } = payload;
+  const { employee: e, annualCTC, joiningDate, gender } = payload;
+  const pfEnabled = true; // Enforced company policy: PF is always YES
+
+  if (!annualCTC || annualCTC <= 0) {
+    logger.error(`[API/generate/employee] Invalid Annual CTC: ${annualCTC}`);
+    return NextResponse.json({ error: 'Annual CTC must be greater than 0.' }, { status: 400 });
+  }
 
   let joiningDateFmt: string;
   try {
@@ -91,17 +101,22 @@ export async function POST(req: NextRequest) {
       ANN_SALARY_IN_HAND_ANNUAL: formatINR(s.salaryInHand * 12),
     };
 
+    logger.gen(`[API/generate/employee] Generating template for contract #${contractNo}`);
     const docxBytes = renderDocx('employee-contract-template.docx', data);
     const docxName = buildFilename(contractNo, e.name, 'docx');
     fs.writeFileSync(path.join(OUTPUT_DIR, docxName), docxBytes);
+    logger.gen(`[API/generate/employee] Saved DOCX: ${docxName}`);
 
     let pdfName: string | null = null;
     try {
+      logger.gen(`[API/generate/employee] Converting DOCX to PDF...`);
       const pdfBytes = docxToPdf(docxBytes);
       pdfName = buildFilename(contractNo, e.name, 'pdf');
       fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
+      logger.gen(`[API/generate/employee] Saved PDF: ${pdfName}`);
     } catch (err) {
       if (!(err instanceof PdfError)) throw err;
+      logger.error(`[API/generate/employee] PDF conversion failed (skipped): ${err.message}`);
     }
 
     appendContract({
@@ -115,9 +130,12 @@ export async function POST(req: NextRequest) {
       annual_ctc: s.annualCTC,
       designation: e.designation,
     });
+    logger.gen(`[API/generate/employee] Appended contract #${contractNo} to history.`);
 
     return NextResponse.json({ contractNo, docxName, pdfName });
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    const errMsg = e instanceof Error ? e.message : String(e);
+    logger.error(`[API/generate/employee] Generation failed: ${errMsg}`);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }

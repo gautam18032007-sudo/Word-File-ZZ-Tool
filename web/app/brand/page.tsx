@@ -5,10 +5,11 @@ import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
 import { SheetLoader } from "@/components/shared/SheetLoader";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ function formatINRClient(n: number): string {
   return `₹${parts.join(",")},${last3}`;
 }
 
-function num(s: string): number { const n = parseFloat(s); return isNaN(n) ? 0 : n; }
+function num(s: string): number { const n = parseFloat(s); return isNaN(n) || n <= 0 ? 0 : n; }
 
 function buildClause(
   location: Location,
@@ -89,9 +90,50 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function BrandPage() {
-  const [brands, setBrands] = useState<BrandRow[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [rawRows, setRawRows] = useState<string[][]>([]);
   const [selectedIdx, setSelectedIdx] = useState(-1);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function findColumnIndex(headersList: string[], possibleNames: string[]): number {
+    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+    return headersList.findIndex(h => 
+      possibleNames.some(p => norm(h) === norm(p))
+    );
+  }
+
+  // Compute brand column indices dynamically
+  const legalNameIdx = findColumnIndex(headers, ['Legal Name ( to be written in contract )', 'Legal Name']);
+  const brandCategoryIdx = findColumnIndex(headers, ['Products Category ( to be written in contract )', 'Products Category']);
+  const addressIdx = findColumnIndex(headers, ['Address ( to be written in contract )', 'Address']);
+
+  // Compute brands dynamically from rawRows
+  const brands: BrandRow[] = rawRows.map((r, i) => ({
+    index: i + 2,
+    legalName: legalNameIdx >= 0 ? (r[legalNameIdx] ?? '').trim() : '',
+    brandCategory: brandCategoryIdx >= 0 ? (r[brandCategoryIdx] ?? '').trim() : '',
+    address: addressIdx >= 0 ? (r[addressIdx] ?? '').trim() : '',
+    email: '',
+    phone: '',
+    contactPerson: '',
+  })).filter(b => b.legalName);
+
   const selected = brands[selectedIdx] ?? null;
+
+  // Filter brands based on search query
+  const filteredBrands = brands.filter((b) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return b.legalName.toLowerCase().includes(q) || b.brandCategory.toLowerCase().includes(q);
+  });
+
+  // Mandatory fields check for selected brand
+  const brandMissingFields: string[] = [];
+  if (selected) {
+    if (!selected.legalName?.trim()) brandMissingFields.push("Legal Name");
+    if (!selected.brandCategory?.trim()) brandMissingFields.push("Products Category");
+    if (!selected.address?.trim()) brandMissingFields.push("Address");
+  }
 
   // commercial inputs
   const [location, setLocation] = useState<Location>("SWN");
@@ -103,8 +145,8 @@ export default function BrandPage() {
   const [noOfMonths, setNoOfMonths] = useState("");
   const [noOfSku, setNoOfSku] = useState("");
   const [commissionPct, setCommissionPct] = useState("");
-  const [effectiveDate, setEffectiveDate] = useState("");
-  const [stampingDate, setStampingDate] = useState("");
+  const [commissionPctSwn, setCommissionPctSwn] = useState("");
+  const [commissionPctKlj, setCommissionPctKlj] = useState("");
 
   // generate state
   const [genState, setGenState] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -114,13 +156,10 @@ export default function BrandPage() {
   // Live clause preview
   const preview = buildClause(location, contractType, amountPerMonth, amountPerSku, amountSwn, amountKlj, noOfMonths, noOfSku, commissionPct);
 
-  async function handleLoadBrands(url: string) {
-    setBrands([]);
+  async function handleLoadBrands(url: string, loadedHeaders: string[], loadedRows: string[][]) {
     setSelectedIdx(-1);
-    const res = await fetch(`/api/sheets/brand?sheet=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error ?? "Failed to load");
-    setBrands(data.rows);
+    setHeaders(loadedHeaders);
+    setRawRows(loadedRows);
   }
 
   async function generate() {
@@ -131,17 +170,27 @@ export default function BrandPage() {
       setGenError("Please select a brand.");
       return;
     }
+    if (brandMissingFields.length > 0) {
+      setGenError(`Cannot Generate Contract. Missing:\n${brandMissingFields.map(f => `• ${f}`).join("\n")}`);
+      return;
+    }
     if (!preview) {
       setGenError("Please fill commercial details to preview contract.");
       return;
     }
-    if (!effectiveDate || !stampingDate) {
-      setGenError("Please enter Effective Date and Stamping Date.");
-      return;
-    }
-    if (!commissionPct) {
-      setGenError("Please enter Commission %.");
-      return;
+    if (location === "BOTH") {
+      const swnPctNum = parseFloat(commissionPctSwn) || 0;
+      const kljPctNum = parseFloat(commissionPctKlj) || 0;
+      if (swnPctNum <= 0 || kljPctNum <= 0) {
+        setGenError("Commission % must be greater than 0 for both SWN and KLJ.");
+        return;
+      }
+    } else {
+      const commPctNum = parseFloat(commissionPct) || 0;
+      if (commPctNum <= 0) {
+        setGenError("Commission % must be greater than 0.");
+        return;
+      }
     }
 
     setGenState("loading");
@@ -157,8 +206,8 @@ export default function BrandPage() {
       noOfMonths: parseFloat(noOfMonths) || 0,
       noOfSku: parseFloat(noOfSku) || 0,
       commissionPct,
-      effectiveDate,
-      stampingDate,
+      commissionPctSwn,
+      commissionPctKlj,
     };
 
     try {
@@ -206,7 +255,26 @@ export default function BrandPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <SheetLoader onLoad={handleLoadBrands} loadedCount={brands.length} />
+              <SheetLoader onLoad={handleLoadBrands} loadedCount={brands.length} storageKey="brand_sheet_url" />
+              {headers.length > 0 && (
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[oklch(0.99_0_0)] text-xs space-y-2 mt-3">
+                  <p className="font-semibold text-[var(--foreground)]">Sheet Status</p>
+                  <div className="space-y-1.5 pt-1 border-t border-[var(--border)]">
+                    {[
+                      ["Legal Name", legalNameIdx >= 0],
+                      ["Products Category", brandCategoryIdx >= 0],
+                      ["Address", addressIdx >= 0],
+                    ].map(([label, found]) => (
+                      <div key={label as string} className="flex items-center justify-between text-[11px]">
+                        <span className="text-[var(--muted-foreground)]">{label}</span>
+                        <span className={found ? "text-emerald-600 font-bold" : "text-rose-500 font-bold"}>
+                          {found ? "✓ Found" : "✗ Missing"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -219,35 +287,74 @@ export default function BrandPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Select
-                value={selectedIdx === -1 ? "" : String(selectedIdx)}
-                onChange={(e) => setSelectedIdx(parseInt(e.target.value))}
-                disabled={brands.length === 0}
-              >
-                <option value="">— choose a brand —</option>
-                {brands.map((b, i) => (
-                  <option key={i} value={i}>{b.legalName}</option>
-                ))}
-              </Select>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Search brand by name or category..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={brands.length === 0}
+                />
+
+                {brands.length === 0 && (
+                  <p className="p-3 text-center text-xs text-[var(--muted-foreground)] border border-dashed border-[var(--border)] rounded-md">
+                    0 records loaded. Please paste Google Sheet URL and click load.
+                  </p>
+                )}
+
+                {brands.length > 0 && (
+                  <div className="max-h-60 overflow-y-auto border border-[var(--border)] rounded-md divide-y divide-[var(--border)] bg-[var(--background)]">
+                    {filteredBrands.length === 0 ? (
+                      <p className="p-3 text-center text-xs text-[var(--muted-foreground)]">No matching brands found.</p>
+                    ) : (
+                      filteredBrands.map((b) => {
+                        const originalIdx = brands.findIndex(x => x.index === b.index);
+                        return (
+                          <button
+                            key={b.index}
+                            onClick={() => setSelectedIdx(originalIdx)}
+                            className={cn(
+                              "w-full text-left px-3 py-2 text-xs flex justify-between hover:bg-[var(--muted)] transition-colors",
+                              selectedIdx === originalIdx && "bg-[oklch(0.95_0_0)] border-l-2 border-[var(--foreground)]"
+                            )}
+                          >
+                            <div className="pr-2 truncate">
+                              <p className="font-semibold text-[var(--foreground)] truncate">{b.legalName}</p>
+                              <p className="text-[10px] text-[var(--muted-foreground)] truncate">
+                                {b.brandCategory || "No Category"}
+                              </p>
+                            </div>
+                            <span className="shrink-0 self-center font-mono text-[9px] uppercase tracking-wider bg-[var(--muted)] px-1.5 py-0.5 rounded text-[var(--muted-foreground)] max-w-[100px] truncate" title={b.brandCategory}>
+                              {b.brandCategory || "General"}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
 
               {selected && (
                 <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[oklch(0.975_0_0)]">
                   {[
                     ["Legal Name", selected.legalName],
-                    ["Category", selected.brandCategory],
-                    ["Contact", selected.contactPerson],
-                    ["Email", selected.email],
-                    ["Phone", selected.phone],
+                    ["Products Category", selected.brandCategory],
+                    ["Address", selected.address],
                   ].map(([k, v]) => (
                     <div key={k} className="flex gap-2">
-                      <span className="text-[var(--muted-foreground)] w-20 shrink-0 text-xs pt-0.5">{k}</span>
+                      <span className="text-[var(--muted-foreground)] w-32 shrink-0 text-xs pt-0.5">{k}</span>
                       <span className="font-medium text-xs break-all">{v || "—"}</span>
                     </div>
                   ))}
-                  {selected.address && (
-                    <div className="flex gap-2">
-                      <span className="text-[var(--muted-foreground)] w-20 shrink-0 text-xs pt-0.5">Address</span>
-                      <span className="font-medium text-xs">{selected.address}</span>
+
+                  {/* Warning banner for missing mandatory fields */}
+                  {brandMissingFields.length > 0 && (
+                    <div className="flex gap-2 text-xs py-2 px-3 border border-rose-200 bg-rose-50 text-rose-700 rounded-md mt-2">
+                      <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-semibold">Cannot Generate Contract</p>
+                        <p className="text-[10px]">Missing mandatory fields: {brandMissingFields.join(", ")}</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -269,17 +376,25 @@ export default function BrandPage() {
             <CardContent className="space-y-4">
               <FieldRow>
                 <Field label="Location">
-                  <Select value={location} onChange={(e) => setLocation(e.target.value as Location)}>
+                  <select
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value as Location)}
+                    className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  >
                     <option value="SWN">SWN</option>
                     <option value="KLJ">KLJ</option>
                     <option value="BOTH">BOTH</option>
-                  </Select>
+                  </select>
                 </Field>
                 <Field label="Contract Type">
-                  <Select value={contractType} onChange={(e) => setContractType(e.target.value as ContractType)}>
+                  <select
+                    value={contractType}
+                    onChange={(e) => setContractType(e.target.value as ContractType)}
+                    className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  >
                     <option value="MONTH">MONTH</option>
                     <option value="SKU">SKU</option>
-                  </Select>
+                  </select>
                 </Field>
               </FieldRow>
 
@@ -317,19 +432,24 @@ export default function BrandPage() {
                 <Field label="No. of Months">
                   <Input type="number" placeholder="0" value={noOfMonths} onChange={(e) => setNoOfMonths(e.target.value)} />
                 </Field>
-                <Field label="Commission %">
-                  <Input type="number" placeholder="0" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} />
-                </Field>
+                {location !== "BOTH" && (
+                  <Field label="Commission %">
+                    <Input type="number" placeholder="0" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} />
+                  </Field>
+                )}
               </FieldRow>
 
-              <FieldRow>
-                <Field label="Effective Date">
-                  <Input type="date" value={effectiveDate} onChange={(e) => setEffectiveDate(e.target.value)} />
-                </Field>
-                <Field label="Stamping Date">
-                  <Input type="date" value={stampingDate} onChange={(e) => setStampingDate(e.target.value)} />
-                </Field>
-              </FieldRow>
+              {location === "BOTH" && (
+                <FieldRow>
+                  <Field label="Commission % — SWN">
+                    <Input type="number" placeholder="0" value={commissionPctSwn} onChange={(e) => setCommissionPctSwn(e.target.value)} />
+                  </Field>
+                  <Field label="Commission % — KLJ">
+                    <Input type="number" placeholder="0" value={commissionPctKlj} onChange={(e) => setCommissionPctKlj(e.target.value)} />
+                  </Field>
+                </FieldRow>
+              )}
+
             </CardContent>
           </Card>
 
@@ -350,8 +470,18 @@ export default function BrandPage() {
                 ) : (
                   <div className="space-y-2">
                     <p>{preview.clause}</p>
-                    {commissionPct && (
-                      <p>A commission of {commissionPct}% on the sale price of each product sold.</p>
+                    {location === "BOTH" ? (
+                      (commissionPctSwn || commissionPctKlj) && (
+                        <p>
+                          A commission of {commissionPctSwn || "0"}% on the sale price of each product sold
+                          through the SWN setup and {commissionPctKlj || "0"}% on the sale price of each
+                          product sold through the KLJ setup.
+                        </p>
+                      )
+                    ) : (
+                      commissionPct && (
+                        <p>A commission of {commissionPct}% on the sale price of each product sold.</p>
+                      )
                     )}
                     <p className="text-[var(--muted-foreground)] text-xs pt-1 border-t border-[var(--border)]">
                       Total: <strong className="text-[var(--foreground)]">{formatINRClient(preview.total)}</strong>

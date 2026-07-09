@@ -67,7 +67,9 @@ export interface BrandFormData {
   amountKlj: string;
   noOfMonths: string;
   noOfSku: string;
-  commissionPct: string;
+  commissionPct: string;       // used when location !== 'BOTH'
+  commissionPctSwn: string;    // used when location === 'BOTH'
+  commissionPctKlj: string;    // used when location === 'BOTH'
   effectiveDate: string;
   stampingDate: string;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Search, KeyRound, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 
 interface SheetLoaderProps {
   placeholder?: string;
-  onLoad: (sheetUrl: string) => Promise<void>;
+  onLoad: (sheetUrl: string, headers: string[], rows: string[][]) => Promise<void>;
   loadedCount?: number;
+  storageKey: string;
 }
 
 function isAccessError(msg: string): boolean {
@@ -17,28 +18,58 @@ function isAccessError(msg: string): boolean {
     msg.toLowerCase().includes("not public");
 }
 
-export function SheetLoader({ placeholder, onLoad, loadedCount }: SheetLoaderProps) {
+export function SheetLoader({ placeholder, onLoad, loadedCount, storageKey }: SheetLoaderProps) {
   const [url, setUrl] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [error, setError] = useState("");
 
-  async function handleLoad() {
-    if (!url.trim()) return;
+  const loadSheet = async (targetUrl: string) => {
     setState("loading");
     setError("");
     try {
-      await onLoad(url.trim());
+      const type = storageKey.includes("brand") ? "brand" : "employee";
+      const res = await fetch(`/api/sheets/${type}?sheet=${encodeURIComponent(targetUrl)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to load");
+      
+      const headers = data.headers ?? [];
+      const rows = data.rows ?? [];
+      await onLoad(targetUrl, headers, rows);
+      localStorage.setItem(storageKey, targetUrl);
       setState("done");
-    } catch (e) {
-      setError(String(e).replace(/^Error: /, ""));
+    } catch (e: any) {
+      setError(e.message || String(e));
       setState("error");
     }
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      setUrl(saved);
+      loadSheet(saved);
+    } else {
+      // No manual override saved — auto-load using the env-configured sheet
+      // ID (GOOGLE_BRAND_SHEET_ID / GOOGLE_EMPLOYEE_SHEET_ID) so the page
+      // works with zero user input, per the Google Form → Response Sheet flow.
+      loadSheet("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  async function handleLoad() {
+    if (!url.trim()) return;
+    await loadSheet(url.trim());
   }
 
   return (
     <div className="space-y-3">
       <div className="space-y-1.5">
-        <Label>Sheet URL</Label>
+        <Label>Sheet URL (optional override)</Label>
+        <p className="text-xs text-[var(--muted-foreground)]">
+          Records load automatically from the configured Response Sheet. Paste a different
+          sheet URL here only if you need to load from somewhere else.
+        </p>
         <div className="flex gap-2">
           <Input
             placeholder={placeholder ?? "https://docs.google.com/spreadsheets/d/…"}

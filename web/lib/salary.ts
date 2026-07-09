@@ -37,6 +37,12 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
   // 5. SPECIAL ALLOWANCE — balancing figure
   const rSpecialAllowance = monthlyCTC - (rBasic + rHra + rConveyance + rPfEmployer);
 
+  // Math Balance Check Assert
+  const sum = rBasic + rHra + rConveyance + rPfEmployer + rSpecialAllowance;
+  if (sum !== monthlyCTC) {
+    throw new Error(`Salary Engine Error: Component sum (${sum}) does not match Monthly CTC (${monthlyCTC}) exactly.`);
+  }
+
   // 6. PF EMPLOYEE — same as employer contribution
   const pfEmployee = pfEnabled ? rPfEmployer : 0;
 

@@ -8,8 +8,9 @@
 import fs from 'fs';
 import path from 'path';
 import type { ContractRecord } from './types';
+import { writableDir } from './paths';
 
-const OUTPUT_DIR = path.resolve(process.cwd(), '..', 'output');
+const OUTPUT_DIR = writableDir('output');
 const STORE_FILE = path.join(OUTPUT_DIR, 'contracts.json');
 
 const LEGACY_KEY_MAP: Record<string, string> = {

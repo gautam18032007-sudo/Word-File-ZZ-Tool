@@ -6,8 +6,9 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { writableDir } from './paths';
 
-const OUTPUT_DIR = path.resolve(process.cwd(), '..', 'output');
+const OUTPUT_DIR = writableDir('output');
 const SEQUENCE_FILE = path.join(OUTPUT_DIR, 'sequence.json');
 
 function readSequence(): Record<string, Record<string, number>> {

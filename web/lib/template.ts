@@ -10,10 +10,52 @@
 import PizZip from 'pizzip';
 import fs from 'fs';
 import path from 'path';
+import { DOMParser } from '@xmldom/xmldom';
+import { logger } from './logger';
 
-const TEMPLATES_DIR = path.resolve(process.cwd(), '..', 'templates');
+// Templates live inside web/ (not one level up) so they ship as part of the
+// deployment bundle on Vercel — a repo-root-relative path wouldn't exist there.
+const TEMPLATES_DIR = path.resolve(process.cwd(), 'templates');
 
 export class TemplateError extends Error {}
+
+function buildReplacements(pairs: [string, string][]): [string, string][] {
+  const qL = '\u201c'; // “
+  const qR = '\u201d'; // ”
+  const list: [string, string][] = [];
+  for (const [raw, tag] of pairs) {
+    list.push([qL + raw + qR, tag]);
+    list.push([`"${raw}"`, tag]);
+    list.push([`'${raw}'`, tag]);
+    list.push([raw, tag]);
+  }
+  return list;
+}
+
+function stripContentControls(xml: string): string {
+  let prevXml;
+  const sdtRe = /<w:sdt\b[^>]*>(?:(?!<\/w:sdt>)[\s\S])*?<w:sdtContent\b[^>]*>([\s\S]*?)<\/w:sdtContent>(?:(?!<\/w:sdt>)[\s\S])*?<\/w:sdt>/g;
+  let passes = 0;
+  do {
+    prevXml = xml;
+    xml = xml.replace(sdtRe, '$1');
+    passes++;
+  } while (xml !== prevXml && passes < 10);
+  return xml;
+}
+
+function stripHighlightAndShading(xml: string): string {
+  xml = xml.replace(/<w:highlight\b[^>]*?\/>/g, '')
+           .replace(/<w:highlight\b[^>]*?>[\s\S]*?<\/w:highlight>/g, '');
+
+  xml = xml.replace(/<w:rPr\b[^>]*>([\s\S]*?)<\/w:rPr>/g, (match) => {
+    return match
+      .replace(/<w:shd\b[^>]*?\/>/g, '')
+      .replace(/<w:shd\b[^>]*?>[\s\S]*?<\/w:shd>/g, '');
+  });
+
+  return xml;
+}
 
 // ─── Paragraph & run extraction ───────────────────────────────────────────────
 
@@ -75,9 +117,10 @@ function applyOpsToParagraphs(xml: string, opsFor: OpsFor): string {
     let lastEnd = 0;
     for (let i = 0; i < runMatches.length; i++) {
       const { m } = runMatches[i];
-      result += para.slice(lastEnd, m.index + m[0].indexOf(m[2]));
+      const contentOffset = m[1].length + 5;
+      result += para.slice(lastEnd, m.index + contentOffset);
       result += newTexts[i];
-      lastEnd = m.index + m[0].indexOf(m[2]) + m[2].length;
+      lastEnd = m.index + contentOffset + m[2].length;
     }
     result += para.slice(lastEnd);
     return result;
@@ -89,12 +132,14 @@ function applyOpsToParagraphs(xml: string, opsFor: OpsFor): string {
 function literalOps(concat: string, replacements: [string, string][]): Op[] {
   const ops: Op[] = [];
   let i = 0;
+  const lowerConcat = concat.toLowerCase();
   while (i < concat.length) {
     let bestLen = 0;
     let bestTo: string | null = null;
     for (const [frm, to] of replacements) {
-      if (frm.length > bestLen && concat.startsWith(frm, i)) {
-        bestLen = frm.length;
+      const lowerFrm = frm.toLowerCase();
+      if (lowerFrm.length > bestLen && lowerConcat.startsWith(lowerFrm, i)) {
+        bestLen = lowerFrm.length;
         bestTo = to;
       }
     }
@@ -200,51 +245,78 @@ function preprocessEmployeeTable(xml: string): string {
 // ─── Preprocessors ────────────────────────────────────────────────────────────
 
 function preprocessEmployeeXml(xml: string): string {
-  const qL = '\u201c'; // "
-  const qR = '\u201d'; // "
-  const replacements: [string, string][] = [
-    [qL + 'Mr./Ms. NAME' + qR, '{{EMPLOYEE_NAME}}'],
+  const employeePairs: [string, string][] = [
     ['Mr./Ms. NAME', '{{EMPLOYEE_NAME}}'],
-    [qL + 'ADDRESS' + qR, '{{EMPLOYEE_ADDRESS}}'],
+    ['EMPLOYEE NAME', '{{EMPLOYEE_NAME}}'],
+    ['NAME:', '{{EMPLOYEE_NAME}}'],
+    ['NAME', '{{EMPLOYEE_NAME}}'],
+    ['ADDRESS:', '{{EMPLOYEE_ADDRESS}}'],
     ['ADDRESS', '{{EMPLOYEE_ADDRESS}}'],
-    [qL + 'DESIGNATION' + qR, '{{DESIGNATION}}'],
+    ['DESIGNATION:', '{{DESIGNATION}}'],
     ['DESIGNATION', '{{DESIGNATION}}'],
-    [qL + 'JOINING DATE' + qR, '{{JOINING_DATE}}'],
+    ['JOINING DATE:', '{{JOINING_DATE}}'],
     ['JOINING DATE', '{{JOINING_DATE}}'],
-    [qL + 'MONTHLY CTC IN WORDS' + qR, '{{MONTHLY_CTC_WORDS}}'],
     ['MONTHLY CTC IN WORDS', '{{MONTHLY_CTC_WORDS}}'],
-    [qL + 'MONTHLY CTC' + qR, '{{MONTHLY_CTC}}'],
     ['MONTHLY CTC', '{{MONTHLY_CTC}}'],
-    [qL + 'ANNUAL CTC IN WORDS' + qR, '{{ANNUAL_CTC_WORDS}}'],
     ['ANNUAL CTC IN WORDS', '{{ANNUAL_CTC_WORDS}}'],
-    [qL + 'ANNUAL CTC' + qR, '{{ANNUAL_CTC}}'],
     ['ANNUAL CTC', '{{ANNUAL_CTC}}'],
   ];
+  const replacements = buildReplacements(employeePairs);
   xml = replaceAcrossRuns(xml, replacements);
   xml = preprocessPronouns(xml);
   xml = preprocessEmployeeTable(xml);
   return xml;
 }
 
+// ─── Fee / Commission clause collapse ────────────────────────────────────────
+//
+// The "Rental and Commission Structure" list item text (a numbered-list w:p each)
+// is fully dynamic — its wording differs structurally between a single-location
+// contract and a BOTH-location contract, so it can't be built from small
+// token-level tags like {{AMOUNT}}/{{LOCATION}}. Instead, each of the two list
+// paragraphs is collapsed to a single tag ({{FEE_CLAUSE}}, {{COMMISSION_CLAUSE}})
+// whose full sentence is composed server-side (see generate/brand/route.ts).
+function feeCommissionClauseOps(concat: string): Op[] {
+  if (/advanced?\s+fixed\s+fee/i.test(concat)) {
+    return [{ start: 0, end: concat.length, replacement: '{{FEE_CLAUSE}}' }];
+  }
+  if (/commission of/i.test(concat)) {
+    return [{ start: 0, end: concat.length, replacement: '{{COMMISSION_CLAUSE}}' }];
+  }
+  // Stray continuation paragraph (no numPr — a soft line break in the source
+  // doc, not its own list item) carrying the tail of the commission sentence
+  // ("through our Location Setup as disclosed in the PI."). Its content is
+  // already folded into {{COMMISSION_CLAUSE}} above, so it collapses to empty.
+  if (/disclosed in the\s+(PI\b|proforma invoice)/i.test(concat)) {
+    return [{ start: 0, end: concat.length, replacement: '' }];
+  }
+  return [];
+}
+
 function preprocessBrandXml(xml: string): string {
-  const replacements: [string, string][] = [
+  xml = applyOpsToParagraphs(xml, feeCommissionClauseOps);
+  const brandPairs: [string, string][] = [
     ['(Stamping Date)', '{{STAMPING_DATE}}'],
     ['(commencement date)', '{{EFFECTIVE_DATE}}'],
+    ['Effective Date:', '{{EFFECTIVE_DATE}}'],
     ['Effective Date', '{{EFFECTIVE_DATE}}'],
     ['Le gal Name', '{{LEGAL_NAME}}'],
+    ['Legal Name:', '{{LEGAL_NAME}}'],
     ['Legal Name', '{{LEGAL_NAME}}'],
+    ['Brands Category:', '{{BRAND_CATEGORY}}'],
     ['Brands Category', '{{BRAND_CATEGORY}}'],
+    ['Brand Category:', '{{BRAND_CATEGORY}}'],
     ['Brand Category', '{{BRAND_CATEGORY}}'],
+    ['Products Category:', '{{BRAND_CATEGORY}}'],
+    ['Products Category', '{{BRAND_CATEGORY}}'],
+    ['Product Category:', '{{BRAND_CATEGORY}}'],
+    ['Product Category', '{{BRAND_CATEGORY}}'],
+    ['Address:', '{{ADDRESS}}'],
     ['Address', '{{ADDRESS}}'],
-    ['No of SKUs', '{{NO_OF_SKUS}}'],
-    ['No of  months', '{{NO_OF_MONTHS}}'],
-    ['Total Amount', '{{TOTAL_AMOUNT}}'],
-    ['Amount', '{{AMOUNT}}'],
-    ['Location  Setup', '{{LOCATION_TEXT}}'],
-    ['Location setup', '{{LOCATION_TEXT}}'],
-    ['Comm%', '{{COMMISSION_PCT}}'],
+    ['Payment Method:', '{{PAYMENT_METHOD}}'],
     ['Payment Method', '{{PAYMENT_METHOD}}'],
   ];
+  const replacements = buildReplacements(brandPairs);
   return replaceAcrossRuns(xml, replacements);
 }
 
@@ -260,7 +332,20 @@ function escapeXml(s: string): string {
 }
 
 function fillTags(xml: string, data: Record<string, string>): string {
-  return xml.replace(/\{\{(\w+)\}\}/g, (_, key) => escapeXml(data[key] ?? ''));
+  return xml.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+    const val = data[key];
+    if (val === undefined || val === '') return '';
+
+    const noBoldKeys = [
+      'HE_SHE', 'HIM_HER', 'HIS_HER', 'HE', 'HIM', 'HIS', 'SHE', 'HER',
+      'PAYMENT_METHOD', 'FEE_CLAUSE', 'COMMISSION_CLAUSE'
+    ];
+    if (noBoldKeys.includes(key)) {
+      return escapeXml(val);
+    }
+
+    return `</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>${escapeXml(val)}</w:t></w:r><w:r><w:t xml:space="preserve">`;
+  });
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -271,10 +356,15 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
     throw new TemplateError(`Template not found: templates/${templateFile}`);
   }
 
+  logger.gen(`[renderDocx] Starting contract generation for template "${templateFile}"`);
+
   const content = fs.readFileSync(tplPath);
   const zip = new PizZip(content);
 
   let xml = zip.file('word/document.xml')!.asText();
+
+  // First pass: strip content controls completely to simplify XML structure
+  xml = stripContentControls(xml);
 
   if (templateFile.includes('employee')) {
     xml = preprocessEmployeeXml(xml);
@@ -283,6 +373,90 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
   }
 
   xml = fillTags(xml, data);
+
+  // Strip highlights and shadings (from runs)
+  xml = stripHighlightAndShading(xml);
+
+  // Second pass: unwrap any content controls that might have been processed or populated
+  xml = stripContentControls(xml);
+
+  // --- STRICT AUTOMATED VALIDATION LAYER ---
+  logger.gen(`[renderDocx] Running validations on generated document`);
+
+  // 1. Assert no w:highlight remains
+  if (xml.includes('w:highlight')) {
+    const errMsg = 'Validation failed: w:highlight tags remain in the generated document.';
+    logger.error(`[renderDocx] ${errMsg}`);
+    throw new TemplateError(errMsg);
+  }
+
+  // 2. Assert no w:sdt remains (content controls)
+  if (xml.includes('w:sdt') || xml.includes('w:sdtContent')) {
+    const errMsg = 'Validation failed: w:sdt content controls remain in the generated document.';
+    logger.error(`[renderDocx] ${errMsg}`);
+    throw new TemplateError(errMsg);
+  }
+
+  // 3. Assert no unreplaced template tag {{TAG}} remains
+  const unreplacedTagMatch = xml.match(/\{\{(\w+)\}\}/);
+  if (unreplacedTagMatch) {
+    const errMsg = `Validation failed: Unreplaced template tag "${unreplacedTagMatch[0]}" remains in the generated document.`;
+    logger.error(`[renderDocx] ${errMsg}`);
+    throw new TemplateError(errMsg);
+  }
+
+  const isEmployee = templateFile.includes('employee');
+
+  // 4. Assert no raw placeholder text remains (case-sensitive to avoid matching lowercase boilerplates/labels)
+  const activePlaceholders = isEmployee 
+    ? ['Mr./Ms. NAME', 'EMPLOYEE NAME', 'DESIGNATION', 'JOINING DATE', 'ADDRESS']
+    : ['(Stamping Date)', '(commencement date)', 'Brands Category', 'Location setup', 'Total Amount', 'Le gal Name'];
+
+  for (const ph of activePlaceholders) {
+    if (xml.includes(ph)) {
+      const idx = xml.indexOf(ph);
+      const snippet = xml.slice(Math.max(0, idx - 100), Math.min(xml.length, idx + ph.length + 100));
+      const errMsg = `Validation failed: Raw placeholder text "${ph}" remains in the generated document. Context:\n${snippet}`;
+      logger.error(`[renderDocx] ${errMsg}`);
+      throw new TemplateError(errMsg);
+    }
+  }
+
+  // 5. Assert actual party name exists in plain text inside the document
+  const primaryNameKey = isEmployee ? 'EMPLOYEE_NAME' : 'LEGAL_NAME';
+  const expectedName = data[primaryNameKey];
+  if (expectedName) {
+    const escapedExpectedName = escapeXml(expectedName);
+    if (!xml.includes(escapedExpectedName)) {
+      const errMsg = `Validation failed: Expected party name "${expectedName}" was not found in the generated plain text document.`;
+      logger.error(`[renderDocx] ${errMsg}`);
+      throw new TemplateError(errMsg);
+    }
+  }
+
+  // 6. DOM parsing syntax verification
+  try {
+    let hasError = false;
+    let errorMsg = '';
+    const parser = new DOMParser({
+      errorHandler: (level, msg) => {
+        if (level === 'error' || level === 'fatalError') {
+          hasError = true;
+          errorMsg = String(msg);
+        }
+      }
+    });
+    parser.parseFromString(xml, 'text/xml');
+    if (hasError) {
+      throw new Error(errorMsg);
+    }
+  } catch (e: any) {
+    const errMsg = `Validation failed: Invalid DOCX XML generated. Syntax error: ${e.message}`;
+    logger.error(`[renderDocx] ${errMsg}`);
+    throw new TemplateError(errMsg);
+  }
+
+  logger.gen(`[renderDocx] Validation passed successfully!`);
 
   zip.file('word/document.xml', xml);
   return Buffer.from(zip.generate({ type: 'nodebuffer', compression: 'DEFLATE' }));

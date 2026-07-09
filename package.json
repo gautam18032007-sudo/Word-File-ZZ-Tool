@@ -1,0 +1,11 @@
+{
+  "name": "zenzebra-contract-generator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm install --prefix web",
+    "dev": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "start": "npm run start --prefix web"
+  }
+}

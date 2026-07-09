@@ -1,0 +1,194 @@
+[7/9/2026, 3:31:35 PM] [API/generate/brand] Received generate request for brand: "Vinati Bhatt Designs LLP."
+[7/9/2026, 3:31:35 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0007
+[7/9/2026, 3:31:35 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:31:35 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:31:41 PM] [API/generate/brand] Received generate request for brand: "Vinati Bhatt Designs LLP."
+[7/9/2026, 3:31:41 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0008
+[7/9/2026, 3:31:41 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:31:41 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:32:09 PM] [API/generate/brand] Received generate request for brand: "Vinati Bhatt Designs LLP."
+[7/9/2026, 3:32:09 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0009
+[7/9/2026, 3:32:09 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:32:09 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:32:11 PM] [API/generate/brand] Received generate request for brand: "Vinati Bhatt Designs LLP."
+[7/9/2026, 3:32:11 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0010
+[7/9/2026, 3:32:11 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:32:11 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:32:55 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 3:32:55 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0017
+[7/9/2026, 3:32:55 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 3:32:55 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:38:25 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 3:38:25 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0018
+[7/9/2026, 3:38:25 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 3:38:25 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:38:52 PM] [API/generate/brand] Received generate request for brand: "KOKOPO Foods"
+[7/9/2026, 3:38:52 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0011
+[7/9/2026, 3:38:52 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:38:52 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:55:39 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 3:55:39 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0019
+[7/9/2026, 3:55:39 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 3:55:39 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:55:39 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 3:55:39 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0019_RAHUL_KUMAR_JHA.docx
+[7/9/2026, 3:55:39 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/9/2026, 3:55:39 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0019 to history.
+[7/9/2026, 3:56:51 PM] [API/generate/brand] Received generate request for brand: "Bon Fiction"
+[7/9/2026, 3:56:51 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0012
+[7/9/2026, 3:56:51 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:56:52 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:56:52 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 3:56:52 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0012_BON_FICTION.docx
+[7/9/2026, 3:56:52 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 3:56:52 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0012 to history.
+[7/9/2026, 3:57:08 PM] [API/generate/brand] Received generate request for brand: "Bon Fiction"
+[7/9/2026, 3:57:08 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0013
+[7/9/2026, 3:57:08 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:57:08 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:57:08 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 3:57:08 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0013_BON_FICTION.docx
+[7/9/2026, 3:57:08 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 3:57:08 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0013 to history.
+[7/9/2026, 3:59:37 PM] [API/generate/brand] Received generate request for brand: "SmiiSenses"
+[7/9/2026, 3:59:37 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0014
+[7/9/2026, 3:59:37 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 3:59:37 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 3:59:37 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 3:59:38 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0014_SMIISENSES.docx
+[7/9/2026, 3:59:38 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 3:59:38 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0014 to history.
+[7/9/2026, 4:11:13 PM] [API/generate/employee] Received generate request for employee: "Parthasarathi Behura"
+[7/9/2026, 4:11:13 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0020
+[7/9/2026, 4:11:13 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 4:11:13 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 4:11:13 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 4:11:13 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0020_PARTHASARATHI_BEHURA.docx
+[7/9/2026, 4:11:13 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/9/2026, 4:11:13 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0020 to history.
+[7/9/2026, 5:45:02 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 5:45:02 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0015
+[7/9/2026, 5:45:02 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 5:45:03 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:45:03 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:45:03 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0015_PREMIER_FOODS_AND_COMMODITIES.docx
+[7/9/2026, 5:45:03 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 5:45:03 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0015 to history.
+[7/9/2026, 5:45:55 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 5:45:55 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0016
+[7/9/2026, 5:45:55 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/9/2026, 5:45:55 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:45:55 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:45:56 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0016_PREMIER_FOODS_AND_COMMODITIES.docx
+[7/9/2026, 5:45:56 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 5:45:56 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0016 to history.
+[7/9/2026, 5:46:42 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 5:46:42 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0021
+[7/9/2026, 5:46:42 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 5:46:42 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:46:43 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:46:43 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0021_RAHUL_KUMAR_JHA.docx
+[7/9/2026, 5:46:43 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/9/2026, 5:46:43 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0021 to history.
+[7/9/2026, 5:51:54 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 5:51:54 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0017
+[7/9/2026, 5:51:54 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 5:51:55 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:51:55 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:51:55 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0017_PREMIER_FOODS_AND_COMMODITIES.docx
+[7/9/2026, 5:51:55 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 5:51:55 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0017 to history.
+[7/9/2026, 5:53:31 PM] [API/generate/brand] Received generate request for brand: "GACS FOODS"
+[7/9/2026, 5:53:31 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0018
+[7/9/2026, 5:53:31 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 5:53:31 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:53:31 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:53:31 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0018_GACS_FOODS.docx
+[7/9/2026, 5:53:31 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 5:53:31 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0018 to history.
+[7/9/2026, 5:57:15 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 5:57:15 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0022
+[7/9/2026, 5:57:15 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 5:57:15 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:57:15 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:57:15 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0022_RAHUL_KUMAR_JHA.docx
+[7/9/2026, 5:57:15 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/9/2026, 5:57:15 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0022 to history.
+[7/9/2026, 5:59:41 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/9/2026, 5:59:41 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0023
+[7/9/2026, 5:59:41 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/9/2026, 5:59:42 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 5:59:42 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 5:59:42 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0023_RAHUL_KUMAR_JHA.docx
+[7/9/2026, 5:59:42 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/9/2026, 5:59:42 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0023 to history.
+[7/9/2026, 6:00:49 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 6:00:49 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0019
+[7/9/2026, 6:00:49 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:00:49 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:01:18 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 6:01:18 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0020
+[7/9/2026, 6:01:18 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:01:18 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:01:20 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 6:01:20 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0021
+[7/9/2026, 6:01:20 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:01:21 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:01:22 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 6:01:22 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0022
+[7/9/2026, 6:01:22 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:01:23 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:02:13 PM] [API/generate/brand] Received generate request for brand: "Premier Foods and Commodities"
+[7/9/2026, 6:02:13 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0023
+[7/9/2026, 6:02:13 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:02:14 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:02:14 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:02:14 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0023_PREMIER_FOODS_AND_COMMODITIES.docx
+[7/9/2026, 6:02:14 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 6:02:14 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0023 to history.
+[7/9/2026, 6:20:10 PM] [API/generate/brand] Received generate request for brand: "GACS FOODS"
+[7/9/2026, 6:20:10 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0024
+[7/9/2026, 6:20:10 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:20:11 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:20:11 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:20:11 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0024_GACS_FOODS.docx
+[7/9/2026, 6:20:11 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 6:20:11 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0024 to history.
+[7/9/2026, 6:53:58 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:53:58 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:53:58 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:53:58 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:53:58 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:53:58 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:53:59 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:53:59 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:53:59 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:53:59 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:53:59 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:53:59 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:57:02 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:57:02 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:57:02 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:57:02 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:57:02 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:57:03 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:57:03 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:57:03 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:57:03 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:57:03 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:57:03 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:57:03 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:58:18 PM] [API/generate/brand] Received generate request for brand: "GACS FOODS"
+[7/9/2026, 6:58:18 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0025
+[7/9/2026, 6:58:18 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 6:58:18 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 6:58:18 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 6:58:19 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0025_GACS_FOODS.docx
+[7/9/2026, 6:58:19 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/9/2026, 6:58:19 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0025 to history.
+[7/9/2026, 7:07:33 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 7:07:33 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 7:07:33 PM] [renderDocx] Validation passed successfully!
+[7/9/2026, 7:17:45 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/9/2026, 7:17:45 PM] [renderDocx] Running validations on generated document
+[7/9/2026, 7:17:45 PM] [renderDocx] Validation passed successfully!

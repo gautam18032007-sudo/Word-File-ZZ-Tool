@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
+import { writableDir } from '@/lib/paths';
 
-const OUTPUT_DIR = path.resolve(process.cwd(), '..', 'output');
+const OUTPUT_DIR = writableDir('output');
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

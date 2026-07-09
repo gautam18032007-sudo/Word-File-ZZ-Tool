@@ -29,3 +29,7 @@ legacy-backup.zip
 __pycache__/
 *.pyc
 */__pycache__/
+
+# Archived legacy files
+.legacy_trash/
+

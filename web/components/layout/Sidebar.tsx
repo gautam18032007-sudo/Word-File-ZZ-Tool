@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Users, History, Zap } from "lucide-react";
+import { FileText, Users, LayoutDashboard, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/brand", label: "Brand Contract", icon: FileText },
   { href: "/employee", label: "Employee Contract", icon: Users },
-  { href: "/history", label: "History", icon: History },
 ];
 
 export function Sidebar() {

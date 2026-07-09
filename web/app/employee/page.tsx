@@ -5,10 +5,11 @@ import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { EmployeeRow, SalaryBreakup, GenerateResult } from "@/lib/types";
 import { SheetLoader } from "@/components/shared/SheetLoader";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 // ─── Client-side salary engine (mirrors lib/salary.ts) ───────────────────────
 
@@ -25,6 +26,13 @@ function calcSalaryClient(annualCTC: number, pfEnabled: boolean): SalaryBreakup 
   const rBasic = roundHalfUp(basic), rHra = roundHalfUp(hra),
     rConveyance = roundHalfUp(conveyance), rPfEmployer = roundHalfUp(pfEmployer);
   const rSpecialAllowance = monthlyCTC - (rBasic + rHra + rConveyance + rPfEmployer);
+
+  // Math Balance Check Assert
+  const sum = rBasic + rHra + rConveyance + rPfEmployer + rSpecialAllowance;
+  if (sum !== monthlyCTC) {
+    throw new Error(`Salary Engine Error: Component sum (${sum}) does not match Monthly CTC (${monthlyCTC}) exactly.`);
+  }
+
   const pfEmployee = pfEnabled ? rPfEmployer : 0;
   return {
     monthlyCTC, annualCTC: roundHalfUp(annualCTC),
@@ -110,13 +118,54 @@ function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function EmployeePage() {
-  const [employees, setEmployees] = useState<EmployeeRow[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [rawRows, setRawRows] = useState<string[][]>([]);
   const [selectedIdx, setSelectedIdx] = useState(-1);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function findColumnIndex(headersList: string[], possibleNames: string[]): number {
+    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+    return headersList.findIndex(h => 
+      possibleNames.some(p => norm(h) === norm(p))
+    );
+  }
+
+  // Compute employee column indices dynamically
+  const nameIdx = findColumnIndex(headers, ['Full Name', 'Name']);
+  const fatherNameIdx = findColumnIndex(headers, ['Father Name', "Father's Name"]);
+  const genderIdx = findColumnIndex(headers, ['Gender']);
+  const addressIdx = findColumnIndex(headers, ['Address']);
+  const phoneIdx = findColumnIndex(headers, ['Phone', 'Phone Number', 'Mobile Number']);
+  const emailIdx = findColumnIndex(headers, ['Email', 'Email Address', 'Email ID']);
+  // NOT aliased to the sheet's "PAN Card" / "Aadhaar Card" columns on purpose —
+  // those are file-upload links (Drive URLs), not the PAN/Aadhar number text.
+  // Mapping them would print a Drive link into the contract instead of the
+  // actual number. Left unmapped (blank) until there's a real text source.
+  const panIdx = findColumnIndex(headers, ['PAN', 'PAN Number']);
+  const aadharIdx = findColumnIndex(headers, ['Aadhar', 'Aadhar Number', 'Aadhaar', 'Aadhaar Number']);
+  const departmentIdx = findColumnIndex(headers, ['Department']);
+  const designationIdx = findColumnIndex(headers, ['Designation']);
+
+  // Compute employees dynamically from rawRows
+  const employees: EmployeeRow[] = rawRows.map((r, i) => ({
+    index: i + 2,
+    name: nameIdx >= 0 ? (r[nameIdx] ?? '').trim() : '',
+    fatherName: fatherNameIdx >= 0 ? (r[fatherNameIdx] ?? '').trim() : '',
+    gender: genderIdx >= 0 ? (r[genderIdx] ?? '').trim() : '',
+    address: addressIdx >= 0 ? (r[addressIdx] ?? '').trim() : '',
+    phone: phoneIdx >= 0 ? (r[phoneIdx] ?? '').trim() : '',
+    email: emailIdx >= 0 ? (r[emailIdx] ?? '').trim() : '',
+    pan: panIdx >= 0 ? (r[panIdx] ?? '').trim() : '',
+    aadhar: aadharIdx >= 0 ? (r[aadharIdx] ?? '').trim() : '',
+    department: departmentIdx >= 0 ? (r[departmentIdx] ?? '').trim() : '',
+    designation: designationIdx >= 0 ? (r[designationIdx] ?? '').trim() : '',
+  })).filter(e => e.name);
+
   const selected = employees[selectedIdx] ?? null;
 
   const [annualCTC, setAnnualCTC] = useState("");
   const [joiningDate, setJoiningDate] = useState("");
-  const [pfEnabled, setPfEnabled] = useState(true);
+  const pfEnabled = true; // PF is fixed to YES
   const [gender, setGender] = useState<"Male" | "Female" | "">("");
 
   const [genState, setGenState] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -125,6 +174,39 @@ export default function EmployeePage() {
 
   const ctcNum = parseFloat(annualCTC) || 0;
   const salary = ctcNum > 0 ? calcSalaryClient(ctcNum, pfEnabled) : null;
+
+  // Filter employees based on search query
+  const filteredEmployees = employees.filter((e) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      e.name.toLowerCase().includes(q) ||
+      e.designation.toLowerCase().includes(q) ||
+      e.department.toLowerCase().includes(q)
+    );
+  });
+
+  // Display duplicate-aware candidate names
+  function getEmployeeDisplayName(emp: EmployeeRow): string {
+    const duplicates = employees.filter(
+      (x) => x.name.trim().toLowerCase() === emp.name.trim().toLowerCase()
+    );
+    if (duplicates.length > 1) {
+      return `${emp.name} (${emp.designation || emp.department || `Row ${emp.index}`})`;
+    }
+    return emp.name;
+  }
+
+  // Mandatory fields check for selected employee
+  const employeeMissingFields: string[] = [];
+  if (selected) {
+    if (!selected.name?.trim()) employeeMissingFields.push("Employee Name");
+    if (!selected.designation?.trim()) employeeMissingFields.push("Designation");
+    if (!selected.address?.trim()) employeeMissingFields.push("Address");
+    if (!gender) employeeMissingFields.push("Gender");
+  }
+
+  const isExtremelyHighCTC = ctcNum >= 100000000;
 
   function handleSelectEmployee(idx: number) {
     setSelectedIdx(idx);
@@ -141,13 +223,10 @@ export default function EmployeePage() {
     }
   }
 
-  async function handleLoadEmployees(url: string) {
-    setEmployees([]);
+  async function handleLoadEmployees(url: string, loadedHeaders: string[], loadedRows: string[][]) {
     setSelectedIdx(-1);
-    const res = await fetch(`/api/sheets/employee?sheet=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error ?? "Failed to load");
-    setEmployees(data.rows);
+    setHeaders(loadedHeaders);
+    setRawRows(loadedRows);
   }
 
   async function generate() {
@@ -158,12 +237,16 @@ export default function EmployeePage() {
       setGenError("Please select an employee.");
       return;
     }
+    if (employeeMissingFields.length > 0) {
+      setGenError(`Cannot generate: Selected employee has missing mandatory fields: ${employeeMissingFields.join(", ")}`);
+      return;
+    }
     if (!gender) {
       setGenError("Please select gender.");
       return;
     }
     if (!ctcNum || ctcNum <= 0) {
-      setGenError("Please enter a valid Annual CTC.");
+      setGenError("Please enter a valid Annual CTC (must be greater than 0).");
       return;
     }
     if (!joiningDate) {
@@ -220,7 +303,33 @@ export default function EmployeePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <SheetLoader onLoad={handleLoadEmployees} loadedCount={employees.length} />
+              <SheetLoader onLoad={handleLoadEmployees} loadedCount={employees.length} storageKey="employee_sheet_url" />
+              {headers.length > 0 && (
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[oklch(0.99_0_0)] text-xs space-y-2 mt-3">
+                  <p className="font-semibold text-[var(--foreground)]">Sheet Status</p>
+                  <div className="space-y-1.5 pt-1 border-t border-[var(--border)]">
+                    {[
+                      ["Full Name", nameIdx >= 0],
+                      ["Father Name", fatherNameIdx >= 0],
+                      ["Gender", genderIdx >= 0],
+                      ["Address", addressIdx >= 0],
+                      ["Phone", phoneIdx >= 0],
+                      ["Email", emailIdx >= 0],
+                      ["PAN", panIdx >= 0],
+                      ["Aadhar", aadharIdx >= 0],
+                      ["Department", departmentIdx >= 0],
+                      ["Designation", designationIdx >= 0],
+                    ].map(([label, found]) => (
+                      <div key={label as string} className="flex items-center justify-between text-[11px]">
+                        <span className="text-[var(--muted-foreground)]">{label}</span>
+                        <span className={found ? "text-emerald-600 font-bold" : "text-rose-500 font-bold"}>
+                          {found ? "✓ Found" : "✗ Missing"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -232,16 +341,54 @@ export default function EmployeePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Select
-                value={selectedIdx === -1 ? "" : String(selectedIdx)}
-                onChange={(e) => handleSelectEmployee(parseInt(e.target.value))}
-                disabled={employees.length === 0}
-              >
-                <option value="">— choose an employee —</option>
-                {employees.map((e, i) => (
-                  <option key={i} value={i}>{e.name} — {e.designation}</option>
-                ))}
-              </Select>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Search employee by name, dept or title..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={employees.length === 0}
+                />
+
+                {employees.length === 0 && (
+                  <p className="p-3 text-center text-xs text-[var(--muted-foreground)] border border-dashed border-[var(--border)] rounded-md">
+                    0 records loaded. Please paste Google Sheet URL and click load.
+                  </p>
+                )}
+
+                {employees.length > 0 && (
+                  <div className="max-h-60 overflow-y-auto border border-[var(--border)] rounded-md divide-y divide-[var(--border)] bg-[var(--background)]">
+                    {filteredEmployees.length === 0 ? (
+                      <p className="p-3 text-center text-xs text-[var(--muted-foreground)]">No matching employees found.</p>
+                    ) : (
+                      filteredEmployees.map((e) => {
+                        const originalIdx = employees.findIndex(x => x.index === e.index);
+                        return (
+                          <button
+                            key={e.index}
+                            onClick={() => handleSelectEmployee(originalIdx)}
+                            className={cn(
+                              "w-full text-left px-3 py-2 text-xs flex justify-between items-center hover:bg-[var(--muted)] transition-colors",
+                              selectedIdx === originalIdx && "bg-[oklch(0.95_0_0)] border-l-2 border-[var(--foreground)]"
+                            )}
+                          >
+                            <div className="pr-2 truncate">
+                              <p className="font-semibold text-[var(--foreground)] truncate">
+                                {getEmployeeDisplayName(e)}
+                              </p>
+                              <p className="text-[10px] text-[var(--muted-foreground)] truncate">
+                                {e.department || "No Department"} · {e.email || "No Email"}
+                              </p>
+                            </div>
+                            <span className="shrink-0 font-mono text-[9px] uppercase tracking-wider bg-[var(--muted)] px-1.5 py-0.5 rounded text-[var(--muted-foreground)] max-w-[100px] truncate" title={e.designation}>
+                              {e.designation || "Employee"}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
 
               {selected && (
                 <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[oklch(0.975_0_0)]">
@@ -266,6 +413,17 @@ export default function EmployeePage() {
                       <span className="font-medium text-xs">{selected.address}</span>
                     </div>
                   )}
+
+                  {/* Warning banner for missing mandatory fields */}
+                  {employeeMissingFields.length > 0 && (
+                    <div className="flex gap-2 text-xs py-2 px-3 border border-rose-200 bg-rose-50 text-rose-700 rounded-md mt-2">
+                      <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-semibold">Cannot Generate Contract</p>
+                        <p className="text-[10px]">Missing mandatory fields: {employeeMissingFields.join(", ")}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -282,7 +440,7 @@ export default function EmployeePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <Field label="Annual CTC (₹)">
                   <Input
                     type="number"
@@ -294,32 +452,28 @@ export default function EmployeePage() {
                 <Field label="Joining Date">
                   <Input type="date" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
                 </Field>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Provident Fund">
-                  <div className="flex h-9 items-center gap-4">
-                    {[true, false].map((val) => (
-                      <label key={String(val)} className="flex items-center gap-1.5 cursor-pointer text-sm">
-                        <input
-                          type="radio"
-                          className="accent-[var(--foreground)]"
-                          checked={pfEnabled === val}
-                          onChange={() => setPfEnabled(val)}
-                        />
-                        PF {val ? "Yes" : "No"}
-                      </label>
-                    ))}
-                  </div>
-                </Field>
                 <Field label="Gender">
-                  <Select value={gender} onChange={(e) => setGender(e.target.value as "Male" | "Female" | "")}>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value as "Male" | "Female" | "")}
+                    className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  >
                     <option value="">— select gender —</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
-                  </Select>
+                  </select>
                 </Field>
               </div>
+
+              {isExtremelyHighCTC && (
+                <div className="flex gap-2 text-xs py-2 px-3 border border-amber-200 bg-amber-50 text-amber-800 rounded-md mt-2 animate-pulse">
+                  <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold">Extremely High CTC Warning</p>
+                    <p className="text-[10px]">The entered Annual CTC is ₹10 Crore+. Please double check if this is correct.</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

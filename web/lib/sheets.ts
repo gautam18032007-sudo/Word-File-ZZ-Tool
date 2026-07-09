@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { BrandRow, EmployeeRow } from './types';
+import { logger } from './logger';
 
 const CREDENTIALS_PATH = path.resolve(process.cwd(), '..', 'credentials.json');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
@@ -71,26 +72,46 @@ async function getRowsPublicCsv(sheetIdOrUrl: string): Promise<string[][]> {
   return parseCsv(await res.text());
 }
 
-// ─── Mode 2: Service account (credentials.json) ───────────────────────────────
+// ─── Mode 2: Service account (env var, or credentials.json for local dev) ────
+
+/**
+ * Reads the service-account key from GOOGLE_SERVICE_ACCOUNT_JSON (raw JSON or
+ * base64-encoded JSON) first — this is the only option that works on Vercel,
+ * since a gitignored credentials.json file is never part of the deployment.
+ * Falls back to the local credentials.json file for local dev convenience.
+ */
+function readServiceAccountKey(): Record<string, unknown> | null {
+  const envVal = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (envVal) {
+    const raw = envVal.trim().startsWith('{')
+      ? envVal
+      : Buffer.from(envVal, 'base64').toString('utf-8');
+    return JSON.parse(raw);
+  }
+  if (fs.existsSync(CREDENTIALS_PATH)) {
+    return JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf-8'));
+  }
+  return null;
+}
 
 async function getRowsServiceAccount(sheetId: string): Promise<string[][]> {
-  if (!fs.existsSync(CREDENTIALS_PATH)) {
+  let keyFile: Record<string, unknown> | null;
+  try {
+    keyFile = readServiceAccountKey();
+  } catch (e) {
+    throw new SheetsError(`Could not read service account key: ${e}`);
+  }
+  if (!keyFile) {
     throw new SheetsError(
-      'Sheet is not public and no credentials.json was found.\n' +
+      'Sheet is not public and no service account key was found.\n' +
       'Either set the sheet\'s sharing to "Anyone with the link" (Viewer),\n' +
-      `or place a service account key at:\n  ${CREDENTIALS_PATH}`
+      'or set GOOGLE_SERVICE_ACCOUNT_JSON (recommended for Vercel), ' +
+      `or place a service account key at:\n  ${CREDENTIALS_PATH} (local dev only)`
     );
   }
 
-  // Dynamic import — only pulled in when credentials.json exists
+  // Dynamic import — only pulled in when a service account key is available
   const { google } = await import('googleapis');
-
-  let keyFile: Record<string, unknown>;
-  try {
-    keyFile = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf-8'));
-  } catch (e) {
-    throw new SheetsError(`Could not read credentials.json: ${e}`);
-  }
 
   const auth = new google.auth.GoogleAuth({
     credentials: keyFile,
@@ -127,6 +148,32 @@ async function getRows(sheetIdOrUrl: string): Promise<string[][]> {
       // Re-throw the original public error — it has the better user-facing message
       throw publicErr;
     }
+  }
+}
+
+export async function fetchRawRows(sheetIdOrUrl: string | null, type: 'brand' | 'employee'): Promise<string[][]> {
+  const envVar = type === 'brand' ? 'GOOGLE_BRAND_SHEET_ID' : 'GOOGLE_EMPLOYEE_SHEET_ID';
+  const sid = (sheetIdOrUrl || '').trim() || process.env[envVar] || '';
+
+  logger.sheet(`[fetchRawRows] Requesting ${type} sheet. Input: "${sheetIdOrUrl || ''}", Default env: "${process.env[envVar] || ''}"`);
+
+  if (!sid) {
+    const errMsg = `No Google Sheet URL or ID provided for ${type}.`;
+    logger.error(`[fetchRawRows] ${errMsg}`);
+    throw new SheetsError(errMsg);
+  }
+
+  const cleanId = extractSheetId(sid);
+  logger.sheet(`[fetchRawRows] Extracted sheet ID: "${cleanId}"`);
+
+  try {
+    const rows = await getRows(sid);
+    logger.sheet(`[fetchRawRows] Successfully fetched ${rows.length} rows (including headers) for ${type}.`);
+    return rows;
+  } catch (e) {
+    const errMsg = e instanceof Error ? e.message : String(e);
+    logger.error(`[fetchRawRows] Failed to fetch sheet rows: ${errMsg}`);
+    throw e;
   }
 }
 
