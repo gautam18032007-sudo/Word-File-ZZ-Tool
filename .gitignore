@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Next.js build
+.next/
+web/.next/
+out/
+web/out/
+build/
+web/build/
+
+# Local env files
+.env
+.env*.local
+web/.env*.local
+
+# Google API Credentials
+credentials.json
+
+# Local Contract Output files (Generated files & history store)
+output/
+web/output/
+
+# Backups
+legacy-backup.zip
+
+# Python caches
+__pycache__/
+*.pyc
+*/__pycache__/
