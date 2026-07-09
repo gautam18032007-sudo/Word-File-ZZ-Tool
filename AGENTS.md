@@ -20,5 +20,7 @@ working in that directory — it has the full file map and conventions.
    today, plus known gaps).
 3. [`PROJECT_PLAN.md`](PROJECT_PLAN.md) — architecture/folder-structure reference, superseded for
    business logic by doc #1.
+4. [`VERCEL.md`](VERCEL.md) — exact deployment steps (Root Directory must be `web`), required
+   env vars, and what does/doesn't work on Vercel vs. locally.
 
 No database, no auth, no login — keep it that way unless the user explicitly asks otherwise.
