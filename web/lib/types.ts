@@ -22,6 +22,7 @@ export interface EmployeeRow {
   designation: string;
   department: string;
   gender: string;
+  joiningDate?: string;
 }
 
 export interface SalaryBreakup {
@@ -35,6 +36,13 @@ export interface SalaryBreakup {
   specialAllowance: number;
   salaryInHand: number;
   pfEnabled: boolean;
+  basicAnnual: number;
+  hraAnnual: number;
+  conveyanceAnnual: number;
+  pfEmployerAnnual: number;
+  pfEmployeeAnnual: number;
+  specialAllowanceAnnual: number;
+  salaryInHandAnnual: number;
 }
 
 export interface ContractRecord {

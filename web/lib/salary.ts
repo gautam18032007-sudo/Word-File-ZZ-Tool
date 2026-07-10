@@ -15,19 +15,16 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
   const g3 = annualCTC / 12; // unrounded monthly CTC
 
   // 1. BASIC
-  const basic = g3 < 42000 ? Math.min(21500, g3) : g3 / 2;
+  const basic = g3 <= 42000 ? Math.min(21500, g3) : g3 / 2;
 
-  // 2. PF EMPLOYER
-  let pfEmployer = 0;
-  if (pfEnabled) {
-    pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
-  }
+  // 2. PF EMPLOYER (must be before HRA as HRA subtracts it)
+  const pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
 
   // 3. CONVEYANCE
-  const conveyance = g3 < 42000 ? 0 : roundHalfUp(g3 * 0.1);
+  const conveyance = roundHalfUp(g3 < 42000 ? 0 : g3 * 0.10);
 
   // 4. HRA
-  const hra = g3 < 42000 ? g3 - basic - pfEmployer : basic / 2;
+  const hra = g3 < 42000 ? (g3 - basic - pfEmployer) : basic / 2;
 
   const rBasic = roundHalfUp(basic);
   const rHra = roundHalfUp(hra);
@@ -44,14 +41,23 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
   }
 
   // 6. PF EMPLOYEE — same as employer contribution
-  const pfEmployee = pfEnabled ? rPfEmployer : 0;
+  const pfEmployee = rPfEmployer;
 
   // 7. SALARY IN HAND
   const salaryInHand = monthlyCTC - rPfEmployer - pfEmployee;
 
+  // --- Annual components matching spreadsheet's exact float/rounding logic ---
+  const basicAnnual = roundHalfUp(basic * 12);
+  const hraAnnual = roundHalfUp(hra * 12);
+  const conveyanceAnnual = rConveyance * 12;
+  const pfEmployerAnnual = rPfEmployer * 12;
+  const specialAllowanceAnnual = annualCTC - (basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual);
+  const pfEmployeeAnnual = pfEmployee * 12;
+  const salaryInHandAnnual = annualCTC - pfEmployerAnnual - pfEmployeeAnnual;
+
   return {
     monthlyCTC,
-    annualCTC: roundHalfUp(annualCTC),
+    annualCTC,
     basic: rBasic,
     hra: rHra,
     conveyance: rConveyance,
@@ -59,6 +65,13 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
     pfEmployee,
     specialAllowance: rSpecialAllowance,
     salaryInHand,
-    pfEnabled,
+    pfEnabled: true,
+    basicAnnual,
+    hraAnnual,
+    conveyanceAnnual,
+    pfEmployerAnnual,
+    pfEmployeeAnnual,
+    specialAllowanceAnnual,
+    salaryInHandAnnual,
   };
 }

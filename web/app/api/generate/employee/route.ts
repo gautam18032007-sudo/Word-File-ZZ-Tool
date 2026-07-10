@@ -91,14 +91,14 @@ export async function POST(req: NextRequest) {
       ANN_PF_EMPLOYEE: formatINR(s.pfEmployee),
       ANN_SALARY_IN_HAND: formatINR(s.salaryInHand),
       // Annexure-A annual
-      ANN_BASIC_ANNUAL: formatINR(s.basic * 12),
-      ANN_HRA_ANNUAL: formatINR(s.hra * 12),
-      ANN_CONVEYANCE_ANNUAL: formatINR(s.conveyance * 12),
-      ANN_PF_EMPLOYER_ANNUAL: formatINR(s.pfEmployer * 12),
-      ANN_SPECIAL_ALLOWANCE_ANNUAL: formatINR(s.specialAllowance * 12),
+      ANN_BASIC_ANNUAL: formatINR(s.basicAnnual),
+      ANN_HRA_ANNUAL: formatINR(s.hraAnnual),
+      ANN_CONVEYANCE_ANNUAL: formatINR(s.conveyanceAnnual),
+      ANN_PF_EMPLOYER_ANNUAL: formatINR(s.pfEmployerAnnual),
+      ANN_SPECIAL_ALLOWANCE_ANNUAL: formatINR(s.specialAllowanceAnnual),
       ANN_TOTAL_CTC_ANNUAL: formatINR(s.annualCTC),
-      ANN_PF_EMPLOYEE_ANNUAL: formatINR(s.pfEmployee * 12),
-      ANN_SALARY_IN_HAND_ANNUAL: formatINR(s.salaryInHand * 12),
+      ANN_PF_EMPLOYEE_ANNUAL: formatINR(s.pfEmployeeAnnual),
+      ANN_SALARY_IN_HAND_ANNUAL: formatINR(s.salaryInHandAnnual),
     };
 
     logger.gen(`[API/generate/employee] Generating template for contract #${contractNo}`);

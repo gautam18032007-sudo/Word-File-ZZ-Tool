@@ -132,14 +132,12 @@ function applyOpsToParagraphs(xml: string, opsFor: OpsFor): string {
 function literalOps(concat: string, replacements: [string, string][]): Op[] {
   const ops: Op[] = [];
   let i = 0;
-  const lowerConcat = concat.toLowerCase();
   while (i < concat.length) {
     let bestLen = 0;
     let bestTo: string | null = null;
     for (const [frm, to] of replacements) {
-      const lowerFrm = frm.toLowerCase();
-      if (lowerFrm.length > bestLen && lowerConcat.startsWith(lowerFrm, i)) {
-        bestLen = lowerFrm.length;
+      if (frm.length > bestLen && concat.startsWith(frm, i)) {
+        bestLen = frm.length;
         bestTo = to;
       }
     }
@@ -248,13 +246,8 @@ function preprocessEmployeeXml(xml: string): string {
   const employeePairs: [string, string][] = [
     ['Mr./Ms. NAME', '{{EMPLOYEE_NAME}}'],
     ['EMPLOYEE NAME', '{{EMPLOYEE_NAME}}'],
-    ['NAME:', '{{EMPLOYEE_NAME}}'],
-    ['NAME', '{{EMPLOYEE_NAME}}'],
-    ['ADDRESS:', '{{EMPLOYEE_ADDRESS}}'],
     ['ADDRESS', '{{EMPLOYEE_ADDRESS}}'],
-    ['DESIGNATION:', '{{DESIGNATION}}'],
     ['DESIGNATION', '{{DESIGNATION}}'],
-    ['JOINING DATE:', '{{JOINING_DATE}}'],
     ['JOINING DATE', '{{JOINING_DATE}}'],
     ['MONTHLY CTC IN WORDS', '{{MONTHLY_CTC_WORDS}}'],
     ['MONTHLY CTC', '{{MONTHLY_CTC}}'],
@@ -296,10 +289,6 @@ function feeCommissionClauseOps(concat: string): Op[] {
 function preprocessBrandXml(xml: string): string {
   xml = applyOpsToParagraphs(xml, feeCommissionClauseOps);
   const brandPairs: [string, string][] = [
-    ['(Stamping Date)', '{{STAMPING_DATE}}'],
-    ['(commencement date)', '{{EFFECTIVE_DATE}}'],
-    ['Effective Date:', '{{EFFECTIVE_DATE}}'],
-    ['Effective Date', '{{EFFECTIVE_DATE}}'],
     ['Le gal Name', '{{LEGAL_NAME}}'],
     ['Legal Name:', '{{LEGAL_NAME}}'],
     ['Legal Name', '{{LEGAL_NAME}}'],
@@ -338,6 +327,9 @@ function fillTags(xml: string, data: Record<string, string>): string {
 
     const noBoldKeys = [
       'HE_SHE', 'HIM_HER', 'HIS_HER', 'HE', 'HIM', 'HIS', 'SHE', 'HER',
+      'PRONOUN_SUBJECT', 'PRONOUN_SUBJECT_CAP',
+      'PRONOUN_OBJECT', 'PRONOUN_OBJECT_CAP',
+      'PRONOUN_POSSESSIVE', 'PRONOUN_POSSESSIVE_CAP',
       'PAYMENT_METHOD', 'FEE_CLAUSE', 'COMMISSION_CLAUSE'
     ];
     if (noBoldKeys.includes(key)) {
@@ -410,7 +402,7 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
   // 4. Assert no raw placeholder text remains (case-sensitive to avoid matching lowercase boilerplates/labels)
   const activePlaceholders = isEmployee 
     ? ['Mr./Ms. NAME', 'EMPLOYEE NAME', 'DESIGNATION', 'JOINING DATE', 'ADDRESS']
-    : ['(Stamping Date)', '(commencement date)', 'Brands Category', 'Location setup', 'Total Amount', 'Le gal Name'];
+    : ['Brands Category', 'Location setup', 'Total Amount', 'Le gal Name'];
 
   for (const ph of activePlaceholders) {
     if (xml.includes(ph)) {

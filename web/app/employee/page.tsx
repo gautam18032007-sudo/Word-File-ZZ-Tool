@@ -18,13 +18,15 @@ function roundHalfUp(x: number): number { return Math.floor(x + 0.5); }
 function calcSalaryClient(annualCTC: number, pfEnabled: boolean): SalaryBreakup {
   const monthlyCTC = roundHalfUp(annualCTC / 12);
   const g3 = annualCTC / 12;
-  const basic = g3 < 42000 ? Math.min(21500, g3) : g3 / 2;
-  let pfEmployer = 0;
-  if (pfEnabled) pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
-  const conveyance = g3 < 42000 ? 0 : roundHalfUp(g3 * 0.1);
+  const basic = g3 <= 42000 ? Math.min(21500, g3) : g3 / 2;
+  const pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
+  const conveyance = roundHalfUp(g3 < 42000 ? 0 : g3 * 0.10);
   const hra = g3 < 42000 ? g3 - basic - pfEmployer : basic / 2;
-  const rBasic = roundHalfUp(basic), rHra = roundHalfUp(hra),
-    rConveyance = roundHalfUp(conveyance), rPfEmployer = roundHalfUp(pfEmployer);
+
+  const rBasic = roundHalfUp(basic);
+  const rHra = roundHalfUp(hra);
+  const rConveyance = roundHalfUp(conveyance);
+  const rPfEmployer = roundHalfUp(pfEmployer);
   const rSpecialAllowance = monthlyCTC - (rBasic + rHra + rConveyance + rPfEmployer);
 
   // Math Balance Check Assert
@@ -33,14 +35,34 @@ function calcSalaryClient(annualCTC: number, pfEnabled: boolean): SalaryBreakup 
     throw new Error(`Salary Engine Error: Component sum (${sum}) does not match Monthly CTC (${monthlyCTC}) exactly.`);
   }
 
-  const pfEmployee = pfEnabled ? rPfEmployer : 0;
+  const pfEmployee = rPfEmployer;
+
+  const basicAnnual = roundHalfUp(basic * 12);
+  const hraAnnual = roundHalfUp(hra * 12);
+  const conveyanceAnnual = rConveyance * 12;
+  const pfEmployerAnnual = rPfEmployer * 12;
+  const specialAllowanceAnnual = annualCTC - (basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual);
+  const pfEmployeeAnnual = pfEmployee * 12;
+  const salaryInHandAnnual = annualCTC - pfEmployerAnnual - pfEmployeeAnnual;
+
   return {
-    monthlyCTC, annualCTC: roundHalfUp(annualCTC),
-    basic: rBasic, hra: rHra, conveyance: rConveyance,
-    pfEmployer: rPfEmployer, pfEmployee,
+    monthlyCTC,
+    annualCTC,
+    basic: rBasic,
+    hra: rHra,
+    conveyance: rConveyance,
+    pfEmployer: rPfEmployer,
+    pfEmployee,
     specialAllowance: rSpecialAllowance,
     salaryInHand: monthlyCTC - rPfEmployer - pfEmployee,
-    pfEnabled,
+    pfEnabled: true,
+    basicAnnual,
+    hraAnnual,
+    conveyanceAnnual,
+    pfEmployerAnnual,
+    pfEmployeeAnnual,
+    specialAllowanceAnnual,
+    salaryInHandAnnual,
   };
 }
 
@@ -53,6 +75,55 @@ function fmt(n: number): string {
   while (rest.length > 2) { parts.unshift(rest.slice(-2)); rest = rest.slice(0, -2); }
   if (rest) parts.unshift(rest);
   return `₹${parts.join(",")},${last3}`;
+}
+
+function normalizeDateToYYYYMMDD(dateStr: string): string {
+  const clean = (dateStr ?? "").trim();
+  if (!clean) return "";
+
+  // If already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+    return clean;
+  }
+
+  // Handle DD-MM-YYYY or DD/MM/YYYY
+  let m = clean.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (m) {
+    const day = m[1].padStart(2, "0");
+    const month = m[2].padStart(2, "0");
+    const year = m[3];
+    const val1 = parseInt(m[1], 10);
+    const val2 = parseInt(m[2], 10);
+    if (val1 > 12) {
+      return `${year}-${month}-${day}`;
+    } else if (val2 > 12) {
+      return `${year}-${day}-${month}`;
+    } else {
+      return `${year}-${month}-${day}`;
+    }
+  }
+
+  // Handle YYYY/MM/DD
+  m = clean.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if (m) {
+    const year = m[1];
+    const month = m[2].padStart(2, "0");
+    const day = m[3].padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  // Let Date parse it as fallback
+  try {
+    const parsed = new Date(clean);
+    if (!isNaN(parsed.getTime())) {
+      const year = parsed.getFullYear();
+      const month = String(parsed.getMonth() + 1).padStart(2, "0");
+      const day = String(parsed.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+  } catch {}
+
+  return clean;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -108,7 +179,7 @@ function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
         </div>
         <div className="flex justify-between text-xs text-[var(--muted-foreground)] mt-1">
           <span>Annual In-Hand</span>
-          <span className="font-mono font-semibold text-[var(--foreground)]">{fmt(salary.salaryInHand * 12)}</span>
+          <span className="font-mono font-semibold text-[var(--foreground)]">{fmt(salary.salaryInHandAnnual)}</span>
         </div>
       </div>
     </div>
@@ -145,6 +216,7 @@ export default function EmployeePage() {
   const aadharIdx = findColumnIndex(headers, ['Aadhar', 'Aadhar Number', 'Aadhaar', 'Aadhaar Number']);
   const departmentIdx = findColumnIndex(headers, ['Department']);
   const designationIdx = findColumnIndex(headers, ['Designation']);
+  const joiningDateIdx = findColumnIndex(headers, ['Joining Date', 'JoiningDate', 'Date of Joining']);
 
   // Compute employees dynamically from rawRows
   const employees: EmployeeRow[] = rawRows.map((r, i) => ({
@@ -159,6 +231,7 @@ export default function EmployeePage() {
     aadhar: aadharIdx >= 0 ? (r[aadharIdx] ?? '').trim() : '',
     department: departmentIdx >= 0 ? (r[departmentIdx] ?? '').trim() : '',
     designation: designationIdx >= 0 ? (r[designationIdx] ?? '').trim() : '',
+    joiningDate: joiningDateIdx >= 0 ? (r[joiningDateIdx] ?? '').trim() : '',
   })).filter(e => e.name);
 
   const selected = employees[selectedIdx] ?? null;
@@ -219,6 +292,12 @@ export default function EmployeePage() {
         setGender("Male");
       } else {
         setGender("");
+      }
+
+      if (e.joiningDate) {
+        setJoiningDate(normalizeDateToYYYYMMDD(e.joiningDate));
+      } else {
+        setJoiningDate("");
       }
     }
   }
