@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Users, LayoutDashboard, Zap } from "lucide-react";
+import { FileText, Users, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -18,8 +18,8 @@ export function Sidebar() {
     <aside className="sidebar">
       {/* Logo / Brand */}
       <div className="flex items-center gap-2 px-1 mb-5">
-        <div className="h-7 w-7 rounded-md bg-[var(--foreground)] flex items-center justify-center">
-          <Zap size={14} className="text-[var(--primary-foreground)]" />
+        <div className="h-7 w-7 rounded-md bg-black flex items-center justify-center p-0.5">
+          <img src="/logo.png" alt="ZenZebra Logo" className="h-5 w-5 object-contain" />
         </div>
         <div>
           <p className="text-sm font-semibold leading-none">ZenZebra</p>
