@@ -42,6 +42,7 @@ function calcSalaryClient(annualCTC: number, pfEnabled: boolean): SalaryBreakup 
   const conveyanceAnnual = rConveyance * 12;
   const pfEmployerAnnual = rPfEmployer * 12;
   const specialAllowanceAnnual = annualCTC - (basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual);
+  
   const pfEmployeeAnnual = pfEmployee * 12;
   const salaryInHandAnnual = annualCTC - pfEmployerAnnual - pfEmployeeAnnual;
 

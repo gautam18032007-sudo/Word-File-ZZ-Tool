@@ -230,7 +230,9 @@ function preprocessEmployeeTable(xml: string): string {
     const firstText = texts[0].trim();
     for (const [label, monthlyTag, annualTag] of ANNEXURE_ROWS) {
       if (firstText === label) {
-        let res = row.replace(/<w:t([^>]*)>-<\/w:t>/, `<w:t$1>{{${monthlyTag}}}</w:t>`);
+        let res = row.replace(/w:line="240"/g, 'w:line="220"');
+        res = res.replace(/<w:p>/g, `<w:p><w:pPr><w:spacing w:after="0" w:line="220" w:lineRule="auto"/><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:color w:val="000000"/></w:rPr></w:pPr>`);
+        res = res.replace(/<w:t([^>]*)>-<\/w:t>/, `<w:t$1>{{${monthlyTag}}}</w:t>`);
         res = res.replace(/<w:t([^>]*)>-<\/w:t>/, `<w:t$1>{{${annualTag}}}</w:t>`);
         return res;
       }

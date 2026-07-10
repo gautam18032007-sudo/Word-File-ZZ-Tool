@@ -282,3 +282,108 @@
 [7/10/2026, 4:34:26 PM] [API/generate/employee] Converting DOCX to PDF...
 [7/10/2026, 4:34:31 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0030_RAHUL_KUMAR_JHA.pdf
 [7/10/2026, 4:34:31 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0030 to history.
+[7/10/2026, 6:02:39 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/10/2026, 6:02:39 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0031
+[7/10/2026, 6:02:39 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:02:39 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:02:39 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:02:40 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0031_RAHUL_KUMAR_JHA.docx
+[7/10/2026, 6:02:40 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:02:51 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0031_RAHUL_KUMAR_JHA.pdf
+[7/10/2026, 6:02:51 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0031 to history.
+[7/10/2026, 6:03:28 PM] [API/generate/employee] Received generate request for employee: "Shristi Tripathi"
+[7/10/2026, 6:03:28 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0032
+[7/10/2026, 6:03:28 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:03:28 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:03:28 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:03:28 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0032_SHRISTI_TRIPATHI.docx
+[7/10/2026, 6:03:28 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:03:36 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0032_SHRISTI_TRIPATHI.pdf
+[7/10/2026, 6:03:36 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0032 to history.
+[7/10/2026, 6:06:07 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/10/2026, 6:06:07 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0033
+[7/10/2026, 6:06:07 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:06:07 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:06:07 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:06:07 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0033_RAHUL_KUMAR_JHA.docx
+[7/10/2026, 6:06:07 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:06:18 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0033_RAHUL_KUMAR_JHA.pdf
+[7/10/2026, 6:06:18 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0033 to history.
+[7/10/2026, 6:10:51 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:10:52 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:10:52 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:11:41 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:11:41 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:11:41 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:13:10 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/10/2026, 6:13:10 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0034
+[7/10/2026, 6:13:10 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:13:10 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:13:10 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:13:10 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0034_RAHUL_KUMAR_JHA.docx
+[7/10/2026, 6:13:10 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:13:19 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0034_RAHUL_KUMAR_JHA.pdf
+[7/10/2026, 6:13:19 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0034 to history.
+[7/10/2026, 6:13:35 PM] [API/generate/employee] Received generate request for employee: "Shristi Tripathi"
+[7/10/2026, 6:13:35 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0035
+[7/10/2026, 6:13:35 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:13:35 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:13:35 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:13:35 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0035_SHRISTI_TRIPATHI.docx
+[7/10/2026, 6:13:35 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:13:42 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0035_SHRISTI_TRIPATHI.pdf
+[7/10/2026, 6:13:42 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0035 to history.
+[7/10/2026, 6:17:22 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:17:23 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:17:23 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:17:28 PM] [API/generate/employee] Received generate request for employee: "Shristi Tripathi"
+[7/10/2026, 6:17:28 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0036
+[7/10/2026, 6:17:28 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:17:28 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:17:28 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:17:28 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0036_SHRISTI_TRIPATHI.docx
+[7/10/2026, 6:17:29 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:17:38 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0036_SHRISTI_TRIPATHI.pdf
+[7/10/2026, 6:17:38 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0036 to history.
+[7/10/2026, 6:18:45 PM] [API/generate/brand] Received generate request for brand: "GACS FOODS"
+[7/10/2026, 6:18:45 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0029
+[7/10/2026, 6:18:45 PM] [renderDocx] Starting contract generation for template "braand-contract-template.docx"
+[7/10/2026, 6:18:45 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:18:45 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:18:45 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0029_GACS_FOODS.docx
+[7/10/2026, 6:18:45 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/10/2026, 6:18:58 PM] [API/generate/brand] Saved PDF: ZZ-BRAND-2026-0029_GACS_FOODS.pdf
+[7/10/2026, 6:18:58 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0029 to history.
+[7/10/2026, 6:21:34 PM] [API/generate/employee] Received generate request for employee: "Shristi Tripathi"
+[7/10/2026, 6:21:34 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0037
+[7/10/2026, 6:21:34 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:21:34 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:21:34 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:21:34 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0037_SHRISTI_TRIPATHI.docx
+[7/10/2026, 6:21:34 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:21:40 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0037_SHRISTI_TRIPATHI.pdf
+[7/10/2026, 6:21:40 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0037 to history.
+[7/10/2026, 6:28:13 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:28:13 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:28:14 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:29:39 PM] [API/generate/employee] Received generate request for employee: "Shristi Tripathi"
+[7/10/2026, 6:29:39 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0038
+[7/10/2026, 6:29:39 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:29:39 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:29:39 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:29:39 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0038_SHRISTI_TRIPATHI.docx
+[7/10/2026, 6:29:39 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:29:49 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0038_SHRISTI_TRIPATHI.pdf
+[7/10/2026, 6:29:49 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0038 to history.
+[7/10/2026, 6:46:50 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:46:50 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:46:50 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:47:00 PM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/10/2026, 6:47:00 PM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0039
+[7/10/2026, 6:47:00 PM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/10/2026, 6:47:00 PM] [renderDocx] Running validations on generated document
+[7/10/2026, 6:47:00 PM] [renderDocx] Validation passed successfully!
+[7/10/2026, 6:47:00 PM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0039_RAHUL_KUMAR_JHA.docx
+[7/10/2026, 6:47:00 PM] [API/generate/employee] Converting DOCX to PDF...
+[7/10/2026, 6:47:07 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0039_RAHUL_KUMAR_JHA.pdf
+[7/10/2026, 6:47:07 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0039 to history.
