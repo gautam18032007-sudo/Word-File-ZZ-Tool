@@ -1,0 +1,396 @@
+[7/9/2026, 3:29:58 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:29:58 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:29:59 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:29:59 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:32:25 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:32:25 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:32:26 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:32:26 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:35:08 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:35:08 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:35:09 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:35:09 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:35:10 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:35:10 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:35:10 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:35:10 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:37:52 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:37:52 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:37:53 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:37:53 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:37:53 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:37:53 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:37:54 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:37:54 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:38:30 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:38:30 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:38:31 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:38:31 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:38:31 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:38:31 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:38:32 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:38:32 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:39:38 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:39:38 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:39:39 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:39:39 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:39:39 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:39:39 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:39:39 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:39:39 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:39:50 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:39:50 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:39:51 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:39:51 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:39:52 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:39:52 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:39:52 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:39:52 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:53:15 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:53:15 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:53:19 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:53:19 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:54:00 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:54:00 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:54:01 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:54:01 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:54:22 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:54:22 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:54:23 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:54:23 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:54:24 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 3:54:24 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 3:54:24 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 3:54:24 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 3:56:10 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:56:10 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:56:11 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:56:11 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 3:56:11 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 3:56:11 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 3:56:12 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 3:56:12 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:09:56 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:09:56 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:09:58 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:09:58 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:09:58 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:09:58 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:09:59 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:09:59 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:13:45 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:13:45 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:13:46 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:13:46 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:13:47 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:13:47 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:13:48 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:13:48 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:14:01 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:14:01 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:14:02 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:14:02 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:14:06 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:14:06 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:14:07 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:14:07 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:19:14 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:19:14 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:19:15 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:19:15 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:21:31 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:21:31 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:21:32 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:21:32 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:21:32 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:21:32 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:21:33 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:21:33 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:21:36 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:21:36 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:21:37 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:21:37 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:21:37 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:21:37 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:21:38 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:21:38 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:30:00 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:30:00 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:30:02 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:30:02 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:31:02 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:31:02 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:31:03 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:31:03 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:33:09 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:33:09 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:33:11 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:33:11 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:33:11 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 4:33:11 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 4:33:12 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 4:33:12 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 4:33:23 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:33:23 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:33:24 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:33:24 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 4:33:24 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 4:33:24 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 4:33:25 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 4:33:25 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:07:54 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:07:55 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:07:56 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:07:56 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:10:29 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:10:29 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:10:30 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:10:30 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:12:57 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:12:57 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:12:58 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:12:58 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:13:10 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:13:10 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:13:11 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:13:11 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:14:13 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:14:13 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:14:15 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:14:15 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:14:15 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:14:15 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:14:17 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:14:17 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:14:17 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:14:17 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:14:18 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:14:18 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:25:01 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:25:01 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:25:02 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:25:02 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:34:58 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:34:58 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:34:59 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:34:59 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:35:05 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:35:05 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:35:07 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:35:07 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:35:47 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:35:47 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:35:48 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:35:48 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:41:07 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:41:07 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:41:09 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:41:09 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:46:16 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 5:46:16 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 5:46:17 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 5:46:17 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 5:46:17 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 5:46:17 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 5:46:18 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 5:46:18 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 5:51:27 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:51:27 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:51:29 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:51:29 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:51:30 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:51:30 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:51:31 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:51:31 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:52:51 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 5:52:51 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 5:52:52 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 5:52:53 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 5:57:00 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 5:57:00 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 5:57:02 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 5:57:02 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 5:57:02 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 5:57:02 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 5:57:02 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 5:57:02 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 6:00:09 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:00:09 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:00:11 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:00:11 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 6:00:11 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:00:11 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:00:12 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:00:12 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 6:18:18 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:18:18 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:18:24 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:18:24 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 6:35:48 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:35:48 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:35:50 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:35:50 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 6:43:20 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:43:20 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:43:22 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:43:22 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 6:57:49 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 6:57:49 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 6:57:51 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 6:57:51 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:04:20 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:04:20 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:04:22 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:04:22 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:04:23 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:23 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:25 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:25 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:04:26 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:26 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:26 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:26 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:04:40 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:40 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:41 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:41 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:04:41 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:41 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:41 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:04:41 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:04:42 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:42 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:04:42 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:04:42 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:04:42 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:04:42 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:04:43 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:04:43 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:04:44 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:44 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:45 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:45 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:04:45 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:04:45 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:04:46 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:04:46 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:12:07 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:12:07 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:12:09 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:12:09 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:12:09 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:12:09 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:12:10 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:12:10 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:15:08 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:15:08 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:15:10 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:15:10 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:21:54 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:21:54 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:21:55 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:21:55 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:33:12 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:33:12 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:33:13 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:33:13 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:33:13 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:33:13 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:33:14 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:33:14 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:34:17 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:34:17 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:34:18 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:34:18 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:34:18 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:34:18 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:34:19 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:34:19 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:34:19 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:34:19 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:34:20 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:34:20 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:34:20 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/9/2026, 7:34:20 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/9/2026, 7:34:21 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/9/2026, 7:34:21 PM] [API/employee] Returning 17 headers and 10 rows
+[7/9/2026, 7:34:23 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:34:23 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:34:24 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:34:25 PM] [API/brand] Returning 20 headers and 113 rows
+[7/9/2026, 7:34:25 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: ""
+[7/9/2026, 7:34:25 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/9/2026, 7:34:26 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/9/2026, 7:34:26 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 1:12:11 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 1:12:11 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 1:12:12 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 1:12:12 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 1:12:21 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 1:12:21 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 1:12:21 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 1:12:21 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:33:55 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:33:55 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:33:56 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:33:56 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:33:57 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:33:57 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:33:57 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:33:58 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:33:58 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:33:58 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:33:58 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:34:13 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:34:13 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:34:14 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:34:14 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:34:14 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:34:14 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:34:15 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:34:15 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:36:44 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:36:44 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:36:45 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:36:45 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:36:45 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:36:45 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:36:46 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:36:46 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:46:16 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:46:16 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:46:17 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:46:17 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:46:17 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:46:17 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:46:18 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:46:18 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:51:53 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:51:53 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/10/2026, 2:51:55 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/10/2026, 2:51:55 PM] [API/brand] Returning 20 headers and 113 rows
+[7/10/2026, 2:52:49 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:52:49 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:52:50 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:52:50 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:52:50 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:52:50 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:52:51 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:52:51 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 2:59:35 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:59:35 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 2:59:36 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 2:59:36 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 4:34:11 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 4:34:11 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 4:34:12 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 4:34:12 PM] [API/employee] Returning 17 headers and 10 rows
+[7/10/2026, 4:34:12 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 4:34:12 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/10/2026, 4:34:13 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
+[7/10/2026, 4:34:13 PM] [API/employee] Returning 17 headers and 10 rows
