@@ -40,19 +40,23 @@ CONTRACT TOOL/
     │   ├── page.tsx                    # landing page
     │   ├── brand/page.tsx              # brand contract workflow UI (429 lines)
     │   ├── employee/page.tsx           # employee contract workflow UI (397 lines)
+    │   ├── certificate/page.tsx        # certificate workflow UI (new)
     │   ├── history/page.tsx            # contract history browser (152 lines)
     │   └── api/
-    │       ├── sheets/brand, sheets/employee   # GET: fetch rows from Google Sheet
-    │       ├── generate/brand, generate/employee  # POST: render, PDF, log, return filenames
+    │       ├── sheets/brand, sheets/employee, sheets/certificate   # GET: fetch rows from Google Sheet
+    │       ├── generate/brand, generate/employee, generate/certificate # POST: render, PDF, log, return filenames
+    │       ├── templates/certificate    # GET: get registry / POST: upload custom template
     │       ├── contracts                # GET: full history list
-    │       └── download                 # GET: stream a generated docx/pdf by folder+filename
+    │       └── download                 # GET: stream a generated file by folder+filename
     ├── lib/
-    │   ├── sheets.ts        # Google Sheets reader (2 auth modes)
+    │   ├── sheets.ts        # Google Sheets reader (3 types: brand, employee, certificate)
     │   ├── salary.ts        # PF/CTC salary-breakup calculator
     │   ├── template.ts      # DOCX placeholder + pronoun engine (PizZip, string-level XML ops)
     │   ├── pdf.ts            # DOCX → PDF via LibreOffice headless subprocess
-    │   ├── contractNumber.ts # sequential numbering (never reused/reset)
+    │   ├── pdfLibGenerator.ts # PDF overlay generator for certificates using pdf-lib
+    │   ├── contractNumber.ts # sequential numbering (never reused/reset, supports CERT)
     │   ├── store.ts          # contracts.json history read/append
+    │   ├── certStore.ts      # certificates.json history read/append for certificates
     │   ├── formatting.ts     # formatINR, numberToWords (Indian numbering), formatDate
     │   └── types.ts          # shared domain types
     └── components/           # shadcn-style UI primitives + Sidebar, SheetLoader
@@ -82,6 +86,16 @@ CONTRACT TOOL/
 4. Live salary breakup preview (Annexure-A) computed by `calcSalary()`.
 5. `POST /api/generate/employee` → renders `templates/employee-contract-template.docx` (with
    gender-driven pronoun substitution), PDF, writes to `output/employees/`, logs to history.
+
+### Certificate module
+1. Sourced automatically from the environment-configured Google Sheet (`GOOGLE_CERTIFICATE_SHEET_ID`) on mount via `GET /api/sheets/certificate`.
+2. Candidates are displayed in a list with a searchable text filter (by Full Name and Designation).
+3. Selecting a candidate auto-populates editable form fields (Full Name, Designation, Joining Date, LWD).
+4. Custom templates can be registered via `POST /api/templates/certificate`, saving metadata to `templates/certificates/registry.json`.
+5. Dynamic signatory details (Signatory Name, Signatory Role) and base64 signature graphic files can be configured.
+6. A debounced live preview card overlays form values using absolute positioning on the template graphic.
+7. `POST /api/generate/certificate` overlays text on PNG template files using `pdf-lib` at exact center-aligned coordinates, saves generated PDF to `output/certificates/` with sequential series `ZZ-CERT-YYYY-XXXX`, and logs history to `output/certificates.json`.
+8. Includes built-in duplicate detection checking candidate name, dates, and certificate type before generating, preventing redundant sequence number consumption.
 
 ### Gender / pronoun engine
 The employee template has pronouns hardcoded in prose (`his heirs`, `terminate him`, etc).
@@ -127,11 +141,11 @@ Columns are matched by **header name** (case-insensitive), not position, configu
 ```
 {PREFIX}-{TYPE}-{YEAR}-{SEQ:04d}_{PARTY_NAME_SLUG}.docx / .pdf
 ```
-e.g. `ZZ-BRAND-2026-0005_NIKE_INDIA.docx`. Counters live in `output/sequence.json`, keyed by
-`{type}.{year}`, incremented atomically per generation, **never reused or auto-reset**.
+e.g. `ZZ-BRAND-2026-0005_NIKE_INDIA.docx` or `ZZ-CERT-2026-0001_PALAK_KANKHERIA.pdf`. Counters live in `output/sequence.json`, keyed by
+`{type}.{year}`, incremented atomically per generation, **never reused or auto-reset** (except when regenerating a certificate in force mode which reuses the existing certificate number).
 
 **Current counters** (`output/sequence.json`): `EMP.2026 = 14`, `BRAND.2026 = 6` — i.e. 14
-employee contracts and 6 brand contracts have been generated so far this year. Note: the
+employee contracts and 6 brand contracts have been generated so far this year. Generated certificates are saved to `output/certificates/` with history stored in `output/certificates.json`. Note: the
 `output/brands/` and `output/employees/` folders on disk are currently **empty** even though the
 counters are at 14/6 and `contracts.json`-driven history would list them — meaning either the
 files were generated on a different machine/session and never synced here, or they were manually

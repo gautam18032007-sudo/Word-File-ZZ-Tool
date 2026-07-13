@@ -47,7 +47,7 @@ export interface SalaryBreakup {
 
 export interface ContractRecord {
   contract_no: string;
-  type: 'brand' | 'employee';
+  type: 'brand' | 'employee' | 'certificate';
   party_name: string;
   generated_at: string;
   docx: string;
@@ -57,6 +57,9 @@ export interface ContractRecord {
   total_amount?: number;
   annual_ctc?: number;
   designation?: string;
+  // Certificate specific fields:
+  certificateType?: string;
+  template?: string;
 }
 
 // ─── Form Data ────────────────────────────────────────────────────────────────

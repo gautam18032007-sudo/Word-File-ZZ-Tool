@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Download, FileText, RefreshCw, AlertCircle, LayoutDashboard, FileSpreadsheet, Users, Calendar } from "lucide-react";
+import { Download, FileText, RefreshCw, AlertCircle, LayoutDashboard, FileSpreadsheet, Users, Calendar, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,9 +48,10 @@ export default function DashboardPage() {
   }, [load]);
 
   // Compute metrics in Asia/Kolkata (IST) timezone
-  const totalCount = contracts.length;
   const brandCount = contracts.filter((c) => c.type === "brand").length;
   const employeeCount = contracts.filter((c) => c.type === "employee").length;
+  const certificateCount = contracts.filter((c) => c.type === "certificate").length;
+  const totalDocuments = brandCount + employeeCount + certificateCount;
 
   const todayStr = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Kolkata",
@@ -62,10 +63,29 @@ export default function DashboardPage() {
   // Format MM/DD/YYYY to YYYY-MM-DD for comparison
   const [m, d, y] = todayStr.split("/");
   const todayIso = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  const thisMonthIso = `${y}-${m.padStart(2, "0")}`;
 
   const todaysCount = contracts.filter(
     (c) => shortDate(c.generated_at) === todayIso
   ).length;
+
+  const certsThisMonth = contracts.filter(
+    (c) => c.type === "certificate" && (c.generated_at ?? "").startsWith(thisMonthIso)
+  ).length;
+
+  // Breakdown by Type
+  const certTypes: Record<string, number> = {};
+  contracts.filter((c) => c.type === "certificate").forEach((c) => {
+    const t = c.certificateType ?? "UNKNOWN";
+    certTypes[t] = (certTypes[t] || 0) + 1;
+  });
+
+  // Top templates
+  const certTemplates: Record<string, number> = {};
+  contracts.filter((c) => c.type === "certificate").forEach((c) => {
+    const t = c.template ?? "Unknown Template";
+    certTemplates[t] = (certTemplates[t] || 0) + 1;
+  });
 
   function downloadFile(filename: string, folder: string) {
     const a = document.createElement("a");
@@ -101,12 +121,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
-              Total Contracts
+              Total Documents
             </CardTitle>
             <LayoutDashboard size={15} className="text-[var(--muted-foreground)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{loading ? "..." : totalCount}</div>
+            <div className="text-2xl font-bold">{loading ? "..." : totalDocuments}</div>
           </CardContent>
         </Card>
 
@@ -137,12 +157,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
-              Today's Contracts
+              Certificates
             </CardTitle>
-            <Calendar size={15} className="text-[var(--muted-foreground)]" />
+            <Award size={15} className="text-[var(--muted-foreground)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{loading ? "..." : todaysCount}</div>
+            <div className="text-2xl font-bold">{loading ? "..." : certificateCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -175,13 +195,13 @@ export default function DashboardPage() {
                   <tr key={i} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--muted)] transition-colors">
                     <td className="px-4 py-3 pl-5 font-mono text-xs font-semibold">{c.contract_no}</td>
                     <td className="px-4 py-3">
-                      <Badge variant={c.type === "brand" ? "default" : "secondary"}>
+                      <Badge variant={c.type === "brand" ? "default" : c.type === "employee" ? "secondary" : "outline"}>
                         {c.type}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 max-w-[180px] truncate" title={c.party_name}>{c.party_name}</td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      {c.type === "brand" ? fmt(c.total_amount) : fmt(c.annual_ctc)}
+                      {c.type === "certificate" ? "—" : c.type === "brand" ? fmt(c.total_amount) : fmt(c.annual_ctc)}
                     </td>
                     <td className="px-4 py-3 text-[var(--muted-foreground)] text-xs">{shortDate(c.generated_at)}</td>
                     <td className="px-4 py-3 pr-5">
@@ -218,10 +238,58 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Additional Certificate Analytics */}
+      {!loading && certificateCount > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                Certificates This Month
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">{certsThisMonth}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                By Type
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 text-xs">
+              {Object.entries(certTypes).map(([type, count]) => (
+                <div key={type} className="flex justify-between">
+                  <span className="text-[var(--muted-foreground)] uppercase font-semibold">{type}</span>
+                  <span className="font-mono font-bold">{count}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                Top Templates Used
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1 text-xs">
+              {Object.entries(certTemplates).slice(0, 3).map(([tpl, count]) => (
+                <div key={tpl} className="flex justify-between">
+                  <span className="text-[var(--muted-foreground)] truncate pr-2" title={tpl}>{tpl}</span>
+                  <span className="font-mono font-bold shrink-0">{count}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {!loading && contracts.length > 0 && (
         <p className="text-xs text-[var(--muted-foreground)]">
-          Showing {contracts.length} contract{contracts.length !== 1 ? "s" : ""} · Stored in{" "}
-          <code className="font-mono">output/contracts.json</code>
+          Showing {contracts.length} document{contracts.length !== 1 ? "s" : ""} · Stored in{" "}
+          <code className="font-mono">output/contracts.json</code> and <code className="font-mono">output/certificates.json</code>
         </p>
       )}
     </div>

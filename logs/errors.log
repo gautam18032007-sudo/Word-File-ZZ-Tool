@@ -49,3 +49,47 @@ l="000000"/></w:rPr><w:t>The Company’s total liability under this Agreement sh
 [7/9/2026, 6:02:14 PM] [API/generate/brand] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT
 [7/9/2026, 6:20:11 PM] [API/generate/brand] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT
 [7/9/2026, 6:58:19 PM] [API/generate/brand] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT
+[7/13/2026, 5:24:56 PM] [fetchRawRows] No Google Sheet URL or ID provided for brand.
+[7/13/2026, 5:24:56 PM] [API/brand] Error: No Google Sheet URL or ID provided for brand.
+[7/13/2026, 5:25:11 PM] [fetchRawRows] No Google Sheet URL or ID provided for brand.
+[7/13/2026, 5:25:11 PM] [API/brand] Error: No Google Sheet URL or ID provided for brand.
+[7/13/2026, 5:30:34 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:30:34 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:30:35 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:30:35 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:07 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:07 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:09 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:09 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:29 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:29 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:29 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:29 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:39 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:39 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:40 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:34:40 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:35:07 PM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:35:07 PM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/13/2026, 5:35:27 PM] [fetchRawRows] No Google Sheet URL or ID provided for employee.
+[7/13/2026, 5:35:27 PM] [API/employee] Error: No Google Sheet URL or ID provided for employee.
+[7/13/2026, 5:35:27 PM] [fetchRawRows] No Google Sheet URL or ID provided for employee.
+[7/13/2026, 5:35:27 PM] [API/employee] Error: No Google Sheet URL or ID provided for employee.
+[7/13/2026, 5:37:27 PM] [fetchRawRows] Failed to fetch sheet rows: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 5:37:27 PM] [API/certificate] Error: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 5:52:50 PM] [fetchRawRows] Failed to fetch sheet rows: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 5:52:50 PM] [API/certificate] Error: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 5:52:51 PM] [fetchRawRows] Failed to fetch sheet rows: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 5:52:51 PM] [API/certificate] Error: Sheet is not publicly accessible.
+Open the sheet → Share → General access → "Anyone with the link" (Viewer).
+(Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)

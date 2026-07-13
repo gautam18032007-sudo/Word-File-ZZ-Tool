@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Users, LayoutDashboard } from "lucide-react";
+import { FileText, Users, LayoutDashboard, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/brand", label: "Brand Contract", icon: FileText },
   { href: "/employee", label: "Employee Contract", icon: Users },
+  { href: "/certificate", label: "Certificate", icon: Award },
 ];
 
 export function Sidebar() {

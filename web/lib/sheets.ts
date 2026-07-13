@@ -151,8 +151,10 @@ async function getRows(sheetIdOrUrl: string): Promise<string[][]> {
   }
 }
 
-export async function fetchRawRows(sheetIdOrUrl: string | null, type: 'brand' | 'employee'): Promise<string[][]> {
-  const envVar = type === 'brand' ? 'GOOGLE_BRAND_SHEET_ID' : 'GOOGLE_EMPLOYEE_SHEET_ID';
+export async function fetchRawRows(sheetIdOrUrl: string | null, type: 'brand' | 'employee' | 'certificate'): Promise<string[][]> {
+  const envVar = 
+    type === 'brand' ? 'GOOGLE_BRAND_SHEET_ID' : 
+    type === 'employee' ? 'GOOGLE_EMPLOYEE_SHEET_ID' : 'GOOGLE_CERTIFICATE_SHEET_ID';
   const sid = (sheetIdOrUrl || '').trim() || process.env[envVar] || '';
 
   logger.sheet(`[fetchRawRows] Requesting ${type} sheet. Input: "${sheetIdOrUrl || ''}", Default env: "${process.env[envVar] || ''}"`);

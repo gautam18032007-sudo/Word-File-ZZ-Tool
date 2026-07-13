@@ -442,3 +442,98 @@
 [7/10/2026, 6:46:49 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
 [7/10/2026, 6:46:50 PM] [fetchRawRows] Successfully fetched 11 rows (including headers) for employee.
 [7/10/2026, 6:46:50 PM] [API/employee] Returning 17 headers and 10 rows
+[7/13/2026, 10:40:12 AM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 10:40:12 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 10:40:14 AM] [fetchRawRows] Successfully fetched 13 rows (including headers) for employee.
+[7/13/2026, 10:40:14 AM] [API/employee] Returning 17 headers and 12 rows
+[7/13/2026, 10:40:14 AM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 10:40:14 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 10:40:14 AM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 10:40:14 AM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 10:40:15 AM] [fetchRawRows] Successfully fetched 13 rows (including headers) for employee.
+[7/13/2026, 10:40:15 AM] [API/employee] Returning 17 headers and 12 rows
+[7/13/2026, 10:40:16 AM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 10:40:16 AM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 10:40:16 AM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 10:40:16 AM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 10:40:17 AM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 10:40:17 AM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 2:54:08 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 2:54:08 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 2:54:11 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 2:54:11 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 2:54:11 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 2:54:11 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 2:54:12 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 2:54:12 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:14 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:14 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:17 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 3:57:17 PM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 3:57:18 PM] [fetchRawRows] Requesting brand sheet. Input: "https://docs.google.com/spreadsheets/d/1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI/edit?gid=1282987724#gid=1282987724", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:18 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:21 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:21 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:21 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 3:57:21 PM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 3:57:22 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:57:22 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:23 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:23 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:24 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:57:24 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:25 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:25 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:26 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:57:26 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:46 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:47 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:48 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:57:48 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:48 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:48 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:57:49 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:57:49 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 3:57:50 PM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:50 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:51 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 3:57:51 PM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 3:57:52 PM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:52 PM] [fetchRawRows] Extracted sheet ID: "1Gxw2YSeTHNvOsAyYzK13Z_SeZbatlktNoXyzRjTF-yI"
+[7/13/2026, 3:57:53 PM] [fetchRawRows] Successfully fetched 114 rows (including headers) for brand.
+[7/13/2026, 3:57:53 PM] [API/brand] Returning 20 headers and 113 rows
+[7/13/2026, 3:59:18 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:59:18 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 3:59:19 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 3:59:19 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 5:24:56 PM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: ""
+[7/13/2026, 5:25:11 PM] [fetchRawRows] Requesting brand sheet. Input: "", Default env: ""
+[7/13/2026, 5:25:19 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/13/2026, 5:25:19 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 5:25:20 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 5:25:20 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 5:27:00 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/13/2026, 5:27:00 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 5:27:02 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 5:27:02 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 5:30:34 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:30:35 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:07 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:09 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:29 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:29 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:39 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:34:40 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:35:07 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/13/2026, 5:35:27 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: ""
+[7/13/2026, 5:35:27 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: ""
+[7/13/2026, 5:37:26 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 5:37:26 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 5:37:26 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 5:37:26 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 5:37:28 PM] [fetchRawRows] Successfully fetched 14 rows (including headers) for employee.
+[7/13/2026, 5:37:28 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 5:52:48 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 5:52:48 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 5:52:50 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 5:52:50 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
