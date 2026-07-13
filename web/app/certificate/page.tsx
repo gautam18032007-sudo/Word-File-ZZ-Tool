@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { SheetLoader } from "@/components/shared/SheetLoader";
 
 interface CertificateCandidate {
   fullName: string;
@@ -31,12 +32,28 @@ interface GenerateResult {
 }
 
 export default function CertificatePage() {
-  // Candidate loading state
-  const [candidates, setCandidates] = useState<CertificateCandidate[]>([]);
-  const [loadingCandidates, setLoadingCandidates] = useState(true);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [rawRows, setRawRows] = useState<string[][]>([]);
   const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(-1);
+
+  const findColIndex = (list: string[], possible: string[]) => {
+    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+    return list.findIndex((h) => possible.some((p) => norm(h) === norm(p)));
+  };
+
+  const nameIdx = findColIndex(headers, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
+  const designationIdx = findColIndex(headers, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
+  const joinIdx = findColIndex(headers, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
+  const exitIdx = findColIndex(headers, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
+
+  const candidates: CertificateCandidate[] = rawRows.map((r) => ({
+    fullName: nameIdx >= 0 ? (r[nameIdx] ?? "").trim() : "",
+    designation: designationIdx >= 0 ? (r[designationIdx] ?? "").trim() : "",
+    joiningDate: joinIdx >= 0 ? (r[joinIdx] ?? "").trim() : "",
+    lastWorkingDate: exitIdx >= 0 ? (r[exitIdx] ?? "").trim() : "",
+  })).filter((c) => c.fullName);
 
   // Form details
   const [fullName, setFullName] = useState("");
@@ -52,10 +69,6 @@ export default function CertificatePage() {
   // Template registry state
   const [templates, setTemplates] = useState<CertificateTemplate[]>([
     { id: "CERT_TEMPLATE_001", name: "Certificate of Appreciation", filename: "certificate-appreciation.png", type: "PNG", active: true },
-    { id: "CERT_TEMPLATE_002", name: "Internship Certificate", filename: "certificate-internship.png", type: "PNG", active: true },
-    { id: "CERT_TEMPLATE_003", name: "Experience Certificate", filename: "certificate-experience.pdf", type: "PDF", active: true },
-    { id: "CERT_TEMPLATE_004", name: "Training Certificate", filename: "certificate-training.png", type: "PNG", active: true },
-    { id: "CERT_TEMPLATE_005", name: "Completion Certificate", filename: "certificate-completion.png", type: "PNG", active: true },
   ]);
   const [selectedTemplateId, setSelectedTemplateId] = useState("CERT_TEMPLATE_001");
   const [customTemplates, setCustomTemplates] = useState<CertificateTemplate[]>([]);
@@ -74,53 +87,22 @@ export default function CertificatePage() {
   const [genError, setGenError] = useState("");
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
-  // Load candidates automatically on mount
-  const loadCandidates = useCallback(async (forceRefresh = false) => {
-    setLoadingCandidates(true);
-    setLoadError("");
-    try {
-      const url = forceRefresh ? "/api/sheets/certificate?refresh=true" : "/api/sheets/certificate";
-      const res = await fetch(url);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed to load sheet data");
+  async function handleLoadCandidates(url: string, loadedHeaders: string[], loadedRows: string[][]) {
+    setSelectedIdx(-1);
+    setHeaders(loadedHeaders);
+    setRawRows(loadedRows);
 
-      const headers = data.headers as string[];
-      const rows = data.rows as string[][];
+    const nameIdxTmp = findColIndex(loadedHeaders, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
+    const designationIdxTmp = findColIndex(loadedHeaders, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
+    const joinIdxTmp = findColIndex(loadedHeaders, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
+    const exitIdxTmp = findColIndex(loadedHeaders, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
 
-      const findColIndex = (list: string[], possible: string[]) => {
-        const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
-        return list.findIndex((h) => possible.some((p) => norm(h) === norm(p)));
-      };
-
-      const nameIdx = findColIndex(headers, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
-      const designationIdx = findColIndex(headers, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
-      const joinIdx = findColIndex(headers, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
-      const exitIdx = findColIndex(headers, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
-
-      if (nameIdx === -1 || designationIdx === -1 || joinIdx === -1 || exitIdx === -1) {
-        throw new Error("Missing Required Columns in the Google Sheet. Please ensure Full Name, Designation, Date of Joining, and Last Working Date columns are present.");
-      }
-
-      const mapped: CertificateCandidate[] = rows
-        .map((r) => ({
-          fullName: (r[nameIdx] ?? "").trim(),
-          designation: (r[designationIdx] ?? "").trim(),
-          joiningDate: (r[joinIdx] ?? "").trim(),
-          lastWorkingDate: (r[exitIdx] ?? "").trim(),
-        }))
-        .filter((c) => c.fullName);
-
-      setCandidates(mapped);
-    } catch (e: any) {
-      setLoadError(e.message || String(e));
-    } finally {
-      setLoadingCandidates(false);
+    if (loadedHeaders.length > 0 && (nameIdxTmp === -1 || designationIdxTmp === -1 || joinIdxTmp === -1 || exitIdxTmp === -1)) {
+      setLoadError("Missing Required Columns in the Google Sheet. Please ensure Full Name, Designation, Date of Joining, and Last Working Date columns are present.");
+    } else {
+      setLoadError("");
     }
-  }, []);
-
-  useEffect(() => {
-    loadCandidates();
-  }, [loadCandidates]);
+  }
 
   // Fetch signatory defaults from server environment
   useEffect(() => {
@@ -243,6 +225,24 @@ export default function CertificatePage() {
     }
   }
 
+  async function handleDeleteTemplate(id: string) {
+    if (!confirm("Are you sure you want to delete this custom template?")) return;
+    try {
+      const res = await fetch(`/api/templates/certificate?id=${id}`, {
+        method: "DELETE"
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete template");
+      
+      await loadCustomTemplates();
+      if (selectedTemplateId === id) {
+        setSelectedTemplateId("CERT_TEMPLATE_001");
+      }
+    } catch (err: any) {
+      alert(`Delete error: ${err.message}`);
+    }
+  }
+
   // Format date range string for display
   function formatDateRange(startIso: string, endIso: string): string {
     const format = (iso: string) => {
@@ -356,38 +356,42 @@ export default function CertificatePage() {
         {/* ── LEFT PANEL ── */}
         <div className="space-y-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-[var(--muted-foreground)] font-mono text-xs">01</span>
-                Google Sheet Loader
+                Load Google Sheet
               </CardTitle>
-              <button 
-                onClick={() => loadCandidates(true)} 
-                disabled={loadingCandidates}
-                className="text-[var(--muted-foreground)] hover:text-white transition disabled:opacity-50 cursor-pointer"
-                title="Refresh Sheet Cache"
-              >
-                <RotateCw size={14} className={cn(loadingCandidates && "animate-spin")} />
-              </button>
             </CardHeader>
             <CardContent>
-              {loadingCandidates ? (
-                <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] py-4 justify-center">
-                  <Loader2 size={16} className="animate-spin" />
-                  Loading sheet data...
+              <SheetLoader onLoad={handleLoadCandidates} loadedCount={candidates.length} storageKey="certificate_sheet_url" />
+              {headers.length > 0 && (
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[oklch(0.99_0_0)] text-xs space-y-2 mt-3">
+                  <p className="font-semibold text-[var(--foreground)]">Sheet Status</p>
+                  <div className="space-y-1.5 pt-1 border-t border-[var(--border)]">
+                    {[
+                      ["Full Name", nameIdx >= 0],
+                      ["Designation", designationIdx >= 0],
+                      ["Joining Date", joinIdx >= 0],
+                      ["Last Working Date", exitIdx >= 0],
+                    ].map(([label, found]) => (
+                      <div key={label as string} className="flex items-center justify-between text-[11px]">
+                        <span className="text-[var(--muted-foreground)]">{label}</span>
+                        <span className={found ? "text-emerald-600 font-bold" : "text-rose-500 font-bold"}>
+                          {found ? "✓ Found" : "✗ Missing"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ) : loadError ? (
-                <div className="alert-error text-xs p-3 space-y-2">
+              )}
+              {loadError && (
+                <div className="alert-error text-xs p-3 space-y-2 mt-3">
                   <div className="flex gap-2">
                     <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                    <span>Failed to load Google Sheet.</span>
+                    <span>Failed to parse Google Sheet columns.</span>
                   </div>
-                  <p className="text-[10px] leading-relaxed text-red-800">{loadError}</p>
+                  <p className="text-[10px] leading-relaxed text-red-800 whitespace-pre-wrap">{loadError}</p>
                 </div>
-              ) : (
-                <p className="text-xs text-[var(--muted-foreground)] border border-dashed border-[var(--border)] rounded p-2 text-center">
-                  ✓ {candidates.length} candidate records loaded automatically from sheets.
-                </p>
               )}
             </CardContent>
           </Card>
@@ -514,6 +518,26 @@ export default function CertificatePage() {
                     </label>
                   </div>
                 </div>
+
+                {customTemplates.length > 0 && (
+                  <div className="space-y-1.5 pt-2 border-t border-[var(--border)]">
+                    <Label className="text-xs text-[var(--muted-foreground)]">Custom Templates</Label>
+                    <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+                      {customTemplates.map((t) => (
+                        <div key={t.id} className="flex items-center justify-between text-xs py-1 px-2 bg-[var(--muted)] rounded border border-[var(--border)]">
+                          <span className="truncate max-w-[120px]" title={t.name}>{t.name}</span>
+                          <button
+                            onClick={() => handleDeleteTemplate(t.id)}
+                            className="text-rose-500 hover:text-rose-700 transition cursor-pointer p-0.5"
+                            title="Delete custom template"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3">
@@ -548,13 +572,18 @@ export default function CertificatePage() {
               <div 
                 className="w-full relative shadow-lg bg-white overflow-hidden aspect-[1.414/1] flex flex-col justify-between p-[6%] border border-[var(--border)] text-center text-stone-800"
                 style={{
-                  backgroundImage: selectedTemplateId === "CERT_TEMPLATE_001" ? "url('/templates/CERTIFICATE-template.png.png')" : "none",
+                  backgroundImage: 
+                    selectedTemplateId === "CERT_TEMPLATE_001" 
+                      ? "url('/templates/CERTIFICATE-template.png.png')" 
+                      : activeTemplate && activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") && activeTemplate.type !== "PDF"
+                        ? `url('/templates/certificates/${activeTemplate.filename}')`
+                        : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
                 {/* Fallback layout for empty / other templates */}
-                {selectedTemplateId !== "CERT_TEMPLATE_001" && (
+                {selectedTemplateId !== "CERT_TEMPLATE_001" && (!activeTemplate || !activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") || activeTemplate.type === "PDF") && (
                   <div className="absolute inset-0 bg-stone-50/90 border-4 border-double border-stone-300 m-3 flex flex-col items-center justify-center pointer-events-none p-5">
                     <p className="text-[9px] uppercase tracking-widest text-stone-400 font-semibold mb-2">
                       Template: {activeTemplate?.name}
@@ -565,7 +594,7 @@ export default function CertificatePage() {
                 {/* Overlay Text Placements */}
                 <div className="w-full flex flex-col items-center justify-center h-full pointer-events-none z-10 select-none">
                   {/* Title overlay */}
-                  {selectedTemplateId !== "CERT_TEMPLATE_001" && (
+                  {selectedTemplateId !== "CERT_TEMPLATE_001" && (!activeTemplate || !activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") || activeTemplate.type === "PDF") && (
                     <h2 className="text-[2.2vw] font-serif italic text-amber-800 font-bold mb-[3%]">
                       Certificate of Appreciation
                     </h2>

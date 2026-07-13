@@ -194,6 +194,14 @@ export async function generateCertificatePdf(options: GeneratePdfOptions): Promi
   const sigNameWidth = fontHelveticaBold.widthOfTextAtSize(signatoryName, sigNameSize);
   const sigRoleWidth = fontHelvetica.widthOfTextAtSize(signatoryRole, sigRoleSize);
 
+  // Draw signatory line
+  page.drawLine({
+    start: { x: sigCenterX - 100, y: 200 },
+    end: { x: sigCenterX + 100, y: 200 },
+    thickness: 1.5,
+    color: rgb(0.74, 0.6, 0.4), // Gold-ish color matching the template branding
+  });
+
   page.drawText(signatoryName, {
     x: sigCenterX - sigNameWidth / 2,
     y: 170,

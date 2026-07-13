@@ -27,7 +27,9 @@ export function SheetLoader({ placeholder, onLoad, loadedCount, storageKey }: Sh
     setState("loading");
     setError("");
     try {
-      const type = storageKey.includes("brand") ? "brand" : "employee";
+      const type = 
+        storageKey.includes("brand") ? "brand" : 
+        storageKey.includes("certificate") ? "certificate" : "employee";
       const res = await fetch(`/api/sheets/${type}?sheet=${encodeURIComponent(targetUrl)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to load");

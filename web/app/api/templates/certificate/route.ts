@@ -93,3 +93,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message || String(e) }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Missing template ID" }, { status: 400 });
+    }
+
+    const custom = readRegistry();
+    const template = custom.find((t: any) => t.id === id);
+    if (!template) {
+      return NextResponse.json({ error: "Template not found" }, { status: 444 });
+    }
+
+    // Delete files
+    const filePath = path.join(CERT_DIR, template.filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    const publicPath = path.resolve(process.cwd(), "public/templates/certificates", template.filename);
+    if (fs.existsSync(publicPath)) {
+      fs.unlinkSync(publicPath);
+    }
+
+    // Update registry
+    const updated = custom.filter((t: any) => t.id !== id);
+    writeRegistry(updated);
+
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message || String(e) }, { status: 500 });
+  }
+}

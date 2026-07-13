@@ -141,3 +141,41 @@ Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at proj
 Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
 [7/13/2026, 8:13:11 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
 Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 12:26:25 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:25 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:28 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:28 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:32 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:32 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:33 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:26:33 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:45 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:46 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:46 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:46 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:50 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:30:50 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:46:51 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:46:51 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:46:55 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 12:46:55 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:35:05 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:35:05 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:40:15 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:40:15 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:43:15 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:43:15 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:43:50 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:43:50 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:45:11 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 1:45:11 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 1:45:41 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:45:41 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:47:03 AM] [API/generate/employee] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT
+[7/14/2026, 1:53:56 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:53:56 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:53:57 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:53:57 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/14/2026, 1:54:12 AM] [API/generate/employee] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT

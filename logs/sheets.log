@@ -577,3 +577,61 @@
 [7/13/2026, 8:13:11 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
 [7/13/2026, 8:13:11 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
 [7/13/2026, 8:13:11 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 9:37:53 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 9:37:53 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 9:37:54 PM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/13/2026, 9:37:54 PM] [API/employee] Returning 17 headers and 14 rows
+[7/13/2026, 9:37:55 PM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 9:37:55 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 9:37:57 PM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/13/2026, 9:37:57 PM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 12:26:18 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 12:26:18 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 12:26:19 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 12:26:19 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 12:26:25 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:26:28 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:26:30 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 12:26:30 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 12:26:32 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:26:33 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:26:33 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 12:26:33 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 12:26:33 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 12:26:33 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 12:26:35 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 12:26:35 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 12:30:45 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:30:46 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:30:50 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:46:51 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 12:46:55 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:35:05 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:40:15 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:43:15 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:43:50 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:45:08 AM] [fetchRawRows] Requesting certificate sheet. Input: "https://docs.google.com/spreadsheets/d/1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA/edit?pli=1&gid=1843964171#gid=1843964171", Default env: ""
+[7/14/2026, 1:45:09 AM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/14/2026, 1:45:41 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:46:50 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 1:46:50 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 1:46:52 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 1:46:52 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 1:46:52 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 1:46:52 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 1:46:53 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 1:46:53 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 1:53:51 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 1:53:51 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 1:53:53 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 1:53:53 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 1:53:56 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:53:57 AM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: ""
+[7/14/2026, 1:54:02 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 1:54:02 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 1:54:04 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 1:54:04 AM] [API/employee] Returning 17 headers and 14 rows
+[7/14/2026, 1:54:04 AM] [fetchRawRows] Requesting employee sheet. Input: "https://docs.google.com/spreadsheets/d/1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto/edit?gid=1508099045#gid=1508099045", Default env: ""
+[7/14/2026, 1:54:04 AM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/14/2026, 1:54:05 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=15
+[7/14/2026, 1:54:05 AM] [API/employee] Returning 17 headers and 14 rows

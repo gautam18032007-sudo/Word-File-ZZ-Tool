@@ -423,3 +423,19 @@
 [7/13/2026, 6:33:12 PM] [API/generate/brand] Converting DOCX to PDF...
 [7/13/2026, 6:33:21 PM] [API/generate/brand] Saved PDF: ZZ-BRAND-2026-0030_NIKE_INDIA_TEST_CORP.pdf
 [7/13/2026, 6:33:21 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0030 to history.
+[7/14/2026, 1:47:02 AM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/14/2026, 1:47:02 AM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0043
+[7/14/2026, 1:47:02 AM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/14/2026, 1:47:03 AM] [renderDocx] Running validations on generated document
+[7/14/2026, 1:47:03 AM] [renderDocx] Validation passed successfully!
+[7/14/2026, 1:47:03 AM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0043_RAHUL_KUMAR_JHA.docx
+[7/14/2026, 1:47:03 AM] [API/generate/employee] Converting DOCX to PDF...
+[7/14/2026, 1:47:03 AM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0043 to history.
+[7/14/2026, 1:54:11 AM] [API/generate/employee] Received generate request for employee: "Rahul kumar jha"
+[7/14/2026, 1:54:11 AM] [API/generate/employee] Generating template for contract #ZZ-EMP-2026-0044
+[7/14/2026, 1:54:11 AM] [renderDocx] Starting contract generation for template "employee-contract-template.docx"
+[7/14/2026, 1:54:11 AM] [renderDocx] Running validations on generated document
+[7/14/2026, 1:54:11 AM] [renderDocx] Validation passed successfully!
+[7/14/2026, 1:54:12 AM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0044_RAHUL_KUMAR_JHA.docx
+[7/14/2026, 1:54:12 AM] [API/generate/employee] Converting DOCX to PDF...
+[7/14/2026, 1:54:13 AM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0044 to history.
