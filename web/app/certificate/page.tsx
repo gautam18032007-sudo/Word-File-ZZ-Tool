@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -75,51 +75,52 @@ export default function CertificatePage() {
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   // Load candidates automatically on mount
-  useEffect(() => {
-    async function loadCandidates() {
-      setLoadingCandidates(true);
-      setLoadError("");
-      try {
-        const res = await fetch("/api/sheets/certificate");
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Failed to load sheet data");
+  const loadCandidates = useCallback(async (forceRefresh = false) => {
+    setLoadingCandidates(true);
+    setLoadError("");
+    try {
+      const url = forceRefresh ? "/api/sheets/certificate?refresh=true" : "/api/sheets/certificate";
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to load sheet data");
 
-        const headers = data.headers as string[];
-        const rows = data.rows as string[][];
+      const headers = data.headers as string[];
+      const rows = data.rows as string[][];
 
-        const findColIndex = (list: string[], possible: string[]) => {
-          const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
-          return list.findIndex((h) => possible.some((p) => norm(h) === norm(p)));
-        };
+      const findColIndex = (list: string[], possible: string[]) => {
+        const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+        return list.findIndex((h) => possible.some((p) => norm(h) === norm(p)));
+      };
 
-        const nameIdx = findColIndex(headers, ["Full Name", "Name", "Employee Name"]);
-        const designationIdx = findColIndex(headers, ["Designation", "Role", "Position", "Intern Role"]);
-        const joinIdx = findColIndex(headers, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining"]);
-        const exitIdx = findColIndex(headers, ["Last Working Date", "LWD", "Exit Date", "ExitDate"]);
+      const nameIdx = findColIndex(headers, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
+      const designationIdx = findColIndex(headers, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
+      const joinIdx = findColIndex(headers, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
+      const exitIdx = findColIndex(headers, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
 
-        if (nameIdx === -1 || designationIdx === -1 || joinIdx === -1 || exitIdx === -1) {
-          throw new Error("Missing Required Columns in the Google Sheet. Please ensure Full Name, Designation, Date of Joining, and Last Working Date columns are present.");
-        }
-
-        const mapped: CertificateCandidate[] = rows
-          .map((r) => ({
-            fullName: (r[nameIdx] ?? "").trim(),
-            designation: (r[designationIdx] ?? "").trim(),
-            joiningDate: (r[joinIdx] ?? "").trim(),
-            lastWorkingDate: (r[exitIdx] ?? "").trim(),
-          }))
-          .filter((c) => c.fullName);
-
-        setCandidates(mapped);
-      } catch (e: any) {
-        setLoadError(e.message || String(e));
-      } finally {
-        setLoadingCandidates(false);
+      if (nameIdx === -1 || designationIdx === -1 || joinIdx === -1 || exitIdx === -1) {
+        throw new Error("Missing Required Columns in the Google Sheet. Please ensure Full Name, Designation, Date of Joining, and Last Working Date columns are present.");
       }
-    }
 
-    loadCandidates();
+      const mapped: CertificateCandidate[] = rows
+        .map((r) => ({
+          fullName: (r[nameIdx] ?? "").trim(),
+          designation: (r[designationIdx] ?? "").trim(),
+          joiningDate: (r[joinIdx] ?? "").trim(),
+          lastWorkingDate: (r[exitIdx] ?? "").trim(),
+        }))
+        .filter((c) => c.fullName);
+
+      setCandidates(mapped);
+    } catch (e: any) {
+      setLoadError(e.message || String(e));
+    } finally {
+      setLoadingCandidates(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadCandidates();
+  }, [loadCandidates]);
 
   // Fetch signatory defaults from server environment
   useEffect(() => {
@@ -355,11 +356,19 @@ export default function CertificatePage() {
         {/* ── LEFT PANEL ── */}
         <div className="space-y-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="flex items-center gap-2">
                 <span className="text-[var(--muted-foreground)] font-mono text-xs">01</span>
                 Google Sheet Loader
               </CardTitle>
+              <button 
+                onClick={() => loadCandidates(true)} 
+                disabled={loadingCandidates}
+                className="text-[var(--muted-foreground)] hover:text-white transition disabled:opacity-50 cursor-pointer"
+                title="Refresh Sheet Cache"
+              >
+                <RotateCw size={14} className={cn(loadingCandidates && "animate-spin")} />
+              </button>
             </CardHeader>
             <CardContent>
               {loadingCandidates ? (

@@ -414,3 +414,12 @@
 [7/13/2026, 3:58:51 PM] [API/generate/employee] Converting DOCX to PDF...
 [7/13/2026, 3:59:17 PM] [API/generate/employee] Saved PDF: ZZ-EMP-2026-0042_RAHUL_KUMAR_JHA.pdf
 [7/13/2026, 3:59:17 PM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0042 to history.
+[7/13/2026, 6:33:12 PM] [API/generate/brand] Received generate request for brand: "Nike India Test Corp"
+[7/13/2026, 6:33:12 PM] [API/generate/brand] Generating template for contract #ZZ-BRAND-2026-0030
+[7/13/2026, 6:33:12 PM] [renderDocx] Starting contract generation for template "brand-contract-template.docx"
+[7/13/2026, 6:33:12 PM] [renderDocx] Running validations on generated document
+[7/13/2026, 6:33:12 PM] [renderDocx] Validation passed successfully!
+[7/13/2026, 6:33:12 PM] [API/generate/brand] Saved DOCX: ZZ-BRAND-2026-0030_NIKE_INDIA_TEST_CORP.docx
+[7/13/2026, 6:33:12 PM] [API/generate/brand] Converting DOCX to PDF...
+[7/13/2026, 6:33:21 PM] [API/generate/brand] Saved PDF: ZZ-BRAND-2026-0030_NIKE_INDIA_TEST_CORP.pdf
+[7/13/2026, 6:33:21 PM] [API/generate/brand] Appended contract #ZZ-BRAND-2026-0030 to history.

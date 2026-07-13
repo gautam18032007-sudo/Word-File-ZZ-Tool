@@ -93,3 +93,51 @@ Open the sheet → Share → General access → "Anyone with the link" (Viewer).
 [7/13/2026, 5:52:51 PM] [API/certificate] Error: Sheet is not publicly accessible.
 Open the sheet → Share → General access → "Anyone with the link" (Viewer).
 (Sheet ID: 1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA)
+[7/13/2026, 6:56:02 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 6:56:02 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 6:56:03 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 6:56:03 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:02 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:02 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:02 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:02 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:06 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:06 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:07 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:07 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:08 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:08 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:09 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:09 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:09 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:09 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:10 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:10 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:11 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:11 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:11 PM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/13/2026, 8:13:11 PM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.

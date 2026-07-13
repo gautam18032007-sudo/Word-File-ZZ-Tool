@@ -4,8 +4,10 @@ import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const forceRefresh = searchParams.get("refresh") === "true";
     // Sourced automatically from GOOGLE_CERTIFICATE_SHEET_ID configured in .env
-    const rawRows = await fetchRawRows(null, 'certificate');
+    const rawRows = await fetchRawRows(null, 'certificate', forceRefresh);
     if (rawRows.length === 0) {
       logger.sheet(`[API/certificate] Loaded empty raw rows`);
       return NextResponse.json({ headers: [], rows: [] });

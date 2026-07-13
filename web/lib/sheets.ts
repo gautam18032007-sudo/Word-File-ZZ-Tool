@@ -25,6 +25,7 @@ const CREDENTIALS_PATH = path.resolve(process.cwd(), '..', 'credentials.json');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
 export class SheetsError extends Error {}
+export class SheetsAuthError extends SheetsError {}
 
 // ─── Sheet ID extraction ───────────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ async function getRowsPublicCsv(sheetIdOrUrl: string): Promise<string[][]> {
 
   const contentType = res.headers.get('content-type') ?? '';
   if (res.status !== 200 || !contentType.includes('text/csv')) {
-    throw new SheetsError(
+    throw new SheetsAuthError(
       'Sheet is not publicly accessible.\n' +
       'Open the sheet → Share → General access → "Anyone with the link" (Viewer).\n' +
       `(Sheet ID: ${sheetId})`
@@ -135,23 +136,41 @@ async function getRowsServiceAccount(sheetId: string): Promise<string[][]> {
 
 // ─── Unified fetch with fallback ──────────────────────────────────────────────
 
-async function getRows(sheetIdOrUrl: string): Promise<string[][]> {
+async function getRows(sheetIdOrUrl: string, allowAuthFallback: boolean): Promise<{ rows: string[][]; mode: 'PUBLIC' | 'SERVICE_ACCOUNT' }> {
   try {
-    return await getRowsPublicCsv(sheetIdOrUrl);
+    const rows = await getRowsPublicCsv(sheetIdOrUrl);
+    return { rows, mode: 'PUBLIC' };
   } catch (publicErr) {
-    // Only fall back to service account if the CSV fetch failed (not a network error)
-    if (!(publicErr instanceof SheetsError)) throw publicErr;
-    try {
-      const cleanId = extractSheetId(sheetIdOrUrl);
-      return await getRowsServiceAccount(cleanId);
-    } catch {
-      // Re-throw the original public error — it has the better user-facing message
+    if (!allowAuthFallback || !(publicErr instanceof SheetsAuthError)) {
       throw publicErr;
     }
+    const keyFile = readServiceAccountKey();
+    if (!keyFile) {
+      throw new SheetsError(
+        'Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.\n' +
+        'Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.'
+      );
+    }
+    const cleanId = extractSheetId(sheetIdOrUrl);
+    const rows = await getRowsServiceAccount(cleanId);
+    return { rows, mode: 'SERVICE_ACCOUNT' };
   }
 }
 
-export async function fetchRawRows(sheetIdOrUrl: string | null, type: 'brand' | 'employee' | 'certificate'): Promise<string[][]> {
+// Best-effort memory cache for serverless environments
+interface CacheEntry {
+  rows: string[][];
+  timestamp: number;
+  mode: 'PUBLIC' | 'SERVICE_ACCOUNT';
+}
+const certificateCache: Record<string, CacheEntry> = {};
+const CACHE_TTL_MS = 60 * 1000;
+
+export async function fetchRawRows(
+  sheetIdOrUrl: string | null,
+  type: 'brand' | 'employee' | 'certificate',
+  forceRefresh = false
+): Promise<string[][]> {
   const envVar = 
     type === 'brand' ? 'GOOGLE_BRAND_SHEET_ID' : 
     type === 'employee' ? 'GOOGLE_EMPLOYEE_SHEET_ID' : 'GOOGLE_CERTIFICATE_SHEET_ID';
@@ -168,9 +187,38 @@ export async function fetchRawRows(sheetIdOrUrl: string | null, type: 'brand' | 
   const cleanId = extractSheetId(sid);
   logger.sheet(`[fetchRawRows] Extracted sheet ID: "${cleanId}"`);
 
+  let gid = '0';
+  const gidMatch = sid.match(/[#&?]gid=([0-9]+)/);
+  if (gidMatch) {
+    gid = gidMatch[1];
+  }
+  const cacheKey = `${cleanId}:${gid}`;
+
+  if (type === 'certificate') {
+    if (forceRefresh) {
+      logger.sheet(`[fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet ${cleanId.slice(0, 8)}...`);
+      delete certificateCache[cacheKey];
+    } else {
+      const cached = certificateCache[cacheKey];
+      const now = Date.now();
+      if (cached && (now - cached.timestamp < CACHE_TTL_MS)) {
+        logger.sheet(`[fetchRawRows] Cache hit for certificate sheet (mode: ${cached.mode}). Returning ${cached.rows.length} rows.`);
+        return cached.rows;
+      }
+    }
+  }
+
   try {
-    const rows = await getRows(sid);
-    logger.sheet(`[fetchRawRows] Successfully fetched ${rows.length} rows (including headers) for ${type}.`);
+    const { rows, mode } = await getRows(sid, type === 'certificate');
+    logger.sheet(`[fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=${cleanId.slice(0, 8)}... Mode=${mode}, Rows=${rows.length}`);
+    
+    if (type === 'certificate') {
+      certificateCache[cacheKey] = {
+        rows,
+        timestamp: Date.now(),
+        mode,
+      };
+    }
     return rows;
   } catch (e) {
     const errMsg = e instanceof Error ? e.message : String(e);
@@ -230,7 +278,7 @@ export async function fetchBrandRows(sheetIdOrUrl: string | null): Promise<Brand
   const sid = (sheetIdOrUrl || '').trim() || process.env.GOOGLE_BRAND_SHEET_ID || '';
   if (!sid) throw new SheetsError('No Brand Sheet ID provided.');
 
-  const rows = await getRows(sid);
+  const { rows } = await getRows(sid, false);
   if (rows.length === 0) return [];
 
   const headers = rows[0].map(String);
@@ -260,7 +308,7 @@ export async function fetchEmployeeRows(sheetIdOrUrl: string | null): Promise<Em
   const sid = (sheetIdOrUrl || '').trim() || process.env.GOOGLE_EMPLOYEE_SHEET_ID || '';
   if (!sid) throw new SheetsError('No Employee Sheet ID provided.');
 
-  const rows = await getRows(sid);
+  const { rows } = await getRows(sid, false);
   if (rows.length === 0) return [];
 
   const headers = rows[0].map(String);

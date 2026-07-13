@@ -8,11 +8,6 @@ const nextConfig: NextConfig = {
     // These are read from the parent .env at build/dev time via the instrumentation hook
   },
   serverExternalPackages: ["pizzip", "googleapis"],
-  experimental: {
-    turbopack: {
-      root: path.resolve(__dirname, ".."),
-    },
-  },
 };
 
 export default nextConfig;

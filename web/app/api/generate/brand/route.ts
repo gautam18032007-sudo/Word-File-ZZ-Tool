@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
     };
 
     logger.gen(`[API/generate/brand] Generating template for contract #${contractNo}`);
-    const docxBytes = renderDocx('braand-contract-template.docx', data);
+    const docxBytes = renderDocx('brand-contract-template.docx', data);
     const docxName = buildFilename(contractNo, brand.legalName, 'docx');
     fs.writeFileSync(path.join(OUTPUT_DIR, docxName), docxBytes);
     logger.gen(`[API/generate/brand] Saved DOCX: ${docxName}`);

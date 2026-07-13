@@ -7,13 +7,6 @@ const CERT_DIR = writableDir("templates/certificates");
 const REGISTRY_FILE = path.join(CERT_DIR, "registry.json");
 
 // Default templates list
-const DEFAULT_TEMPLATES = [
-  { id: "CERT_TEMPLATE_001", name: "Certificate of Appreciation", filename: "certificate-appreciation.png", type: "PNG", active: true },
-  { id: "CERT_TEMPLATE_002", name: "Internship Certificate", filename: "certificate-internship.png", type: "PNG", active: true },
-  { id: "CERT_TEMPLATE_003", name: "Experience Certificate", filename: "certificate-experience.pdf", type: "PDF", active: true },
-  { id: "CERT_TEMPLATE_004", name: "Training Certificate", filename: "certificate-training.png", type: "PNG", active: true },
-  { id: "CERT_TEMPLATE_005", name: "Completion Certificate", filename: "certificate-completion.png", type: "PNG", active: true },
-];
 
 function readRegistry() {
   try {

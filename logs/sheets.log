@@ -537,3 +537,43 @@
 [7/13/2026, 5:52:48 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
 [7/13/2026, 5:52:50 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
 [7/13/2026, 5:52:50 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 6:56:01 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 6:56:01 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 6:56:02 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 6:56:02 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:12:30 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 8:12:30 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 8:12:32 PM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=14
+[7/13/2026, 8:12:32 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 8:12:56 PM] [fetchRawRows] Requesting employee sheet. Input: "", Default env: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 8:12:56 PM] [fetchRawRows] Extracted sheet ID: "1wyfsP44k3hM3PWMqxeKsaTt7TwuwM4VkPuuauTI9gto"
+[7/13/2026, 8:12:58 PM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1wyfsP44... Mode=PUBLIC, Rows=14
+[7/13/2026, 8:12:58 PM] [API/employee] Returning 17 headers and 13 rows
+[7/13/2026, 8:13:01 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:01 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:02 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:02 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:06 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:06 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:06 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:07 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:07 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:07 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:08 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:08 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:08 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:08 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:08 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:08 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:09 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:09 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:09 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:10 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:10 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:10 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:10 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:10 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:10 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
+[7/13/2026, 8:13:11 PM] [fetchRawRows] Requesting certificate sheet. Input: "", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:11 PM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/13/2026, 8:13:11 PM] [fetchRawRows] [CERTIFICATE] Force refreshing cache for sheet 1_T1FNjR...
