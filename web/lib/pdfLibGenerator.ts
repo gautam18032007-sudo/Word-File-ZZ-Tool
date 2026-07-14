@@ -89,133 +89,122 @@ export async function generateCertificatePdf(options: GeneratePdfOptions): Promi
     page.drawImage(embeddedImg, { x: 0, y: 0, width, height });
   }
 
-  // 4. White-mask pre-printed regions for default "Certificate of Appreciation" template
-  if (templateId === "CERT_TEMPLATE_001") {
-    const maskColor = rgb(1, 1, 1); // Pure white
-    
-    // Mask Name: y ranges from 611 to 778 in PDF-coordinates
-    page.drawRectangle({
-      x: 350,
-      y: 611,
-      width: 1300,
-      height: 170,
-      color: maskColor,
-    });
-
-    // Mask Role: y ranges from 532 to 555
-    page.drawRectangle({
-      x: 350,
-      y: 520,
-      width: 1300,
-      height: 50,
-      color: maskColor,
-    });
-
-    // Mask Date Range: y ranges from 397 to 461
-    page.drawRectangle({
-      x: 350,
-      y: 380,
-      width: 1300,
-      height: 90,
-      color: maskColor,
-    });
-
-    // Mask Signatory name/role/sig: y ranges from 70 to 320, bottom-right side
-    page.drawRectangle({
-      x: 1300,
-      y: 70,
-      width: 500,
-      height: 250,
-      color: maskColor,
-    });
-  }
+  // 4. No masking needed for CERT_TEMPLATE_001 because the template image is blank in these areas.
 
   // 5. Load fonts
   const fontHelvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontHelveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
   // 6. Draw dynamic text overlays
-  // Format Date Range: e.g. "15 June 2026 – 16 September 2026"
+  // Format Date with ordinal suffix: "15th June, 2026"
+  const ordinal = (n: number) => {
+    const s = ['th','st','nd','rd'];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
   const formatDate = (iso: string) => {
-    if (!iso) return "";
-    const d = new Date(iso + "T00:00:00");
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
     if (isNaN(d.getTime())) return iso;
-    const day = d.getDate();
-    const month = d.toLocaleString("en-GB", { month: "long" });
+    const day = ordinal(d.getDate());
+    const month = d.toLocaleString('en-GB', { month: 'long' });
     const year = d.getFullYear();
-    return `${day} ${month} ${year}`;
+    return `${day} ${month}, ${year}`;
   };
 
   const startFmt = formatDate(joiningDate);
   const endFmt = formatDate(lastWorkingDate);
-  const dateRangeText = startFmt && endFmt ? `${startFmt} – ${endFmt}` : "";
+  const dateRangeText = startFmt && endFmt ? `${startFmt} - ${endFmt}` : '';
 
   const nameText = name.trim();
-  const designationText = `Worked as ${designation.trim()}`;
+  const des = designation.trim();
+  // Build "Worked as Maverick Intern at zenzebra" style text
+  const designationText = des ? `Worked as ${des} at zenzebra` : 'Worked at zenzebra';
 
-  // Center Name
-  const nameSize = 48;
-  const nameWidth = fontHelveticaBold.widthOfTextAtSize(nameText, nameSize);
+  // ── Name: scale up to 110pt, shrink to fit 1300px wide safe zone ──────────
+  const nameCenterX = 1216;
+  let nameSize = 110;
+  let nameWidth = fontHelveticaBold.widthOfTextAtSize(nameText, nameSize);
+  while (nameWidth > 1280 && nameSize > 28) {
+    nameSize -= 2;
+    nameWidth = fontHelveticaBold.widthOfTextAtSize(nameText, nameSize);
+  }
+
   page.drawText(nameText, {
-    x: (width - nameWidth) / 2,
-    y: 694,
+    x: nameCenterX - nameWidth / 2,
+    y: 660,
     size: nameSize,
+    font: fontHelveticaBold,
+    color: rgb(0.69, 0.55, 0.25), // Rich dark gold matching image 2
+  });
+
+  // ── Designation line ─────────────────────────────────────────────────────
+  const desSize = 27;
+  // Draw "Worked as <role> at " in regular weight, then "zenzebra" in bold
+  const desPrefix = des ? `Worked as ${des} at ` : 'Worked at ';
+  const desZen    = 'zenzebra';
+  const desPrefixWidth = fontHelvetica.widthOfTextAtSize(desPrefix, desSize);
+  const desZenWidth    = fontHelveticaBold.widthOfTextAtSize(desZen, desSize);
+  const desTotalWidth  = desPrefixWidth + desZenWidth;
+  const desStartX      = nameCenterX - desTotalWidth / 2;
+
+  page.drawText(desPrefix, {
+    x: desStartX,
+    y: 515,
+    size: desSize,
+    font: fontHelvetica,
+    color: rgb(0.2, 0.2, 0.2),
+  });
+  page.drawText(desZen, {
+    x: desStartX + desPrefixWidth,
+    y: 515,
+    size: desSize,
+    font: fontHelveticaBold,
+    color: rgb(0.2, 0.2, 0.2),
+  });
+
+  // ── Date range: bold, larger ─────────────────────────────────────────────
+  const dateSize  = 28;
+  const dateWidth = fontHelveticaBold.widthOfTextAtSize(dateRangeText, dateSize);
+  page.drawText(dateRangeText, {
+    x: nameCenterX - dateWidth / 2,
+    y: 400,
+    size: dateSize,
     font: fontHelveticaBold,
     color: rgb(0.12, 0.12, 0.12),
   });
 
-  // Center Designation
-  const desSize = 24;
-  const desWidth = fontHelvetica.widthOfTextAtSize(designationText, desSize);
-  page.drawText(designationText, {
-    x: (width - desWidth) / 2,
-    y: 535,
-    size: desSize,
-    font: fontHelvetica,
-    color: rgb(0.24, 0.24, 0.24),
-  });
-
-  // Center Date Range
-  const dateSize = 20;
-  const dateWidth = fontHelvetica.widthOfTextAtSize(dateRangeText, dateSize);
-  page.drawText(dateRangeText, {
-    x: (width - dateWidth) / 2,
-    y: 415,
-    size: dateSize,
-    font: fontHelvetica,
-    color: rgb(0.3, 0.3, 0.3),
-  });
-
-  // Position Signatory Name & Role on the bottom right (centered around X=1550)
-  const sigNameSize = 22;
-  const sigRoleSize = 16;
-  const sigCenterX = 1550;
+  // ── Signatory block ───────────────────────────────────────────────────────
+  const sigCenterX  = 1550;
+  const sigNameSize = 26;
+  const sigRoleSize = 20;
 
   const sigNameWidth = fontHelveticaBold.widthOfTextAtSize(signatoryName, sigNameSize);
   const sigRoleWidth = fontHelvetica.widthOfTextAtSize(signatoryRole, sigRoleSize);
 
-  // Draw signatory line
+  // Signatory line — gold, centered
   page.drawLine({
-    start: { x: sigCenterX - 100, y: 200 },
-    end: { x: sigCenterX + 100, y: 200 },
-    thickness: 1.5,
-    color: rgb(0.74, 0.6, 0.4), // Gold-ish color matching the template branding
+    start: { x: sigCenterX - 120, y: 215 },
+    end:   { x: sigCenterX + 120, y: 215 },
+    thickness: 2,
+    color: rgb(0.69, 0.55, 0.25),
   });
 
   page.drawText(signatoryName, {
     x: sigCenterX - sigNameWidth / 2,
-    y: 170,
+    y: 180,
     size: sigNameSize,
     font: fontHelveticaBold,
-    color: rgb(0.12, 0.12, 0.12),
+    color: rgb(0.08, 0.08, 0.08),
   });
 
   page.drawText(signatoryRole, {
     x: sigCenterX - sigRoleWidth / 2,
-    y: 135,
+    y: 145,
     size: sigRoleSize,
     font: fontHelvetica,
-    color: rgb(0.4, 0.4, 0.4),
+    color: rgb(0.35, 0.35, 0.35),
   });
 
   // Embed Signature Image (if uploaded)

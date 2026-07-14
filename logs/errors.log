@@ -179,3 +179,37 @@ Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at proj
 [7/14/2026, 1:53:57 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
 [7/14/2026, 1:53:57 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
 [7/14/2026, 1:54:12 AM] [API/generate/employee] PDF conversion failed (skipped): PDF conversion failed: Error: spawnSync soffice ENOENT
+[7/14/2026, 2:23:39 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:23:39 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:23:39 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:23:39 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:25:40 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:25:40 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:29:28 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:29:28 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:31:04 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:31:04 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:34:02 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:34:02 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:34:57 AM] [fetchRawRows] Failed to fetch sheet rows: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/14/2026, 2:34:57 AM] [API/certificate] Error: Certificate sheet is private, and GOOGLE_SERVICE_ACCOUNT_JSON is not configured.
+Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at project root.
+[7/15/2026, 1:44:21 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 1:44:21 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 1:52:07 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 1:52:07 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 1:52:07 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 1:52:07 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.

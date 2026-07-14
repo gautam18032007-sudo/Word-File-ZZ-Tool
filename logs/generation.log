@@ -439,3 +439,21 @@
 [7/14/2026, 1:54:12 AM] [API/generate/employee] Saved DOCX: ZZ-EMP-2026-0044_RAHUL_KUMAR_JHA.docx
 [7/14/2026, 1:54:12 AM] [API/generate/employee] Converting DOCX to PDF...
 [7/14/2026, 1:54:13 AM] [API/generate/employee] Appended contract #ZZ-EMP-2026-0044 to history.
+[7/15/2026, 1:52:43 AM] [API/generate/certificate] Received request for: "Rinki singh"
+[7/15/2026, 1:52:43 AM] [API/generate/certificate] Generated new certificate sequence: ZZ-CERT-2026-0001
+[7/15/2026, 1:52:45 AM] [API/generate/certificate] Saved PDF file: ZZ-CERT-2026-0001_RINKI_SINGH.pdf
+[7/15/2026, 1:52:45 AM] [API/generate/certificate] Appended new history record for ZZ-CERT-2026-0001
+[7/15/2026, 2:05:23 AM] [API/generate/certificate] Received request for: "Palak Kankheria"
+[7/15/2026, 2:05:23 AM] [API/generate/certificate] Generated new certificate sequence: ZZ-CERT-2026-0002
+[7/15/2026, 2:05:25 AM] [API/generate/certificate] Saved PDF file: ZZ-CERT-2026-0002_PALAK_KANKHERIA.pdf
+[7/15/2026, 2:05:25 AM] [API/generate/certificate] Appended new history record for ZZ-CERT-2026-0002
+[7/15/2026, 2:12:21 AM] [API/generate/certificate] Received request for: "Danendra Bahadur Pal"
+[7/15/2026, 2:12:21 AM] [API/generate/certificate] Generated new certificate sequence: ZZ-CERT-2026-0003
+[7/15/2026, 2:12:24 AM] [API/generate/certificate] Saved PDF file: ZZ-CERT-2026-0003_DANENDRA_BAHADUR_PAL.pdf
+[7/15/2026, 2:12:24 AM] [API/generate/certificate] Appended new history record for ZZ-CERT-2026-0003
+[7/15/2026, 2:15:11 AM] [API/generate/certificate] Received request for: "Danendra Bahadur Pal"
+[7/15/2026, 2:15:11 AM] [API/generate/certificate] Duplicate certificate found for Danendra Bahadur Pal: ZZ-CERT-2026-0003
+[7/15/2026, 2:15:25 AM] [API/generate/certificate] Received request for: "Palak Kankheria"
+[7/15/2026, 2:15:25 AM] [API/generate/certificate] Generated new certificate sequence: ZZ-CERT-2026-0004
+[7/15/2026, 2:15:26 AM] [API/generate/certificate] Saved PDF file: ZZ-CERT-2026-0004_PALAK_KANKHERIA.pdf
+[7/15/2026, 2:15:26 AM] [API/generate/certificate] Appended new history record for ZZ-CERT-2026-0004

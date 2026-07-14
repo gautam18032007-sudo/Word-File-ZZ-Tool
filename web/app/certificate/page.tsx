@@ -44,7 +44,7 @@ export default function CertificatePage() {
   };
 
   const nameIdx = findColIndex(headers, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
-  const designationIdx = findColIndex(headers, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
+  const designationIdx = findColIndex(headers, ["Designation / Role", "Designation/Role", "Designation", "Role", "Position", "Intern Role", "Intern Designation", "designation / role", "designation/role"]);
   const joinIdx = findColIndex(headers, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
   const exitIdx = findColIndex(headers, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
 
@@ -93,7 +93,7 @@ export default function CertificatePage() {
     setRawRows(loadedRows);
 
     const nameIdxTmp = findColIndex(loadedHeaders, ["Full Name", "Name", "Employee Name", "Intern Name", "Candidate Name"]);
-    const designationIdxTmp = findColIndex(loadedHeaders, ["Designation", "Role", "Position", "Intern Role", "Intern Designation"]);
+    const designationIdxTmp = findColIndex(loadedHeaders, ["Designation / Role", "Designation/Role", "Designation", "Role", "Position", "Intern Role", "Intern Designation", "designation / role", "designation/role"]);
     const joinIdxTmp = findColIndex(loadedHeaders, ["Date of Joining", "Joining Date", "JoiningDate", "DateofJoining", "Start Date"]);
     const exitIdxTmp = findColIndex(loadedHeaders, ["Last Working Date", "LWD", "Exit Date", "ExitDate", "End Date"]);
 
@@ -245,18 +245,23 @@ export default function CertificatePage() {
 
   // Format date range string for display
   function formatDateRange(startIso: string, endIso: string): string {
+    const ordinal = (n: number) => {
+      const s = ['th','st','nd','rd'];
+      const v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    };
     const format = (iso: string) => {
       if (!iso) return "";
       const d = new Date(iso + "T00:00:00");
       if (isNaN(d.getTime())) return iso;
-      const day = d.getDate();
+      const day = ordinal(d.getDate());
       const month = d.toLocaleString("en-GB", { month: "long" });
       const year = d.getFullYear();
-      return `${day} ${month} ${year}`;
+      return `${day} ${month}, ${year}`;
     };
     const s = format(startIso);
     const e = format(endIso);
-    return s && e ? `${s} – ${e}` : "";
+    return s && e ? `${s} - ${e}` : "";
   }
 
   // Run validation checks
@@ -570,7 +575,7 @@ export default function CertificatePage() {
             </CardHeader>
             <CardContent className="flex justify-center bg-[var(--muted)] p-5 rounded-md min-h-[300px] border border-[var(--border)] items-center relative overflow-hidden">
               <div 
-                className="w-full relative shadow-lg bg-white overflow-hidden aspect-[1.414/1] flex flex-col justify-between p-[6%] border border-[var(--border)] text-center text-stone-800"
+                className="w-full relative shadow-lg bg-white overflow-hidden aspect-[1.414/1] border border-[var(--border)] text-center text-stone-800"
                 style={{
                   backgroundImage: 
                     selectedTemplateId === "CERT_TEMPLATE_001" 
@@ -591,56 +596,57 @@ export default function CertificatePage() {
                   </div>
                 )}
 
-                {/* Overlay Text Placements */}
-                <div className="w-full flex flex-col items-center justify-center h-full pointer-events-none z-10 select-none">
-                  {/* Title overlay */}
-                  {selectedTemplateId !== "CERT_TEMPLATE_001" && (!activeTemplate || !activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") || activeTemplate.type === "PDF") && (
-                    <h2 className="text-[2.2vw] font-serif italic text-amber-800 font-bold mb-[3%]">
-                      Certificate of Appreciation
-                    </h2>
-                  )}
+                {/* Title overlay */}
+                {selectedTemplateId !== "CERT_TEMPLATE_001" && (!activeTemplate || !activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") || activeTemplate.type === "PDF") && (
+                  <h2 className="absolute top-[25%] left-[60.8%] -translate-x-1/2 -translate-y-1/2 text-[2.2vw] font-serif italic text-amber-800 font-bold whitespace-nowrap">
+                    Certificate of Appreciation
+                  </h2>
+                )}
 
-                  {/* Body Text */}
-                  <p className="text-[1vw] text-stone-500 uppercase tracking-widest font-semibold mb-[2%]">
+                {/* Body Text */}
+                {selectedTemplateId !== "CERT_TEMPLATE_001" && (!activeTemplate || !activeTemplate.id.startsWith("CERT_TEMPLATE_CUSTOM_") || activeTemplate.type === "PDF") && (
+                  <p className="absolute top-[38%] left-[60.8%] -translate-x-1/2 -translate-y-1/2 text-[1vw] text-stone-500 uppercase tracking-widest font-semibold whitespace-nowrap">
                     This is proudly presented to
                   </p>
+                )}
 
-                  {/* Name */}
-                  <h1 className="text-[2.6vw] font-serif font-bold text-stone-900 border-b border-stone-200 px-[5%] pb-[1%] min-h-[4vw] flex items-center justify-center">
-                    {previewName || "{{FULL_NAME}}"}
-                  </h1>
+                {/* Name */}
+                <h1 className="absolute top-[50.9%] left-[60.8%] -translate-x-1/2 -translate-y-1/2 text-[2.6vw] font-sans font-bold text-[#c5a059] whitespace-nowrap">
+                  {previewName || "{{FULL_NAME}}"}
+                </h1>
 
-                  {/* Designation */}
-                  <p className="text-[1.2vw] text-stone-600 mt-[3%]">
-                    Worked as <strong className="text-stone-800 font-semibold">{previewDesignation || "{{DESIGNATION}}"}</strong>
-                  </p>
+                {/* Designation */}
+                <p className="absolute top-[62.1%] left-[60.8%] -translate-x-1/2 -translate-y-1/2 text-[1.25vw] text-stone-600 whitespace-nowrap">
+                  Worked as <strong className="text-stone-800 font-semibold">{previewDesignation || "{{DESIGNATION}}"}</strong> at <strong className="text-stone-800 font-semibold">zenzebra</strong>
+                </p>
 
-                  {/* Date Range */}
-                  <p className="text-[1vw] text-stone-500 font-semibold tracking-wide mt-[1.5%]">
-                    {previewJoiningDate && previewLastWorkingDate 
-                      ? formatDateRange(previewJoiningDate, previewLastWorkingDate)
-                      : "{{JOINING_DATE}} – {{LAST_WORKING_DATE}}"}
-                  </p>
-                </div>
+                {/* Date Range */}
+                <p className="absolute top-[70.6%] left-[60.8%] -translate-x-1/2 -translate-y-1/2 text-[1vw] text-stone-500 font-semibold tracking-wide whitespace-nowrap">
+                  {previewJoiningDate && previewLastWorkingDate 
+                    ? formatDateRange(previewJoiningDate, previewLastWorkingDate)
+                    : "{{JOINING_DATE}} - {{LAST_WORKING_DATE}}"}
+                </p>
 
                 {/* Signatory Box Overlay */}
-                <div className="w-full flex justify-end items-end z-10 pointer-events-none select-none pr-[4%] pb-[2%]">
-                  <div className="flex flex-col items-center min-w-[150px]">
-                    {sigImage ? (
-                      <img src={sigImage} alt="Sig" className="h-[4.5vw] object-contain mb-[0.2vw] max-w-[100px]" />
-                    ) : (
-                      <div className="h-[3.5vw]" />
-                    )}
-                    <div className="w-full border-t border-stone-300 py-1 text-center">
-                      <p className="text-[0.9vw] font-bold text-stone-800 leading-tight">
-                        {previewSignatoryName || "{{SIGNATORY_NAME}}"}
-                      </p>
-                      <p className="text-[0.75vw] text-stone-500 leading-none mt-[0.2vw]">
-                        {previewSignatoryRole || "{{SIGNATORY_ROLE}}"}
-                      </p>
-                    </div>
+                <div className="absolute top-[88%] left-[77.5%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center min-w-[15vw]">
+                  <div className="w-full border-t border-[#c5a059] pt-[0.5vw] text-center">
+                    <p className="text-[0.9vw] font-bold text-stone-800 leading-tight">
+                      {previewSignatoryName || "{{SIGNATORY_NAME}}"}
+                    </p>
+                    <p className="text-[0.75vw] text-stone-500 leading-none mt-[0.2vw]">
+                      {previewSignatoryRole || "{{SIGNATORY_ROLE}}"}
+                    </p>
                   </div>
                 </div>
+
+                {/* Signature Image Overlay */}
+                {sigImage && (
+                  <img 
+                    src={sigImage} 
+                    alt="Sig" 
+                    className="absolute top-[80%] left-[77.5%] -translate-x-1/2 -translate-y-1/2 h-[4.5vw] object-contain max-w-[10vw]" 
+                  />
+                )}
               </div>
             </CardContent>
           </Card>

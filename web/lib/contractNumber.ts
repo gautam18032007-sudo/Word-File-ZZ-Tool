@@ -25,8 +25,8 @@ function writeSequence(data: Record<string, Record<string, number>>): void {
   fs.writeFileSync(SEQUENCE_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-/** Returns e.g. "ZZ-BRAND-2026-0001" or "ZZ-CERT-2026-0001" */
-export function nextContractNumber(type: 'BRAND' | 'EMP' | 'CERT'): string {
+/** Returns e.g. "ZZ-BRAND-2026-0001" or "ZZ-LOR-2026-0001" */
+export function nextContractNumber(type: 'BRAND' | 'EMP' | 'CERT' | 'LOR'): string {
   const year = String(new Date().getFullYear());
   const prefix = process.env.CONTRACT_PREFIX ?? 'ZZ';
 
