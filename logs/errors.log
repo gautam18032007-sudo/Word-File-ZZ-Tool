@@ -213,3 +213,6 @@ Please set GOOGLE_SERVICE_ACCOUNT_JSON env var or place credentials.json at proj
 [7/15/2026, 1:52:07 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
 [7/15/2026, 1:52:07 AM] [fetchRawRows] No Google Sheet URL or ID provided for certificate.
 [7/15/2026, 1:52:07 AM] [API/certificate] Error: No Google Sheet URL or ID provided for certificate.
+[7/15/2026, 6:33:22 AM] [Ollama] Draft generation failed: fetch failed
+[7/15/2026, 6:33:22 AM] [api/generate/lor/draft] Ollama generation failed, falling back to deterministic template. Error: fetch failed
+[7/15/2026, 9:58:21 PM] [Health Check] Ollama is offline or model is not loaded: fetch failed

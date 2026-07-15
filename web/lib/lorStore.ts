@@ -57,6 +57,8 @@ export interface LorHistoryRecord {
   docxFile: string;
   /** Filename only — e.g. "ZZ-LOR-2026-0001_RAHUL_KUMAR_JHA.pdf". null if LibreOffice unavailable. */
   pdfFile: string | null;
+  /** Audit log showing source model / fallback used: "ollama" | "template" | "manual" */
+  generatedBy?: string;
 }
 
 // ─── Read ──────────────────────────────────────────────────────────────────────

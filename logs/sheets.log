@@ -688,3 +688,11 @@
 [7/15/2026, 2:14:59 AM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
 [7/15/2026, 2:15:01 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1_T1FNjR... Mode=PUBLIC, Rows=5
 [7/15/2026, 2:15:01 AM] [API/certificate] Returning 14 headers and 4 rows
+[7/15/2026, 3:20:05 AM] [fetchRawRows] Requesting certificate sheet. Input: "https://docs.google.com/spreadsheets/d/1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA/edit?gid=1843964171#gid=1843964171", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/15/2026, 3:20:05 AM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/15/2026, 3:20:08 AM] [fetchRawRows] [CERTIFICATE] Loaded sheet. SheetID=1_T1FNjR... Mode=PUBLIC, Rows=5
+[7/15/2026, 3:20:08 AM] [API/certificate] Returning 14 headers and 4 rows
+[7/15/2026, 3:20:08 AM] [fetchRawRows] Requesting certificate sheet. Input: "https://docs.google.com/spreadsheets/d/1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA/edit?gid=1843964171#gid=1843964171", Default env: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/15/2026, 3:20:08 AM] [fetchRawRows] Extracted sheet ID: "1_T1FNjR07-t03vgo138ZI-QJCEu9vbsqbOZQkkf_tYA"
+[7/15/2026, 3:20:08 AM] [fetchRawRows] Cache hit for certificate sheet (mode: PUBLIC). Returning 5 rows.
+[7/15/2026, 3:20:08 AM] [API/certificate] Returning 14 headers and 4 rows

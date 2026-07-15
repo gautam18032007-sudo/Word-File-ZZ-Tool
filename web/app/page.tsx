@@ -25,6 +25,7 @@ function shortDate(iso: string): string {
 
 export default function DashboardPage() {
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
+  const [lorCount, setLorCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -36,6 +37,12 @@ export default function DashboardPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to load contracts");
       setContracts(data.contracts || []);
+
+      const lorRes = await fetch("/api/lor/history");
+      const lorData = await lorRes.json();
+      if (lorRes.ok) {
+        setLorCount(Array.isArray(lorData) ? lorData.length : 0);
+      }
     } catch (e) {
       setError(String(e));
     } finally {
@@ -51,7 +58,7 @@ export default function DashboardPage() {
   const brandCount = contracts.filter((c) => c.type === "brand").length;
   const employeeCount = contracts.filter((c) => c.type === "employee").length;
   const certificateCount = contracts.filter((c) => c.type === "certificate").length;
-  const totalDocuments = brandCount + employeeCount + certificateCount;
+  const totalDocuments = brandCount + employeeCount + certificateCount + lorCount;
 
   const todayStr = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Kolkata",
@@ -117,7 +124,7 @@ export default function DashboardPage() {
       )}
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
@@ -163,6 +170,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{loading ? "..." : certificateCount}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+              LOR Generated
+            </CardTitle>
+            <Award size={15} className="text-[var(--muted-foreground)]" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{loading ? "..." : lorCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -289,7 +308,7 @@ export default function DashboardPage() {
       {!loading && contracts.length > 0 && (
         <p className="text-xs text-[var(--muted-foreground)]">
           Showing {contracts.length} document{contracts.length !== 1 ? "s" : ""} · Stored in{" "}
-          <code className="font-mono">output/contracts.json</code> and <code className="font-mono">output/certificates.json</code>
+          <code className="font-mono">output/contracts.json</code>, <code className="font-mono">output/certificates.json</code>, and <code className="font-mono">output/lor-history.json</code>
         </p>
       )}
     </div>

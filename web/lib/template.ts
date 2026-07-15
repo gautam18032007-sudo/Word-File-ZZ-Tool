@@ -362,7 +362,7 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
 
   if (templateFile.includes('employee')) {
     xml = preprocessEmployeeXml(xml);
-  } else {
+  } else if (templateFile.includes('brand')) {
     xml = preprocessBrandXml(xml);
   }
 
@@ -400,11 +400,17 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
   }
 
   const isEmployee = templateFile.includes('employee');
+  const isBrand = templateFile.includes('brand');
 
   // 4. Assert no raw placeholder text remains (case-sensitive to avoid matching lowercase boilerplates/labels)
-  const activePlaceholders = isEmployee 
-    ? ['Mr./Ms. NAME', 'EMPLOYEE NAME', 'DESIGNATION', 'JOINING DATE', 'ADDRESS']
-    : ['Brands Category', 'Location setup', 'Total Amount', 'Le gal Name'];
+  let activePlaceholders: string[] = [];
+  if (isEmployee) {
+    activePlaceholders = ['Mr./Ms. NAME', 'EMPLOYEE NAME', 'DESIGNATION', 'JOINING DATE', 'ADDRESS'];
+  } else if (isBrand) {
+    activePlaceholders = ['Brands Category', 'Location setup', 'Total Amount', 'Le gal Name'];
+  } else if (templateFile.includes('lor')) {
+    activePlaceholders = ['FULL_NAME', 'DESIGNATION', 'DEPARTMENT', 'JOINING_DATE', 'LAST_WORKING_DATE', 'FINAL_DRAFT', 'SIGNATORY_NAME', 'SIGNATORY_ROLE'];
+  }
 
   for (const ph of activePlaceholders) {
     if (xml.includes(ph)) {
@@ -417,7 +423,7 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
   }
 
   // 5. Assert actual party name exists in plain text inside the document
-  const primaryNameKey = isEmployee ? 'EMPLOYEE_NAME' : 'LEGAL_NAME';
+  const primaryNameKey = isEmployee ? 'EMPLOYEE_NAME' : isBrand ? 'LEGAL_NAME' : 'FULL_NAME';
   const expectedName = data[primaryNameKey];
   if (expectedName) {
     const escapedExpectedName = escapeXml(expectedName);

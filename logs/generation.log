@@ -457,3 +457,54 @@
 [7/15/2026, 2:15:25 AM] [API/generate/certificate] Generated new certificate sequence: ZZ-CERT-2026-0004
 [7/15/2026, 2:15:26 AM] [API/generate/certificate] Saved PDF file: ZZ-CERT-2026-0004_PALAK_KANKHERIA.pdf
 [7/15/2026, 2:15:26 AM] [API/generate/certificate] Appended new history record for ZZ-CERT-2026-0004
+[7/15/2026, 2:40:23 AM] [API/generate/lor] Received LOR generation request for candidate: "Test Candidate"
+[7/15/2026, 2:40:23 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0001
+[7/15/2026, 2:40:23 AM] [renderDocx] Starting contract generation for template "lor/lor-v1.docx"
+[7/15/2026, 2:40:23 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 2:40:23 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 2:40:23 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0001
+[7/15/2026, 3:10:30 AM] [API/generate/lor] Received LOR generation request for candidate: "Candidate 1"
+[7/15/2026, 3:10:30 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0002
+[7/15/2026, 3:10:30 AM] [renderDocx] Starting contract generation for template "lor/lor-v1.docx"
+[7/15/2026, 3:10:30 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 3:10:30 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0002
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Received LOR generation request for candidate: "Candidate 2"
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0003
+[7/15/2026, 3:10:31 AM] [renderDocx] Starting contract generation for template "lor/lor-v1.docx"
+[7/15/2026, 3:10:31 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 3:10:31 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0003
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Received LOR generation request for candidate: "Candidate 3"
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0004
+[7/15/2026, 3:10:31 AM] [renderDocx] Starting contract generation for template "lor/lor-v1.docx"
+[7/15/2026, 3:10:31 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 3:10:31 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 3:10:31 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0004
+[7/15/2026, 4:43:14 AM] [API/generate/lor] Received LOR generation request for candidate: "Neha yadav"
+[7/15/2026, 4:43:14 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0005
+[7/15/2026, 4:43:14 AM] [renderDocx] Starting contract generation for template "lor/lor-v1.docx"
+[7/15/2026, 4:43:14 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 4:43:14 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 4:43:22 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0005
+[7/15/2026, 4:58:26 AM] [API/generate/lor] Received LOR generation request for candidate: "Neha yadav"
+[7/15/2026, 4:58:26 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0006
+[7/15/2026, 4:58:26 AM] [renderDocx] Starting contract generation for template "lor/LOR-template.docx"
+[7/15/2026, 4:58:26 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 4:58:26 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 4:58:33 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0006
+[7/15/2026, 4:59:21 AM] [API/generate/lor] Received LOR generation request for candidate: "Neha yadav"
+[7/15/2026, 4:59:21 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0007
+[7/15/2026, 4:59:21 AM] [renderDocx] Starting contract generation for template "lor/LOR-template.docx"
+[7/15/2026, 4:59:21 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 4:59:21 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 4:59:25 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0007
+[7/15/2026, 6:33:22 AM] [api/generate/lor/draft] Attempting Ollama draft generation for: Palak Kankheria
+[7/15/2026, 6:33:22 AM] [Ollama] Dispatching LOR draft generation to model "qwen3:8b" at URL: http://localhost:11434
+[7/15/2026, 6:33:28 AM] [API/generate/lor] Received LOR generation request for candidate: "Palak Kankheria"
+[7/15/2026, 6:33:28 AM] [API/generate/lor] Allocated LOR sequence number: ZZ-LOR-2026-0008
+[7/15/2026, 6:33:28 AM] [renderDocx] Starting contract generation for template "lor/LOR-template.docx"
+[7/15/2026, 6:33:28 AM] [renderDocx] Running validations on generated document
+[7/15/2026, 6:33:29 AM] [renderDocx] Validation passed successfully!
+[7/15/2026, 6:33:38 AM] [API/generate/lor] Saved LOR history and documents for ZZ-LOR-2026-0008
+[7/15/2026, 9:58:21 PM] [Health Check] Checking Ollama connectivity at URL: http://localhost:11434
