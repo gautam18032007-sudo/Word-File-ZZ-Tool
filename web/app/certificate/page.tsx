@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound, RotateCw } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound, RotateCw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SheetLoader } from "@/components/shared/SheetLoader";
+import Link from "next/link";
 
 interface CertificateCandidate {
   fullName: string;
@@ -674,6 +675,13 @@ export default function CertificatePage() {
                   "Generate Certificate"
                 )}
               </Button>
+
+              <Link href="/ai-workspace/certificate" className="block w-full">
+                <Button variant="outline" className="w-full flex items-center justify-center gap-1.5 text-xs text-indigo-700 border-indigo-200 hover:bg-indigo-50">
+                  <Sparkles size={13} />
+                  Open AI Suggestion Assistant
+                </Button>
+              </Link>
 
               {genState === "error" && (
                 <div className="alert-error flex gap-2">

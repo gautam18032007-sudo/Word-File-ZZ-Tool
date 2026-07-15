@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, FileText, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import type { EmployeeRow, SalaryBreakup, GenerateResult } from "@/lib/types";
 import { SheetLoader } from "@/components/shared/SheetLoader";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 // ─── Client-side salary engine (mirrors lib/salary.ts) ───────────────────────
 
@@ -593,6 +594,13 @@ export default function EmployeePage() {
                 {genState === "loading" && <Loader2 size={15} className="animate-spin" />}
                 {genState === "loading" ? "Generating…" : "Generate Employee Contract"}
               </Button>
+
+              <Link href="/ai-workspace/employee" className="block w-full">
+                <Button variant="outline" className="w-full flex items-center justify-center gap-1.5 text-xs text-indigo-700 border-indigo-200 hover:bg-indigo-50">
+                  <Sparkles size={13} />
+                  Open AI Suggestion Assistant
+                </Button>
+              </Link>
 
               {genState === "error" && (
                 <div className="alert-error flex gap-2">

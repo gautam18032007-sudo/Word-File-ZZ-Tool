@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Users, LayoutDashboard, Award, Scroll } from "lucide-react";
+import { FileText, Users, LayoutDashboard, Award, Scroll, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -11,6 +11,13 @@ const navItems = [
   { href: "/employee", label: "Employee Contract", icon: Users },
   { href: "/certificate", label: "Certificate", icon: Award },
   { href: "/lor", label: "LOR", icon: Scroll },
+];
+
+const aiItems = [
+  { href: "/ai-workspace/brand", label: "Brand Assistant", icon: Sparkles },
+  { href: "/ai-workspace/employee", label: "Employee Assistant", icon: Sparkles },
+  { href: "/ai-workspace/certificate", label: "Certificate Assistant", icon: Sparkles },
+  { href: "/ai-workspace/lor", label: "LOR Assistant", icon: Sparkles },
 ];
 
 export function Sidebar() {
@@ -34,6 +41,22 @@ export function Sidebar() {
           Generate
         </p>
         {navItems.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            className={cn("nav-item", (href === "/" ? pathname === "/" : pathname.startsWith(href)) && "active")}
+          >
+            <Icon size={15} />
+            <span>{label}</span>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mb-3">
+        <p className="px-2 text-[10px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-1">
+          AI Workspace
+        </p>
+        {aiItems.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}

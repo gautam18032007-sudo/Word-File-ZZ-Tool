@@ -127,6 +127,13 @@ const ALIASES = {
     'additional notes',
     'any other info',
   ],
+  pronounPreference: [
+    'preferred pronoun',
+    'pronoun',
+    'pronoun preference',
+    'preferred pronouns',
+    'gender'
+  ],
   declaration: ['employee declaration', 'declaration', 'i agree', 'accept'],
 } as const;
 
@@ -218,6 +225,7 @@ export async function GET(req: NextRequest) {
     projects:         findColIndex(rawHeaders, ALIASES.projects as unknown as string[]),
     strengths:        findColIndex(rawHeaders, ALIASES.strengths as unknown as string[]),
     additionalInfo:   findColIndex(rawHeaders, ALIASES.additionalInfo as unknown as string[]),
+    pronounPreference: findColIndex(rawHeaders, ALIASES.pronounPreference as unknown as string[]),
     declaration:      findColIndex(rawHeaders, ALIASES.declaration as unknown as string[]),
   };
 
@@ -237,6 +245,7 @@ export async function GET(req: NextRequest) {
       projects:         cell(r, colIdx.projects),
       strengths:        cell(r, colIdx.strengths),
       additionalInfo:   cell(r, colIdx.additionalInfo),
+      pronounPreference: cell(r, colIdx.pronounPreference),
       declaration:      cell(r, colIdx.declaration),
     }))
     .filter((r) => r.employeeName !== '');

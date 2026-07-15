@@ -1,5 +1,46 @@
 import { LorDraftPayload } from './ollama';
 
+/**
+ * Remove trailing periods and trim text to avoid double-punctuation
+ */
+function cleanPunctuation(text: string): string {
+  if (!text) return "";
+  return text.trim().replace(/\.+$/, "").trim();
+}
+
+/**
+ * Perform a lightweight first-person -> third-person conversion step
+ * on candidate inputs.
+ */
+function convertToThirdPerson(text: string): string {
+  if (!text) return "";
+  let cleaned = text.trim();
+
+  // Replace common first-person patterns
+  cleaned = cleaned
+    .replace(/\bI've\b/gi, "they have")
+    .replace(/\bI'm\b/gi, "they are")
+    .replace(/\bI am\b/gi, "they are")
+    .replace(/\bI was\b/gi, "they were")
+    .replace(/\bI have\b/gi, "they have")
+    .replace(/\bI did\b/gi, "they did")
+    .replace(/\bI worked\b/gi, "they worked")
+    .replace(/\bI managed\b/gi, "they managed")
+    .replace(/\bI handled\b/gi, "they handled")
+    .replace(/\bI coordinated\b/gi, "they coordinated")
+    .replace(/\bI learned\b/gi, "they learned")
+    .replace(/\bI contributed\b/gi, "they contributed")
+    .replace(/\bI assisted\b/gi, "they assisted")
+    .replace(/\bmy\b/gi, "their")
+    .replace(/\bme\b/gi, "them");
+
+  // Capitalize sentence-starting "I"
+  cleaned = cleaned.replace(/(?:^|[.!?]\s+)\bI\b/g, (match) => match.replace("I", "They"));
+  cleaned = cleaned.replace(/\bI\b/g, "they");
+
+  return cleaned;
+}
+
 export function generateFallbackLorDraft(payload: LorDraftPayload): string {
   const {
     fullName,
@@ -37,26 +78,41 @@ export function generateFallbackLorDraft(payload: LorDraftPayload): string {
   const formattedLwd = formatDateFmt(lastWorkingDate);
 
   // 1. Introduction Paragraph
-  const intro = `This letter serves as a professional recommendation for ${fullName}, who was associated with Bohemian Curations Private Limited (ZenZebra) as a ${designation} ${deptLabel}. ${fullName} worked with the company under the employment type of ${typeLabel} from ${formattedJoining} to ${formattedLwd}. During this tenure, ${fullName} demonstrated dedication and carried out all assigned tasks with a high degree of professionalism.`;
+  const intro = `This letter serves as a professional recommendation for ${fullName}, who was associated with Bohemian Curations Private Limited (ZenZebra) as a ${designation} ${deptLabel}. ${fullName} worked with the company under the employment type of ${typeLabel} from ${formattedJoining} to ${formattedLwd}. During this tenure, they demonstrated dedication and carried out all assigned tasks with a high degree of professionalism.`;
 
-  // 2. Responsibilities Paragraph
-  const responsibilitiesPara = responsibilities && responsibilities.trim() && responsibilities !== 'N/A'
-    ? `In the role of ${designation}, ${fullName} was responsible for key areas including: ${responsibilities.trim()}. These duties were executed with diligence and attention to detail, ensuring alignment with organizational requirements.`
-    : `In the role of ${designation}, ${fullName} handled the standard responsibilities aligned with the position's professional requirements. The core duties were performed consistently, demonstrating a steady focus and reliable output.`;
+  // 2. Responsibilities Paragraph (pronoun "they" used to avoid name repetition, clean first person, clean double periods)
+  const cleanResponsibilities = cleanPunctuation(convertToThirdPerson(responsibilities || ""));
+  const responsibilitiesPara = cleanResponsibilities && cleanResponsibilities !== 'N/A'
+    ? `In the role of ${designation}, they were responsible for key areas including: ${cleanResponsibilities}. These duties were executed with diligence and attention to detail, ensuring alignment with organizational requirements.`
+    : `In the role of ${designation}, they handled the standard responsibilities aligned with the position's professional requirements. The core duties were performed consistently, demonstrating a steady focus and reliable output.`;
 
-  // 3. Projects Paragraph
-  const projectsPara = projects && projects.trim() && projects !== 'N/A'
-    ? `Additionally, ${fullName} was actively involved in key projects and tasks, notably: ${projects.trim()}. The execution of these tasks contributed positively to the team's progress and project milestones.`
-    : `Additionally, ${fullName} contributed to various operational tasks and team initiatives. These efforts supported ongoing workflows and maintained the overall productivity of the department.`;
+  // 3. Projects Paragraph (pronoun "they" used, clean first person, clean double periods)
+  const cleanProjects = cleanPunctuation(convertToThirdPerson(projects || ""));
+  const projectsPara = cleanProjects && cleanProjects !== 'N/A'
+    ? `Additionally, they were actively involved in key projects and tasks, notably: ${cleanProjects}. The execution of these tasks contributed positively to the team's progress and project milestones.`
+    : `Additionally, they contributed to various operational tasks and team initiatives. These efforts supported ongoing workflows and maintained the overall productivity of the department.`;
 
-  // 4. Strengths Paragraph
-  const strengthsPara = strengths && strengths.trim() && strengths !== 'N/A'
-    ? `Throughout the tenure, ${fullName} demonstrated key professional strengths, specifically: ${strengths.trim()}. These qualities were visible in daily interactions and collaborative efforts within the team.`
-    : `Throughout the tenure, ${fullName} demonstrated a positive attitude, adaptability, and a willingness to learn. These attributes supported overall performance and integration into the company's culture.`;
+  // 4. Strengths Paragraph (pronoun "they" used, clean first person, clean double periods)
+  const cleanStrengths = cleanPunctuation(convertToThirdPerson(strengths || ""));
+  let strengthsText = cleanStrengths && cleanStrengths !== 'N/A'
+    ? `Throughout their tenure, they demonstrated key professional strengths, specifically: ${cleanStrengths}.`
+    : `Throughout their tenure, they demonstrated a positive attitude, adaptability, and a willingness to learn.`;
 
-  // 5. Conclusion Paragraph
-  const extraInfo = additionalInfo && additionalInfo.trim() && additionalInfo !== 'N/A' ? ` Note: ${additionalInfo.trim()}` : '';
-  const conclusion = `We appreciate the efforts and contributions made by ${fullName} during the employment period and wish them success in all future academic and professional endeavors.${extraInfo}`;
+  // Conditionally include strengths sentences based on additionalInfo (avoid raw text leakage)
+  if (additionalInfo) {
+    const lower = additionalInfo.toLowerCase();
+    if (lower.includes("teamwork") || lower.includes("collaborat")) {
+      strengthsText += " They worked exceptionally well in team environments, fostering a collaborative spirit.";
+    } else if (lower.includes("punctual") || lower.includes("time")) {
+      strengthsText += " Their punctuality and consistent time management were highly appreciated.";
+    } else if (lower.includes("learn") || lower.includes("curious")) {
+      strengthsText += " They also displayed a strong willingness to learn and adapt to new challenges.";
+    }
+  }
+  const strengthsPara = cleanPunctuation(strengthsText) + ".";
+
+  // 5. Conclusion Paragraph (no name repetition, raw additionalInfo note removed completely)
+  const conclusion = `We appreciate the efforts and contributions made by them during the employment period and wish them success in all future academic and professional endeavors.`;
 
   return [intro, responsibilitiesPara, projectsPara, strengthsPara, conclusion].join('\n\n');
 }

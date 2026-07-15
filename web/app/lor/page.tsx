@@ -21,6 +21,7 @@ interface Candidate {
   projects: string;
   strengths: string;
   additionalInfo: string;
+  pronounPreference?: string;
 }
 
 interface GenerateResult {
@@ -89,6 +90,7 @@ export default function LorPage() {
   const [lastWorkingDate, setLastWorkingDate] = useState("");
   const [email, setEmail] = useState("");
   const [employmentType, setEmploymentType] = useState("Intern");
+  const [pronounMode, setPronounMode] = useState<"auto" | "male" | "female" | "they" | "neutral">("neutral");
 
   // AI Context fields
   const [responsibilities, setResponsibilities] = useState("");
@@ -150,6 +152,15 @@ export default function LorPage() {
       setStrengths(candidate.strengths || "");
       setAdditionalInfo(candidate.additionalInfo || "");
 
+      let pref: "auto" | "male" | "female" | "they" | "neutral" = "neutral";
+      const rawPref = (candidate.pronounPreference || "").trim().toLowerCase();
+      if (rawPref.includes("male") || rawPref === "he") pref = "male";
+      else if (rawPref.includes("female") || rawPref === "she") pref = "female";
+      else if (rawPref.includes("they") || rawPref.includes("them")) pref = "they";
+      else if (rawPref.includes("neutral")) pref = "neutral";
+      else if (rawPref.includes("auto")) pref = "auto";
+      setPronounMode(pref);
+
       // Reset AI draft state
       setAiDraft(null);
       setFinalDraft("");
@@ -190,6 +201,7 @@ export default function LorPage() {
           strengths,
           additionalInfo,
           employmentType,
+          pronounPreference: pronounMode,
         }),
       });
 
@@ -396,7 +408,7 @@ export default function LorPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   <div className="space-y-1.5">
                     <Label>Department</Label>
                     <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Backend" />
@@ -408,6 +420,20 @@ export default function LorPage() {
                   <div className="space-y-1.5">
                     <Label>Personal Email</Label>
                     <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. name@mail.com" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Preferred Pronoun</Label>
+                    <select
+                      value={pronounMode}
+                      onChange={(e) => setPronounMode(e.target.value as any)}
+                      className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    >
+                      <option value="neutral">Neutral Professional</option>
+                      <option value="auto">Auto Detect</option>
+                      <option value="male">He / Him</option>
+                      <option value="female">She / Her</option>
+                      <option value="they">They / Them</option>
+                    </select>
                   </div>
                 </div>
 

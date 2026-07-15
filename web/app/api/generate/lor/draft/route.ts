@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateLorDraftWithOllama, LorDraftPayload } from "@/lib/ollama";
 import { generateFallbackLorDraft } from "@/lib/lorFallback";
+import { recordAnalytics } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 import { writableDir } from "@/lib/paths";
 import path from "path";
@@ -9,10 +10,10 @@ import fs from "fs";
 interface CacheEntry {
   draft: string;
   source: string;
+  model: string;
   timestamp: number;
 }
 
-// In-memory cache for generated recommendation drafts
 const draftCache = new Map<string, CacheEntry>();
 
 function logOllamaError(errorMsg: string) {
@@ -23,7 +24,7 @@ function logOllamaError(errorMsg: string) {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     fs.appendFileSync(logFile, `[${timestamp}] ${errorMsg}\n`, "utf-8");
   } catch (e) {
-    // Silently ignore error log failures to avoid disrupting LOR compile flow
+    // Silently ignore error log failures
   }
 }
 
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
       designation,
       joiningDate,
       lastWorkingDate,
+      pronounPreference
     } = payload;
 
     if (!fullName || !designation || !joiningDate || !lastWorkingDate) {
@@ -47,7 +49,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate a unique serialized key based on the employee details
+    recordAnalytics("totalRequests");
+    const modelName = (process.env.OLLAMA_MODEL_LOR || "qwen3:32b").trim();
+
+    // Generate a unique serialized key including pronoun preference
     const cacheKey = JSON.stringify({
       fullName: (fullName || "").trim(),
       designation: (designation || "").trim(),
@@ -59,16 +64,23 @@ export async function POST(req: NextRequest) {
       projects: (payload.projects || "").trim(),
       strengths: (payload.strengths || "").trim(),
       additionalInfo: (payload.additionalInfo || "").trim(),
+      pronounPreference: (pronounPreference || "neutral").trim(),
     });
 
     // Check memory cache
     const cached = draftCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < 300000) { // 5 minutes caching window
       logger.gen(`[api/generate/lor/draft] Returning cached draft for: ${fullName}`);
+      recordAnalytics("cacheHits");
       return NextResponse.json({
         success: true,
         source: cached.source,
-        draft: cached.draft
+        draft: cached.draft,
+        metadata: {
+          generatedBy: cached.source,
+          model: cached.model,
+          generatedAt: new Date(cached.timestamp).toISOString()
+        }
       });
     }
 
@@ -76,38 +88,55 @@ export async function POST(req: NextRequest) {
       logger.gen(`[api/generate/lor/draft] Attempting Ollama draft generation for: ${fullName}`);
       const draft = await generateLorDraftWithOllama(payload);
       
+      const now = Date.now();
       // Cache the Ollama response
       draftCache.set(cacheKey, {
         draft,
         source: "ollama",
-        timestamp: Date.now()
+        model: modelName,
+        timestamp: now
       });
+
+      recordAnalytics("ollamaSuccess");
 
       return NextResponse.json({
         success: true,
         source: "ollama",
-        draft
+        draft,
+        metadata: {
+          generatedBy: "ollama",
+          model: modelName,
+          generatedAt: new Date(now).toISOString()
+        }
       });
     } catch (err: any) {
       const errMsg = err.message || String(err);
       logger.error(`[api/generate/lor/draft] Ollama generation failed, falling back to deterministic template. Error: ${errMsg}`);
       
-      // Log local error info to gitignored errors log
       logOllamaError(errMsg);
 
       const draft = generateFallbackLorDraft(payload);
+      const now = Date.now();
 
       // Cache fallback response to prevent rapid repeated server attempts
       draftCache.set(cacheKey, {
         draft,
         source: "template",
-        timestamp: Date.now()
+        model: "deterministic-fallback",
+        timestamp: now
       });
+
+      recordAnalytics("fallbackUsage");
 
       return NextResponse.json({
         success: true,
         source: "template",
-        draft
+        draft,
+        metadata: {
+          generatedBy: "template",
+          model: "deterministic-fallback",
+          generatedAt: new Date(now).toISOString()
+        }
       });
     }
   } catch (err: any) {

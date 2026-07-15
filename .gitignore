@@ -33,3 +33,6 @@ __pycache__/
 # Archived legacy files
 .legacy_trash/
 
+# Logs directory
+logs/
+
