@@ -5,12 +5,7 @@ import { getAnalytics } from "@/lib/analytics";
 export async function GET() {
   const ollamaUrl = (process.env.OLLAMA_URL || "http://localhost:11434").trim().replace(/\/$/, "");
   
-  const models = {
-    employee: (process.env.OLLAMA_MODEL_EMPLOYEE || "qwen3:14b").trim(),
-    brand: (process.env.OLLAMA_MODEL_BRAND || "qwen3:14b").trim(),
-    lor: (process.env.OLLAMA_MODEL_LOR || "qwen3:32b").trim(),
-    certificate: (process.env.OLLAMA_MODEL_CERTIFICATE || "qwen3:14b").trim(),
-  };
+  const model = (process.env.OLLAMA_MODEL_LOR || "qwen3:32b").trim();
 
   logger.gen(`[Health Check] Checking Ollama connectivity at URL: ${ollamaUrl}`);
 
@@ -37,13 +32,9 @@ export async function GET() {
     const installedModels = data.models || [];
     const installedNames = installedModels.map((m: any) => m.name);
 
-    // Map each module to whether its configured model is present
-    const modelFound = {
-      employee: installedNames.some((name: string) => name === models.employee || name.startsWith(`${models.employee}:`)),
-      brand: installedNames.some((name: string) => name === models.brand || name.startsWith(`${models.brand}:`)),
-      lor: installedNames.some((name: string) => name === models.lor || name.startsWith(`${models.lor}:`)),
-      certificate: installedNames.some((name: string) => name === models.certificate || name.startsWith(`${models.certificate}:`)),
-    };
+    const modelFound = installedNames.some(
+      (name: string) => name === model || name.startsWith(`${model}:`)
+    );
 
     // Calculate cache hit rate safely
     const cacheHitRate = analytics.totalRequests > 0 
@@ -53,7 +44,7 @@ export async function GET() {
     return NextResponse.json({
       connected: true,
       responseTime: `${responseTimeMs}ms`,
-      configuredModels: models,
+      configuredModel: model,
       installedModels: installedNames,
       modelFoundStatus: modelFound,
       analytics: {

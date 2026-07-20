@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound, RotateCw, Sparkles } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, Award, Loader2, Search, Upload, FileText, Trash2, KeyRound, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SheetLoader } from "@/components/shared/SheetLoader";
-import Link from "next/link";
 
 interface CertificateCandidate {
   fullName: string;
@@ -358,7 +357,7 @@ export default function CertificatePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-[340px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
         {/* ── LEFT PANEL ── */}
         <div className="space-y-4">
           <Card>
@@ -463,7 +462,7 @@ export default function CertificatePage() {
                 <Label>Designation</Label>
                 <Input value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="e.g. Maverick Intern" />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label>Joining Date</Label>
                   <Input type="date" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
@@ -486,7 +485,7 @@ export default function CertificatePage() {
                 Select Template
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <Label>Certificate Template</Label>
@@ -675,13 +674,6 @@ export default function CertificatePage() {
                   "Generate Certificate"
                 )}
               </Button>
-
-              <Link href="/ai-workspace/certificate" className="block w-full">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-1.5 text-xs text-indigo-700 border-indigo-200 hover:bg-indigo-50">
-                  <Sparkles size={13} />
-                  Open AI Suggestion Assistant
-                </Button>
-              </Link>
 
               {genState === "error" && (
                 <div className="alert-error flex gap-2">

@@ -22,6 +22,7 @@ interface Candidate {
   strengths: string;
   additionalInfo: string;
   pronounPreference?: string;
+  declaration?: string;
 }
 
 interface GenerateResult {
@@ -107,6 +108,7 @@ export default function LorPage() {
   const [finalDraft, setFinalDraft] = useState("");
   const [edited, setEdited] = useState(false);
   const [generatedBy, setGeneratedBy] = useState<"ollama" | "template" | "manual">("manual");
+  const [usedModel, setUsedModel] = useState<string>("");
 
   // Status states
   const [draftState, setDraftState] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -172,6 +174,18 @@ export default function LorPage() {
     }
   };
 
+  // Declaration consent evaluation
+  const selectedCandidate = selectedIdx >= 0 && selectedIdx < candidates.length ? candidates[selectedIdx] : null;
+
+  const isConsentMissing = (() => {
+    if (!selectedCandidate) return false;
+    const decl = selectedCandidate.declaration;
+    if (decl === undefined || decl === null || decl.trim() === "") return false;
+    const clean = decl.trim().toLowerCase();
+    const isAgreed = clean === "i agree" || clean === "yes" || clean === "agreed" || clean === "true" || clean.includes("i agree") || clean.includes("i confirm") || clean.includes("accurate");
+    return !isAgreed;
+  })();
+
   // 3. Track Draft Changes for Audit Trail
   const handleFinalDraftChange = (newVal: string) => {
     setFinalDraft(newVal);
@@ -217,6 +231,9 @@ export default function LorPage() {
         setAiDraft(data.draft);
         setFinalDraft(data.draft);
         setGeneratedBy(data.source || "manual");
+        if (data.metadata?.model) {
+          setUsedModel(data.metadata.model);
+        }
         setEdited(false);
         setDraftState("done");
       }
@@ -323,11 +340,11 @@ export default function LorPage() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">LOR Generator Workspace</h1>
         <p className="text-[var(--muted-foreground)] text-sm mt-1">
-          Draft recommendation letters using Gemini and compile them into DOCX/PDF formats.
+          Draft recommendation letters using Ollama and compile them into DOCX/PDF formats.
         </p>
       </div>
 
-      <div className="grid grid-cols-[340px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
         {/* ── LEFT PANEL ── */}
         <div className="space-y-4">
           <Card>
@@ -344,6 +361,13 @@ export default function LorPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 disabled={loadingCandidates || candidates.length === 0}
               />
+
+              {selectedCandidate && isConsentMissing && (
+                <div className="border border-amber-200 bg-amber-50 rounded-md p-3 text-xs text-amber-800 flex items-start gap-2">
+                  <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
+                  <span>This candidate has not confirmed the Employee Declaration — LOR generation is disabled until they do.</span>
+                </div>
+              )}
 
               {loadingCandidates ? (
                 <div className="flex items-center justify-center py-8 text-xs text-[var(--muted-foreground)]">
@@ -386,7 +410,7 @@ export default function LorPage() {
         </div>
 
         {/* ── CENTER + RIGHT PANELS ── */}
-        <div className="grid grid-cols-[1fr_320px] gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
           {/* ── CENTER PANEL (FORM & EDITOR) ── */}
           <div className="space-y-4">
             <Card>
@@ -397,7 +421,14 @@ export default function LorPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                {isConsentMissing && (
+                  <div className="border border-amber-200 bg-amber-50 rounded-md p-3 text-xs text-amber-800 flex items-start gap-2">
+                    <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
+                    <span>This candidate has not confirmed the Employee Declaration — LOR generation is disabled until they do.</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label>Full Name</Label>
                     <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="e.g. Rahul Kumar" />
@@ -408,7 +439,7 @@ export default function LorPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-1.5">
                     <Label>Department</Label>
                     <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Backend" />
@@ -437,7 +468,7 @@ export default function LorPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label>Date of Joining</Label>
                     <Input type="date" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
@@ -459,7 +490,7 @@ export default function LorPage() {
                     <Label>Key Projects/Tasks</Label>
                     <Input value={projects} onChange={(e) => setProjects(e.target.value)} placeholder="e.g. Unified payment gateway, resolved concurrency bugs..." />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label>Key Strengths</Label>
                       <Input value={strengths} onChange={(e) => setStrengths(e.target.value)} placeholder="e.g. Quick learner, diligent, problem solver..." />
@@ -475,7 +506,7 @@ export default function LorPage() {
                   <Button
                     className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
                     onClick={handleGenerateDraft}
-                    disabled={draftState === "loading" || !fullName}
+                    disabled={draftState === "loading" || !fullName || isConsentMissing}
                   >
                     {draftState === "loading" ? (
                       <>
@@ -573,7 +604,7 @@ export default function LorPage() {
                   <div className="flex justify-between">
                     <span className="text-[var(--muted-foreground)]">Model:</span>
                     <span className="font-semibold text-indigo-600">
-                      {generatedBy === "ollama" ? "Qwen3:8b" : generatedBy === "template" ? "Template" : "Manual"}
+                      {generatedBy === "ollama" ? (usedModel || "Qwen3:32b") : generatedBy === "template" ? "Template" : "Manual"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -588,7 +619,7 @@ export default function LorPage() {
                   <Button
                     className="w-full bg-[var(--foreground)] hover:bg-[var(--foreground)]/90 text-[var(--background)] font-medium"
                     onClick={handleGenerateLor}
-                    disabled={genState === "loading" || !fullName || !finalDraft.trim()}
+                    disabled={genState === "loading" || !fullName || !finalDraft.trim() || isConsentMissing}
                   >
                     {genState === "loading" ? (
                       <>

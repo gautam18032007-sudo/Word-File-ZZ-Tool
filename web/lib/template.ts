@@ -327,6 +327,14 @@ function fillTags(xml: string, data: Record<string, string>): string {
     const val = data[key];
     if (val === undefined || val === '') return '';
 
+    if (key === 'FINAL_DRAFT') {
+      const paragraphs = val.split(/\r?\n\r?\n|\r?\n/);
+      return paragraphs
+        .map(p => escapeXml(p.trim()))
+        .filter(Boolean)
+        .join('</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="290" w:lineRule="auto" w:before="140"/><w:ind w:left="137" w:right="702"/><w:jc w:val="both"/></w:pPr><w:r><w:t xml:space="preserve">');
+    }
+
     const noBoldKeys = [
       'HE_SHE', 'HIM_HER', 'HIS_HER', 'HE', 'HIM', 'HIS', 'SHE', 'HER',
       'PRONOUN_SUBJECT', 'PRONOUN_SUBJECT_CAP',

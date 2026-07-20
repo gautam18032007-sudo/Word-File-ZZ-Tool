@@ -14,7 +14,7 @@ function Select({
     <div className="relative w-full">
       <select
         className={cn(
-          "flex h-9 w-full rounded-md border border-[var(--input)] bg-transparent pl-3 pr-8 py-1 text-sm shadow-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-50 appearance-none cursor-pointer",
+          "flex h-11 md:h-9 w-full rounded-md border border-[var(--input)] bg-transparent pl-3 pr-8 py-1 text-sm shadow-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-50 appearance-none cursor-pointer",
           className
         )}
         value={value}
@@ -24,7 +24,7 @@ function Select({
       >
         {children}
       </select>
-      <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 opacity-50 pointer-events-none" />
+      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
     </div>
   )
 }

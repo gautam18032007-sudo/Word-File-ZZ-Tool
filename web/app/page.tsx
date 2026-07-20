@@ -124,7 +124,7 @@ export default function DashboardPage() {
       )}
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
@@ -191,7 +191,7 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {loading && (
             <div className="py-12 text-center text-sm text-[var(--muted-foreground)]">Loading…</div>
           )}
@@ -259,7 +259,7 @@ export default function DashboardPage() {
 
       {/* Additional Certificate Analytics */}
       {!loading && certificateCount > 0 && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">

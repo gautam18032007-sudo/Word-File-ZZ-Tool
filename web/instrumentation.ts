@@ -7,5 +7,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 export async function register() {
-  dotenv.config({ path: path.resolve(process.cwd(), "../.env"), override: false });
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    dotenv.config({ path: path.resolve(process.cwd(), "../.env"), override: false });
+  }
 }

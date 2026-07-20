@@ -16,11 +16,21 @@ export interface LorDraftPayload {
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+function formatDateMMM_YYYY(dateStr: string): string {
+  if (!dateStr) return '';
+  const clean = dateStr.trim();
+  const d = new Date(clean.includes('T') ? clean : clean + 'T00:00:00');
+  if (isNaN(d.getTime())) return clean;
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const year = d.getFullYear();
+  return `${month}, ${year}`;
+}
+
 export async function generateLorDraftWithOllama(
   payload: LorDraftPayload
 ): Promise<string> {
   const ollamaUrl = (process.env.OLLAMA_URL || 'http://localhost:11434').trim().replace(/\/$/, '');
-  const modelName = (process.env.OLLAMA_MODEL || 'qwen3:8b').trim();
+  const modelName = (process.env.OLLAMA_MODEL_LOR || 'qwen3:32b').trim();
   const timeoutMs = process.env.OLLAMA_TIMEOUT_MS ? parseInt(process.env.OLLAMA_TIMEOUT_MS, 10) : 30000;
 
   // 1. Verify model is installed in local Ollama before sending prompt
@@ -46,62 +56,61 @@ export async function generateLorDraftWithOllama(
     logger.error(`[Ollama] Tags verification check warning: ${errMsg}. Proceeding to attempt actual generation once anyway.`);
   }
 
-  const prompt = `You are a senior HR Director.
+  const formattedJoining = formatDateMMM_YYYY(payload.joiningDate);
+  const formattedLwd = formatDateMMM_YYYY(payload.lastWorkingDate);
+  const periodLabel = (payload.employmentType || '').toLowerCase().includes('intern')
+    ? 'internship period'
+    : 'tenure';
 
-Write a professional Letter of Recommendation.
+  let pronounObj = 'them';
+  let pronounSubj = 'they';
+  let pronounPoss = 'their';
+  const pref = (payload.pronounPreference || '').toLowerCase().trim();
+
+  if (pref === 'female' || pref.includes('female') || pref === 'she' || pref === 'her') {
+    pronounObj = 'her';
+    pronounSubj = 'she';
+    pronounPoss = 'her';
+  } else if (pref === 'male' || pref.includes('male') || pref === 'he' || pref === 'him') {
+    pronounObj = 'him';
+    pronounSubj = 'he';
+    pronounPoss = 'his';
+  }
+
+  const prompt = `You are a senior HR Director at Bohemian Curations Private Limited (ZenZebra).
+
+Write a professional 4-paragraph Letter of Recommendation for the employee below, matching the reference structure and tone exactly.
+
+Write this the way an experienced HR professional would actually write it by hand — not by filling in a template. Vary sentence structure and length naturally across paragraphs; don't make every paragraph the same shape or length.
+
+Avoid stock corporate phrases like 'demonstrated dedication', 'high degree of professionalism', 'carried out assigned responsibilities diligently' unless they genuinely fit what was actually described — prefer specific, concrete language drawn from the Department/Team, Designation/Role, Responsibilities, and Projects fields over generic praise.
+
+Every field provided — Department/Team, Designation/Role, Responsibilities, Projects, Strengths, and Additional Information — should be reflected somewhere in the letter. If Additional Information contains something specific and factual (a promotion, an extension, a particular achievement), weave it naturally into whichever paragraph fits best rather than bolting it on as an obviously separate final sentence.
+
+REFERENCE STRUCTURE AND TONE (MATCH EXACTLY):
+Paragraph 1: "This is to certify that ${payload.fullName} was associated with Bohemian Curations Private Limited (ZenZebra) as a ${payload.designation} from ${formattedJoining} to ${formattedLwd}."
+Paragraph 2: During the tenure, describe key responsibilities and projects in flowing prose (3-4 sentences max).
+Paragraph 3: Throughout the internship/tenure, describe demonstrated qualities and strengths (2 sentences max). Blend strengths into natural sentences; do not itemize every keyword.
+Paragraph 4: "We appreciate the efforts and contributions made during the ${periodLabel} and wish ${pronounObj} success in all future academic and professional endeavors."
 
 Rules:
+- Do not include any meta-commentary, notes, headers, bullet points, or markdown. Output ONLY the 4-paragraph letter text.
+- If any input field contains first-person language ('I did X'), rewrite it in third person (${pronounSubj}/${pronounObj}).
+- Total length: 4 paragraphs, ~120-160 words total.
+- Use dates formatted as "MMM, YYYY" (e.g. "${formattedJoining}"). Do NOT use ordinal day format.
+- Do not fabricate achievements, awards, promotions, or roles.
 
-- Do not include any meta-commentary, instructions, or notes about how to use this letter. Output ONLY the letter body text.
-- If any input field contains first-person language (e.g. 'I did X'), rewrite it in third person as if describing the employee, not quoting them.
-- Do not repeat the candidate's full name more than twice in the entire letter — use pronouns after the first two mentions.
-- Use ONLY supplied information.
-- Use responsibilities as evidence.
-- Use projects as proof of contribution.
-- Use strengths as recommendation points.
-- Use additional information only if relevant.
-- Never invent achievements.
-- Never invent awards.
-- Never invent revenue numbers.
-- Never invent promotions.
-- Never invent certifications.
-- Never invent leadership roles.
-- Never fabricate achievements.
-- Never fabricate promotions.
-- Never fabricate certifications.
-- Never fabricate leadership positions.
-- Use professional HR language.
-- Write 4-6 paragraphs.
-- No headings.
-- No bullet points.
-- No markdown.
-- Return only recommendation text.
-
-Employee Details
-
+Employee Details:
 Name: ${payload.fullName}
-
-Department: ${payload.department}
-
+Department: ${payload.department || 'N/A'}
 Designation: ${payload.designation}
-
-Joining Date: ${payload.joiningDate}
-
-Last Working Date: ${payload.lastWorkingDate}
-
-Employment Type: ${payload.employmentType}
-
-Responsibilities:
-${payload.responsibilities || 'N/A'}
-
-Projects:
-${payload.projects || 'N/A'}
-
-Strengths:
-${payload.strengths || 'N/A'}
-
-Additional Information:
-${payload.additionalInfo || 'N/A'}
+Joining Date: ${formattedJoining}
+Last Working Date: ${formattedLwd}
+Employment Type: ${payload.employmentType || 'Intern'}
+Responsibilities: ${payload.responsibilities || 'N/A'}
+Projects: ${payload.projects || 'N/A'}
+Strengths: ${payload.strengths || 'N/A'}
+Additional Info: ${payload.additionalInfo || 'N/A'}
 
 Generate the recommendation letter.`;
 
@@ -170,11 +179,11 @@ Generate the recommendation letter.`;
     }
   }
 
-  // 3. Reject if the response is under ~150 words
+  // 3. Reject if the response is under ~90 words
   const wordCount = trimmedResponse.split(/\s+/).length;
-  if (wordCount < 150) {
-    logger.error(`[Ollama] Validation failed: Response has only ${wordCount} words (minimum 150 required).`);
-    throw new Error("Validation failed: Draft is under 150 words");
+  if (wordCount < 90) {
+    logger.error(`[Ollama] Validation failed: Response has only ${wordCount} words (minimum 90 required).`);
+    throw new Error("Validation failed: Draft is under 90 words");
   }
 
   // 4. Reject if response contains forbidden markdown symbols

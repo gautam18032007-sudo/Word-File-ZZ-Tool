@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, AlertCircle, Download, FileText, Loader2, Sparkles } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,6 @@ import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/typ
 import { SheetLoader } from "@/components/shared/SheetLoader";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -76,7 +75,7 @@ function buildClause(
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function FieldRow({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-2 gap-3">{children}</div>;
+  return <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -244,7 +243,7 @@ export default function BrandPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-[340px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
         {/* ── LEFT COLUMN ─────────────────────────────────────── */}
         <div className="space-y-4">
           {/* Step 1 — Sheet Loader */}
@@ -510,13 +509,6 @@ export default function BrandPage() {
                 {genState === "loading" && <Loader2 size={15} className="animate-spin" />}
                 {genState === "loading" ? "Generating…" : "Generate Brand Contract"}
               </Button>
-
-              <Link href="/ai-workspace/brand" className="block w-full">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-1.5 text-xs text-indigo-700 border-indigo-200 hover:bg-indigo-50">
-                  <Sparkles size={13} />
-                  Open AI Suggestion Assistant
-                </Button>
-              </Link>
 
               {genState === "error" && (
                 <div className="alert-error flex gap-2">
