@@ -322,7 +322,7 @@ function escapeXml(s: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function fillTags(xml: string, data: Record<string, string>): string {
+function fillTags(xml: string, data: Record<string, string>, isLor = false): string {
   return xml.replace(/\{\{(\w+)\}\}/g, (_, key) => {
     const val = data[key];
     if (val === undefined || val === '') return '';
@@ -333,6 +333,10 @@ function fillTags(xml: string, data: Record<string, string>): string {
         .map(p => escapeXml(p.trim()))
         .filter(Boolean)
         .join('</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="290" w:lineRule="auto" w:before="140"/><w:ind w:left="137" w:right="702"/><w:jc w:val="both"/></w:pPr><w:r><w:t xml:space="preserve">');
+    }
+
+    if (isLor) {
+      return escapeXml(val);
     }
 
     const noBoldKeys = [
@@ -374,7 +378,8 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
     xml = preprocessBrandXml(xml);
   }
 
-  xml = fillTags(xml, data);
+  const isLor = templateFile.includes('lor');
+  xml = fillTags(xml, data, isLor);
 
   // Strip highlights and shadings (from runs)
   xml = stripHighlightAndShading(xml);
