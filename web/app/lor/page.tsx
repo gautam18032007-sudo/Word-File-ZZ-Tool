@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2, AlertCircle, Download, Loader2, Search, Sparkles } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, Loader2, Search, Sparkles, FileText, FileDown, History, UserCheck, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,20 @@ interface Candidate {
   additionalInfo: string;
   pronounPreference?: string;
   declaration?: string;
+}
+
+interface LorHistoryItem {
+  id: string;
+  lorNumber: string;
+  fullName: string;
+  designation: string;
+  department: string;
+  joiningDate: string;
+  lastWorkingDate: string;
+  generatedAt: string;
+  docxFile: string;
+  pdfFile: string | null;
+  generatedBy?: string;
 }
 
 interface GenerateResult {
@@ -77,11 +91,18 @@ function normalizeDateToYYYYMMDD(dateStr: string): string {
 }
 
 export default function LorPage() {
+  const [activeTab, setActiveTab] = useState<"sheet" | "history">("sheet");
+
+  // Sheet Candidates
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loadingCandidates, setLoadingCandidates] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(-1);
+
+  // LOR History
+  const [historyList, setHistoryList] = useState<LorHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   // Form fields
   const [fullName, setFullName] = useState("");
@@ -132,7 +153,21 @@ export default function LorPage() {
       }
     }
     fetchCandidates();
+    fetchHistory();
   }, []);
+
+  // Fetch LOR History
+  const fetchHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const res = await fetch("/api/lor/history");
+      if (res.ok) {
+        const data = await res.json();
+        setHistoryList(Array.isArray(data) ? data : []);
+      }
+    } catch {}
+    setLoadingHistory(false);
+  };
 
   // 2. Select Candidate Auto-Fill
   const handleSelectCandidate = (idx: number, filteredList: Candidate[]) => {
@@ -186,7 +221,7 @@ export default function LorPage() {
     return !isAgreed;
   })();
 
-  // 3. Track Draft Changes for Audit Trail
+  // 3. Track Draft Changes
   const handleFinalDraftChange = (newVal: string) => {
     setFinalDraft(newVal);
     if (aiDraft !== null) {
@@ -283,7 +318,7 @@ export default function LorPage() {
     const jDate = new Date(joiningDate);
     const lDate = new Date(lastWorkingDate);
     if (jDate > lDate) {
-      setGenError("Joining Date cannot be after Last Working Date");
+      setGenError("Joining Date cannot be after Last Working Date.");
       setGenState("error");
       return;
     }
@@ -315,6 +350,7 @@ export default function LorPage() {
 
       setGenResult(data);
       setGenState("done");
+      fetchHistory(); // Refresh history list
     } catch (err: any) {
       setGenError(err.message || String(err));
       setGenState("error");
@@ -328,7 +364,7 @@ export default function LorPage() {
     a.click();
   };
 
-  // Search filter
+  // Search filter for candidates
   const filteredCandidates = candidates.filter((c) => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return true;
@@ -336,72 +372,152 @@ export default function LorPage() {
   });
 
   return (
-    <div className="max-w-5xl space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">LOR Generator Workspace</h1>
-        <p className="text-[var(--muted-foreground)] text-sm mt-1">
-          Draft recommendation letters using Ollama and compile them into DOCX/PDF formats.
-        </p>
+    <div className="max-w-6xl space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">LOR Generator Workspace</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
+            Draft recommendation letters using Ollama AI and compile into 1-page DOCX & PDF formats.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="px-2.5 py-1 text-xs gap-1 font-mono">
+            <FileDown size={13} className="text-emerald-500" />
+            PDF Engine Ready
+          </Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
-        {/* ── LEFT PANEL ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+        {/* ── LEFT SIDEBAR: CANDIDATES & HISTORY TAB SWITCHER ── */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-[var(--muted-foreground)] font-mono text-xs">01</span>
-                Candidate Registry
-              </CardTitle>
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3 border-b border-[var(--border)] bg-[var(--muted)]/40">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <span className="text-[var(--muted-foreground)] font-mono text-xs">01</span>
+                  Select Candidate
+                </CardTitle>
+
+                {/* Tab Switcher */}
+                <div className="flex items-center p-0.5 bg-[var(--muted)] rounded-md border border-[var(--border)]">
+                  <button
+                    onClick={() => setActiveTab("sheet")}
+                    className={cn(
+                      "px-2.5 py-1 text-[11px] font-medium rounded transition-all cursor-pointer",
+                      activeTab === "sheet" ? "bg-[var(--background)] text-[var(--foreground)] shadow-xs" : "text-[var(--muted-foreground)]"
+                    )}
+                  >
+                    Registry ({candidates.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("history")}
+                    className={cn(
+                      "px-2.5 py-1 text-[11px] font-medium rounded transition-all cursor-pointer",
+                      activeTab === "history" ? "bg-[var(--background)] text-[var(--foreground)] shadow-xs" : "text-[var(--muted-foreground)]"
+                    )}
+                  >
+                    History ({historyList.length})
+                  </button>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3.5">
-              <Input
-                placeholder="Search candidates..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                disabled={loadingCandidates || candidates.length === 0}
-              />
 
-              {selectedCandidate && isConsentMissing && (
-                <div className="border border-amber-200 bg-amber-50 rounded-md p-3 text-xs text-amber-800 flex items-start gap-2">
-                  <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
-                  <span>This candidate has not confirmed the Employee Declaration — LOR generation is disabled until they do.</span>
-                </div>
-              )}
+            <CardContent className="p-3.5 space-y-3">
+              {activeTab === "sheet" ? (
+                <>
+                  <Input
+                    placeholder="Search candidate or title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    disabled={loadingCandidates || candidates.length === 0}
+                    className="h-9 text-xs"
+                  />
 
-              {loadingCandidates ? (
-                <div className="flex items-center justify-center py-8 text-xs text-[var(--muted-foreground)]">
-                  <Loader2 size={16} className="animate-spin mr-2" />
-                  Loading response sheets...
-                </div>
-              ) : loadError ? (
-                <div className="alert-error text-xs p-3 flex gap-2">
-                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                  <span>{loadError}</span>
-                </div>
-              ) : (
-                <div className="max-h-96 overflow-y-auto border border-[var(--border)] rounded-md divide-y divide-[var(--border)] bg-[var(--background)]">
-                  {filteredCandidates.length === 0 ? (
-                    <p className="p-3 text-center text-xs text-[var(--muted-foreground)]">No candidates found.</p>
+                  {selectedCandidate && isConsentMissing && (
+                    <div className="border border-amber-300 dark:border-amber-700/60 bg-amber-50 dark:bg-amber-950/40 rounded-md p-2.5 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+                      <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                      <span>Employee Declaration missing — generation is disabled until confirmed.</span>
+                    </div>
+                  )}
+
+                  {loadingCandidates ? (
+                    <div className="flex items-center justify-center py-8 text-xs text-[var(--muted-foreground)]">
+                      <Loader2 size={16} className="animate-spin mr-2" />
+                      Loading form responses...
+                    </div>
+                  ) : loadError ? (
+                    <div className="alert-error text-xs p-3 flex gap-2">
+                      <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                      <span>{loadError}</span>
+                    </div>
                   ) : (
-                    filteredCandidates.map((c, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleSelectCandidate(i, filteredCandidates)}
-                        className={cn(
-                          "w-full text-left px-3 py-2.5 text-xs flex justify-between items-center hover:bg-[var(--muted)] transition-colors",
-                          selectedIdx !== -1 && candidates[selectedIdx]?.employeeName === c.employeeName && "bg-[oklch(0.95_0_0)] border-l-2 border-[var(--foreground)]"
-                        )}
-                      >
-                        <div className="pr-2 truncate">
-                          <p className="font-semibold text-[var(--foreground)] truncate">{c.employeeName}</p>
-                          <p className="text-[10px] text-[var(--muted-foreground)] truncate">{c.designation}</p>
+                    <div className="max-h-[420px] overflow-y-auto border border-[var(--border)] rounded-md divide-y divide-[var(--border)] bg-[var(--background)]">
+                      {filteredCandidates.length === 0 ? (
+                        <p className="p-3 text-center text-xs text-[var(--muted-foreground)]">No candidates found.</p>
+                      ) : (
+                        filteredCandidates.map((c, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleSelectCandidate(i, filteredCandidates)}
+                            className={cn(
+                              "w-full text-left px-3 py-2.5 text-xs flex justify-between items-center hover:bg-[var(--muted)] transition-colors cursor-pointer",
+                              selectedIdx !== -1 && candidates[selectedIdx]?.employeeName === c.employeeName && "bg-[var(--muted)] border-l-2 border-[var(--foreground)]"
+                            )}
+                          >
+                            <div className="pr-2 truncate">
+                              <p className="font-semibold text-[var(--foreground)] truncate">{c.employeeName}</p>
+                              <p className="text-[10px] text-[var(--muted-foreground)] truncate">{c.designation}</p>
+                            </div>
+                            <Badge variant="outline" className="shrink-0 text-[9px] uppercase tracking-wider">
+                              Intern
+                            </Badge>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* Generated History List */
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1">
+                    <span>Recent Generations</span>
+                    <button onClick={fetchHistory} className="hover:text-[var(--foreground)] transition cursor-pointer" title="Refresh">
+                      <RefreshCw size={12} className={loadingHistory ? "animate-spin" : ""} />
+                    </button>
+                  </div>
+
+                  {historyList.length === 0 ? (
+                    <p className="p-4 text-center text-xs text-[var(--muted-foreground)] border border-[var(--border)] rounded-md">
+                      No generated LOR history found.
+                    </p>
+                  ) : (
+                    <div className="max-h-[440px] overflow-y-auto border border-[var(--border)] rounded-md divide-y divide-[var(--border)] bg-[var(--background)]">
+                      {historyList.map((item) => (
+                        <div key={item.id} className="p-2.5 space-y-1.5 hover:bg-[var(--muted)]/50 transition">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold text-xs text-[var(--foreground)] truncate">{item.fullName}</p>
+                              <p className="text-[10px] text-[var(--muted-foreground)] font-mono">{item.lorNumber}</p>
+                            </div>
+                            <Badge variant="secondary" className="text-[9px] font-mono shrink-0">
+                              {item.generatedBy || "PDF"}
+                            </Badge>
+                          </div>
+                          
+                          <div className="flex gap-1.5 pt-1">
+                            <Button size="sm" variant="outline" className="flex-1 text-[10px] h-7 gap-1" onClick={() => downloadFile(item.docxFile)}>
+                              <Download size={11} /> DOCX
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1 text-[10px] h-7 gap-1 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900" onClick={() => downloadFile(item.pdfFile || item.docxFile.replace(/\.docx$/, ".pdf"))}>
+                              <FileDown size={11} /> PDF
+                            </Button>
+                          </div>
                         </div>
-                        <Badge variant="outline" className="shrink-0 text-[9px] uppercase tracking-wider">
-                          Intern
-                        </Badge>
-                      </button>
-                    ))
+                      ))}
+                    </div>
                   )}
                 </div>
               )}
@@ -409,255 +525,244 @@ export default function LorPage() {
           </Card>
         </div>
 
-        {/* ── CENTER + RIGHT PANELS ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
-          {/* ── CENTER PANEL (FORM & EDITOR) ── */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+        {/* ── MAIN WORKSPACE: FORM, AI DRAFT, EDITOR & EXPORT ── */}
+        <div className="space-y-6">
+          {/* Candidate Information Form */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-[var(--border)]">
+              <CardTitle className="text-sm font-semibold flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <span className="text-[var(--muted-foreground)] font-mono text-xs">02</span>
-                  Candidate Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {isConsentMissing && (
-                  <div className="border border-amber-200 bg-amber-50 rounded-md p-3 text-xs text-amber-800 flex items-start gap-2">
-                    <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
-                    <span>This candidate has not confirmed the Employee Declaration — LOR generation is disabled until they do.</span>
-                  </div>
+                  Candidate & Tenure Details
+                </div>
+                {selectedCandidate && (
+                  <Badge variant="outline" className="text-[10px] gap-1 font-mono text-emerald-600 border-emerald-300">
+                    <UserCheck size={11} /> From Response Sheet
+                  </Badge>
                 )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label>Full Name</Label>
-                    <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="e.g. Rahul Kumar" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Designation</Label>
-                    <Input value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="e.g. Software Engineer" />
-                  </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Full Name *</Label>
+                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="e.g. Neha Sharma" />
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-1.5">
-                    <Label>Department</Label>
-                    <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Backend" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Employment Type</Label>
-                    <Input value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} placeholder="e.g. Intern" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Personal Email</Label>
-                    <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. name@mail.com" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Preferred Pronoun</Label>
-                    <select
-                      value={pronounMode}
-                      onChange={(e) => setPronounMode(e.target.value as any)}
-                      className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                      <option value="neutral">Neutral Professional</option>
-                      <option value="auto">Auto Detect</option>
-                      <option value="male">He / Him</option>
-                      <option value="female">She / Her</option>
-                      <option value="they">They / Them</option>
-                    </select>
-                  </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Designation / Role *</Label>
+                  <Input value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="e.g. Maverick Intern" />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label>Date of Joining</Label>
-                    <Input type="date" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Last Working Date</Label>
-                    <Input type="date" value={lastWorkingDate} onChange={(e) => setLastWorkingDate(e.target.value)} />
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Department</Label>
+                  <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Tech Team" />
                 </div>
-
-                <div className="border-t border-[var(--border)] pt-4 space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">AI drafting context</h4>
-                  
-                  <div className="space-y-1.5">
-                    <Label>Key Responsibilities</Label>
-                    <Input value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} placeholder="e.g. Managed databases, built REST APIs..." />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Key Projects/Tasks</Label>
-                    <Input value={projects} onChange={(e) => setProjects(e.target.value)} placeholder="e.g. Unified payment gateway, resolved concurrency bugs..." />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label>Key Strengths</Label>
-                      <Input value={strengths} onChange={(e) => setStrengths(e.target.value)} placeholder="e.g. Quick learner, diligent, problem solver..." />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label>Additional Information</Label>
-                      <Input value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)} placeholder="e.g. Extended tenure by 2 weeks..." />
-                    </div>
-                  </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Employment Type</Label>
+                  <Input value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} placeholder="e.g. Intern" />
                 </div>
-
-                <div className="pt-2">
-                  <Button
-                    className="w-full flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
-                    onClick={handleGenerateDraft}
-                    disabled={draftState === "loading" || !fullName || isConsentMissing}
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Personal Email</Label>
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@mail.com" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Pronoun Preference</Label>
+                  <select
+                    value={pronounMode}
+                    onChange={(e) => setPronounMode(e.target.value as any)}
+                    className="flex h-11 md:h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-xs shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   >
-                    {draftState === "loading" ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin" />
-                        Drafting with Ollama...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={14} />
-                        Generate AI Draft
-                      </>
-                    )}
-                  </Button>
+                    <option value="neutral">Neutral Professional</option>
+                    <option value="auto">Auto Detect</option>
+                    <option value="female">Female (She / Her)</option>
+                    <option value="male">Male (He / Him)</option>
+                    <option value="they">Neutral (They / Them)</option>
+                  </select>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card>
-              <CardHeader className="pb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Date of Joining *</Label>
+                  <Input type="date" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Last Working Date *</Label>
+                  <Input type="date" value={lastWorkingDate} onChange={(e) => setLastWorkingDate(e.target.value)} />
+                </div>
+              </div>
+
+              {/* AI Context Fields */}
+              <div className="border-t border-[var(--border)] pt-3.5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <span className="text-[var(--muted-foreground)] font-mono text-xs">03</span>
-                    Recommendation Draft Editor
-                  </CardTitle>
-                  <div className="flex gap-2">
-                    {generatedBy !== "manual" && (
-                      <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200">
-                        {generatedBy === "ollama" ? "Generated by Qwen" : "Generated by Template"}
-                      </Badge>
-                    )}
-                    {aiDraft && (
-                      <Badge variant={edited ? "outline" : "secondary"} className="text-[10px]">
-                        {edited ? "Edited Audit Trail" : "AI Original"}
-                      </Badge>
-                    )}
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                    <Sparkles size={12} className="text-indigo-500" />
+                    AI Drafting Context
+                  </h4>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Key Responsibilities</Label>
+                  <Input value={responsibilities} onChange={(e) => setResponsibilities(e.target.value)} placeholder="e.g. Managed database schemas, built REST APIs..." />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Key Projects / Achievements</Label>
+                  <Input value={projects} onChange={(e) => setProjects(e.target.value)} placeholder="e.g. Integrated payment gateway, reduced manual effort..." />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Key Strengths</Label>
+                    <Input value={strengths} onChange={(e) => setStrengths(e.target.value)} placeholder="e.g. Quick learner, problem solver..." />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Additional Info</Label>
+                    <Input value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)} placeholder="e.g. Promoted mid-internship..." />
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-3.5">
-                {draftState === "error" && draftError && (
-                  <div className="border border-amber-200 bg-amber-50 rounded-lg p-3 text-xs text-amber-800 flex gap-2">
-                    <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                    <span>{draftError}</span>
-                  </div>
-                )}
-                
-                <textarea
-                  className="w-full min-h-[300px] p-3 text-sm rounded-md border border-[var(--input)] bg-[var(--background)] focus:outline-none focus:ring-1 focus:ring-ring font-sans leading-relaxed resize-y"
-                  placeholder="Paste or write the recommendation letter body here manually, or generate draft using the AI context form above..."
-                  value={finalDraft}
-                  onChange={(e) => handleFinalDraftChange(e.target.value)}
-                />
-              </CardContent>
-            </Card>
-          </div>
+              </div>
 
-          {/* ── RIGHT PANEL (SIGNATORY & ACTIONS) ── */}
-          <div className="space-y-4">
+              <div className="pt-1">
+                <Button
+                  className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-xs"
+                  onClick={handleGenerateDraft}
+                  disabled={draftState === "loading" || !fullName || isConsentMissing}
+                >
+                  {draftState === "loading" ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      Drafting with Ollama AI...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={15} />
+                      Generate Humanized AI Draft
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recommendation Draft Editor */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-[var(--border)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <span className="text-[var(--muted-foreground)] font-mono text-xs">03</span>
+                  Recommendation Body Editor
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  {generatedBy !== "manual" && (
+                    <Badge variant="outline" className="text-[10px] bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
+                      {generatedBy === "ollama" ? `AI (${usedModel || "Qwen"})` : "Template Fallback"}
+                    </Badge>
+                  )}
+                  {aiDraft && (
+                    <Badge variant={edited ? "outline" : "secondary"} className="text-[10px]">
+                      {edited ? "Edited Draft" : "Original Draft"}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              {draftState === "error" && draftError && (
+                <div className="alert-error text-xs flex gap-2">
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                  <span>{draftError}</span>
+                </div>
+              )}
+
+              <textarea
+                className="w-full min-h-[260px] p-3.5 text-xs sm:text-sm rounded-md border border-[var(--input)] bg-[var(--background)] color-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-ring font-sans leading-relaxed resize-y shadow-xs"
+                placeholder="Write or edit recommendation letter content here..."
+                value={finalDraft}
+                onChange={(e) => handleFinalDraftChange(e.target.value)}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Authority & Generation Block */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-3 border-b border-[var(--border)]">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <span className="text-[var(--muted-foreground)] font-mono text-xs">04</span>
                   Authority Block
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3.5">
+              <CardContent className="p-4 space-y-3">
                 <div className="space-y-1.5">
-                  <Label>Signatory Name</Label>
+                  <Label className="text-xs">Signatory Name</Label>
                   <Input value={signatoryName} onChange={(e) => setSignatoryName(e.target.value)} placeholder="e.g. Tanmay Jain" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Signatory Role</Label>
+                  <Label className="text-xs">Signatory Role</Label>
                   <Input value={signatoryRole} onChange={(e) => setSignatoryRole(e.target.value)} placeholder="e.g. Co-Founder" />
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-3 border-b border-[var(--border)]">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <span className="text-[var(--muted-foreground)] font-mono text-xs">05</span>
-                  Document Status
+                  Export LOR (DOCX & PDF)
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="border border-[var(--border)] rounded-md p-3.5 bg-[oklch(0.99_0_0)] text-xs space-y-2">
+              <CardContent className="p-4 space-y-4">
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[var(--muted)]/30 text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Recipient:</span>
-                    <span className="font-semibold">{fullName || "(Select Candidate)"}</span>
+                    <span className="text-[var(--muted-foreground)]">Candidate:</span>
+                    <span className="font-semibold truncate max-w-[160px]">{fullName || "(Enter Name)"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Designation:</span>
-                    <span className="font-semibold">{designation || "N/A"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Model:</span>
-                    <span className="font-semibold text-indigo-600">
-                      {generatedBy === "ollama" ? (usedModel || "Qwen3:32b") : generatedBy === "template" ? "Template" : "Manual"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--muted-foreground)]">Status:</span>
-                    <Badge variant={genState === "done" ? "success" as any : "secondary"} className="text-[9px] font-mono tracking-wide py-0 px-1">
-                      {genState === "done" ? "Generated" : genState === "loading" ? "Compiling" : "Pending"}
-                    </Badge>
+                    <span className="text-[var(--muted-foreground)]">Layout:</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400">1-Page Guaranteed</span>
                   </div>
                 </div>
 
-                <div className="space-y-2.5">
-                  <Button
-                    className="w-full bg-[var(--foreground)] hover:bg-[var(--foreground)]/90 text-[var(--background)] font-medium"
-                    onClick={handleGenerateLor}
-                    disabled={genState === "loading" || !fullName || !finalDraft.trim() || isConsentMissing}
-                  >
-                    {genState === "loading" ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin mr-2" />
-                        Generating Files...
-                      </>
-                    ) : (
-                      "Generate Recommendation Letter"
-                    )}
-                  </Button>
-
-                  {genState === "error" && genError && (
-                    <div className="alert-error text-xs p-3 flex gap-2">
-                      <AlertCircle size={15} className="shrink-0 mt-0.5" />
-                      <span>{genError}</span>
-                    </div>
+                <Button
+                  className="w-full bg-[var(--foreground)] hover:bg-[var(--foreground)]/90 text-[var(--background)] font-medium shadow-xs"
+                  onClick={handleGenerateLor}
+                  disabled={genState === "loading" || !fullName || !finalDraft.trim() || isConsentMissing}
+                >
+                  {genState === "loading" ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin mr-2" />
+                      Compiling 1-Page DOCX & PDF...
+                    </>
+                  ) : (
+                    "Compile & Generate LOR"
                   )}
+                </Button>
 
-                  {genState === "done" && genResult && (
-                    <div className="alert-success space-y-3.5">
-                      <div className="flex items-center gap-2 font-semibold text-xs text-emerald-800">
-                        <CheckCircle2 size={14} className="shrink-0 text-emerald-600" />
-                        <span>{genResult.lorNumber} Created!</span>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2 pt-1">
-                        <Button size="sm" variant="outline" className="w-full flex items-center justify-center text-xs" onClick={() => downloadFile(genResult.docxFile)}>
-                          <Download size={13} className="mr-1.5" /> Download DOCX
-                        </Button>
-                        {genResult.pdfFile && (
-                          <Button size="sm" variant="outline" className="w-full flex items-center justify-center text-xs" onClick={() => downloadFile(genResult.pdfFile!)}>
-                            <Download size={13} className="mr-1.5" /> Download PDF
-                          </Button>
-                        )}
-                      </div>
+                {genState === "error" && genError && (
+                  <div className="alert-error text-xs flex gap-2">
+                    <AlertCircle size={15} className="shrink-0 mt-0.5" />
+                    <span>{genError}</span>
+                  </div>
+                )}
+
+                {genState === "done" && genResult && (
+                  <div className="alert-success space-y-3">
+                    <div className="flex items-center gap-2 font-semibold text-xs">
+                      <CheckCircle2 size={15} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <span>{genResult.lorNumber} Created Successfully!</span>
                     </div>
-                  )}
-                </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 cursor-pointer" onClick={() => downloadFile(genResult.docxFile)}>
+                        <Download size={13} /> DOCX
+                      </Button>
+                      <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 cursor-pointer text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfFile || genResult.docxFile.replace(/\.docx$/, ".pdf"))}>
+                        <FileDown size={13} /> PDF
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

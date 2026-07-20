@@ -424,7 +424,7 @@ export default function BrandPage() {
               )}
 
               <FieldRow>
-                {(location === "BOTH" || contractType === "SKU") && (
+                {location === "BOTH" && contractType === "SKU" && (
                   <Field label="No. of SKUs">
                     <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
                   </Field>
