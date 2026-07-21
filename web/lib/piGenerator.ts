@@ -1,7 +1,10 @@
 import ExcelJS from 'exceljs';
 import path from 'path';
 import fs from 'fs';
-import { xlsxToPdf, isLibreOfficeAvailable } from './pdf';
+import { xlsxToPdf } from './pdf';
+import { supportsLibreOffice, isVercel } from './environment';
+import { generatePdfFromHtml } from './pdfRenderer';
+import { renderProformaInvoiceHtml } from './documentHtmlRenderer';
 
 export interface PiGeneratorItem {
   description: string;
@@ -184,11 +187,18 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer());
 
   let pdfBuffer: Buffer | null = null;
-  if (isLibreOfficeAvailable()) {
+  if (supportsLibreOffice()) {
     try {
       pdfBuffer = xlsxToPdf(xlsxBuffer);
     } catch (e) {
-      console.warn('[generatePiWorkbook] PDF conversion skipped or failed:', e);
+      console.warn('[generatePiWorkbook] LibreOffice PDF conversion skipped or failed:', e);
+    }
+  } else if (isVercel()) {
+    try {
+      const html = renderProformaInvoiceHtml(input);
+      pdfBuffer = await generatePdfFromHtml(html);
+    } catch (e) {
+      console.warn('[generatePiWorkbook] Puppeteer PDF rendering skipped or failed:', e);
     }
   }
 

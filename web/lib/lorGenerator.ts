@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
-import { docxToPdf, isLibreOfficeAvailable } from './pdf';
+import { docxToPdf } from './pdf';
+import { supportsLibreOffice, isVercel } from './environment';
+import { generatePdfFromHtml } from './pdfRenderer';
+import { renderLorHtml } from './documentHtmlRenderer';
 
 import { writableDir } from './paths';
 
@@ -25,7 +28,8 @@ export interface GenerateLorResult {
   pdfFile: string | null;
 }
 
-export function generateLor(options: GenerateLorOptions): GenerateLorResult {
+export async function generateLor(options: GenerateLorOptions): Promise<GenerateLorResult> {
+
   const {
     fullName,
     designation,
@@ -104,9 +108,9 @@ export function generateLor(options: GenerateLorOptions): GenerateLorResult {
   // Write DOCX
   fs.writeFileSync(docxPath, docxBytes);
 
-  // 4. Convert to PDF using headless LibreOffice
+  // 4. Convert to PDF using headless LibreOffice or Puppeteer on Vercel
   let pdfSaved = false;
-  if (isLibreOfficeAvailable()) {
+  if (supportsLibreOffice()) {
     try {
       const pdfBytes = docxToPdf(docxBytes);
       fs.writeFileSync(pdfPath, pdfBytes);
@@ -114,9 +118,19 @@ export function generateLor(options: GenerateLorOptions): GenerateLorResult {
     } catch (err) {
       console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
     }
+  } else if (isVercel()) {
+    try {
+      const html = renderLorHtml(data);
+      const pdfBytes = await generatePdfFromHtml(html);
+      fs.writeFileSync(pdfPath, pdfBytes);
+      pdfSaved = true;
+    } catch (err) {
+      console.warn(`[generateLor] Puppeteer PDF rendering failed for ${lorNumber}, proceeding with DOCX only.`, err);
+    }
   } else {
-    console.log(`[generateLor] LibreOffice unavailable or Vercel environment. Skipping PDF conversion for ${lorNumber}.`);
+    console.log(`[generateLor] LibreOffice and Vercel unavailable. Skipping PDF conversion for ${lorNumber}.`);
   }
+
 
   return {
     docxFile: docxFilename,

@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
-import { docxToPdf, isLibreOfficeAvailable, PdfError } from '@/lib/pdf';
+import { docxToPdf, PdfError } from '@/lib/pdf';
+import { supportsLibreOffice, isVercel } from '@/lib/environment';
+import { generatePdfFromHtml } from '@/lib/pdfRenderer';
+import { renderBrandContractHtml } from '@/lib/documentHtmlRenderer';
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
+
 
 import { appendContract } from '@/lib/store';
 import { formatINR, formatDate } from '@/lib/formatting';
@@ -208,9 +212,9 @@ export async function POST(req: NextRequest) {
     let pdfName: string | null = null;
     let message: string | undefined = undefined;
 
-    if (isLibreOfficeAvailable()) {
+    if (supportsLibreOffice()) {
       try {
-        logger.gen(`[API/generate/brand] Converting DOCX to PDF...`);
+        logger.gen(`[API/generate/brand] Converting DOCX to PDF via LibreOffice...`);
         const pdfBytes = docxToPdf(docxBytes);
         pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
@@ -218,12 +222,25 @@ export async function POST(req: NextRequest) {
       } catch (e) {
         if (!(e instanceof PdfError)) throw e;
         logger.error(`[API/generate/brand] PDF conversion failed (skipped): ${e.message}`);
-        message = 'PDF conversion available only in local environment.';
+        message = 'PDF generation unavailable.';
+      }
+    } else if (isVercel()) {
+      try {
+        logger.gen(`[API/generate/brand] Generating PDF via Puppeteer Chromium on Vercel...`);
+        const html = renderBrandContractHtml(data);
+        const pdfBytes = await generatePdfFromHtml(html);
+        pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
+        fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
+        logger.gen(`[API/generate/brand] Saved Puppeteer PDF: ${pdfName}`);
+      } catch (e) {
+        logger.error(`[API/generate/brand] Puppeteer PDF rendering failed: ${e}`);
+        message = 'PDF generation unavailable.';
       }
     } else {
-      message = 'PDF conversion available only in local environment.';
-      logger.gen(`[API/generate/brand] LibreOffice unavailable or Vercel environment. Skipping PDF conversion.`);
+      message = 'PDF generation unavailable.';
+      logger.gen(`[API/generate/brand] LibreOffice and Vercel unavailable. Skipping PDF conversion.`);
     }
+
 
     appendContract({
       contract_no: contractNo,

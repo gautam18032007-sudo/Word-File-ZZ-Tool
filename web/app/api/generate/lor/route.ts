@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     logger.gen(`[API/generate/lor] Allocated LOR sequence number: ${lorNumber}`);
 
     // 3. Generate LOR documents
-    const result = generateLor({
+    const result = await generateLor({
       fullName: fullName.trim(),
       designation: designation.trim(),
       department: (department || "").trim(),
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
       signatoryRole: (signatoryRole || "Co-Founder").trim(),
       lorNumber,
     });
+
 
     // 4. Save/Append history
     const record: LorHistoryRecord = {
