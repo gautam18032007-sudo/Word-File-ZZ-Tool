@@ -753,14 +753,21 @@ export default function LorPage() {
                       <span>{genResult.lorNumber} Created Successfully!</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 cursor-pointer" onClick={() => downloadFile(genResult.docxFile)}>
+                    <div className="flex gap-2 flex-wrap items-center pt-1">
+                      <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer" onClick={() => downloadFile(genResult.docxFile)}>
                         <Download size={13} /> DOCX
                       </Button>
-                      <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 cursor-pointer text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfFile || genResult.docxFile.replace(/\.docx$/, ".pdf"))}>
-                        <FileDown size={13} /> PDF
-                      </Button>
+                      {genResult.pdfFile ? (
+                        <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfFile!)}>
+                          <FileDown size={13} /> PDF
+                        </Button>
+                      ) : (
+                        <span className="text-xs text-[var(--muted-foreground)] self-center">
+                          PDF conversion available only in local environment.
+                        </span>
+                      )}
                     </div>
+
                   </div>
                 )}
               </CardContent>

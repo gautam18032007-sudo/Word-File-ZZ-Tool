@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
-import { docxToPdf, PdfError } from '@/lib/pdf';
+import { docxToPdf, isLibreOfficeAvailable, PdfError } from '@/lib/pdf';
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
+
 import { appendContract } from '@/lib/store';
 import { formatINR, formatDate } from '@/lib/formatting';
 import type { BrandRow, Location, ContractType } from '@/lib/types';
@@ -205,15 +206,23 @@ export async function POST(req: NextRequest) {
     logger.gen(`[API/generate/brand] Saved DOCX: ${docxName}`);
 
     let pdfName: string | null = null;
-    try {
-      logger.gen(`[API/generate/brand] Converting DOCX to PDF...`);
-      const pdfBytes = docxToPdf(docxBytes);
-      pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
-      fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
-      logger.gen(`[API/generate/brand] Saved PDF: ${pdfName}`);
-    } catch (e) {
-      if (!(e instanceof PdfError)) throw e;
-      logger.error(`[API/generate/brand] PDF conversion failed (skipped): ${e.message}`);
+    let message: string | undefined = undefined;
+
+    if (isLibreOfficeAvailable()) {
+      try {
+        logger.gen(`[API/generate/brand] Converting DOCX to PDF...`);
+        const pdfBytes = docxToPdf(docxBytes);
+        pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
+        fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
+        logger.gen(`[API/generate/brand] Saved PDF: ${pdfName}`);
+      } catch (e) {
+        if (!(e instanceof PdfError)) throw e;
+        logger.error(`[API/generate/brand] PDF conversion failed (skipped): ${e.message}`);
+        message = 'PDF conversion available only in local environment.';
+      }
+    } else {
+      message = 'PDF conversion available only in local environment.';
+      logger.gen(`[API/generate/brand] LibreOffice unavailable or Vercel environment. Skipping PDF conversion.`);
     }
 
     appendContract({
@@ -229,7 +238,14 @@ export async function POST(req: NextRequest) {
     });
     logger.gen(`[API/generate/brand] Appended contract #${contractNo} to history.`);
 
-    return NextResponse.json({ contractNo, docxName, pdfName });
+    return NextResponse.json({
+      success: true,
+      contractNo,
+      docxName,
+      pdfName,
+      message,
+    });
+
   } catch (e) {
     const errMsg = e instanceof Error ? e.message : String(e);
     logger.error(`[API/generate/brand] Generation failed: ${errMsg}`);

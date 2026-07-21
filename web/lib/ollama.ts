@@ -77,7 +77,7 @@ export async function generateLorDraftWithOllama(
     pronounPoss = 'his';
   }
 
-  const prompt = `You are a senior HR Director at Bohemian Curations Private Limited (ZenZebra).
+  const prompt = `You are a senior HR Director at ZenZebra.
 
 Write a professional 4-paragraph Letter of Recommendation for the employee below, matching the reference structure and tone exactly.
 
@@ -88,7 +88,8 @@ Avoid stock corporate phrases like 'demonstrated dedication', 'high degree of pr
 Every field provided — Department/Team, Designation/Role, Responsibilities, Projects, Strengths, and Additional Information — should be reflected somewhere in the letter. If Additional Information contains something specific and factual (a promotion, an extension, a particular achievement), weave it naturally into whichever paragraph fits best rather than bolting it on as an obviously separate final sentence.
 
 REFERENCE STRUCTURE AND TONE (MATCH EXACTLY):
-Paragraph 1: "This is to certify that ${payload.fullName} was associated with Bohemian Curations Private Limited (ZenZebra) as a ${payload.designation} from ${formattedJoining} to ${formattedLwd}."
+Paragraph 1: "This is to certify that ${payload.fullName} was associated with ZenZebra as a ${payload.designation} from ${formattedJoining} to ${formattedLwd}."
+
 Paragraph 2: During the tenure, describe key responsibilities and projects in flowing prose (3-4 sentences max).
 Paragraph 3: Throughout the internship/tenure, describe demonstrated qualities and strengths (2 sentences max). Blend strengths into natural sentences; do not itemize every keyword.
 Paragraph 4: "We appreciate the efforts and contributions made during the ${periodLabel} and wish ${pronounObj} success in all future academic and professional endeavors."

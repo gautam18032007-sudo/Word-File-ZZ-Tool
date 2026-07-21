@@ -99,7 +99,9 @@ export async function POST(req: NextRequest) {
       lorNumber,
       docxFile: result.docxFile,
       pdfFile: result.pdfFile,
+      message: !result.pdfFile ? 'PDF conversion available only in local environment.' : undefined,
     });
+
 
   } catch (e: any) {
     const errMsg = e.message || String(e);

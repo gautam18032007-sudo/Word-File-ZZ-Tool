@@ -314,7 +314,8 @@ export function generateFallbackLorDraft(payload: LorDraftPayload): string {
   }
 
   // Paragraph 1: Reference opening
-  const intro = `This is to certify that ${fullName} was associated with Bohemian Curations Private Limited (ZenZebra) as a ${designation} from ${formattedJoining} to ${formattedLwd}.`;
+  const intro = `This is to certify that ${fullName} was associated with ZenZebra as a ${designation} from ${formattedJoining} to ${formattedLwd}.`;
+
 
   // Paragraph 2: Responsibilities & projects (3-4 sentences max)
   const cleanResp = cleanPunctuation(convertToThirdPerson(responsibilities || '', subj, obj, poss));

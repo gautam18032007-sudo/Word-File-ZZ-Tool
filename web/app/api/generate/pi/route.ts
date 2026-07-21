@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
-import { generatePiPdf } from "@/lib/piGenerator";
+import { generatePiWorkbook } from "@/lib/piGenerator";
 import { nextContractNumber, buildFilename, peekNextPiNumber, commitPiNumber } from "@/lib/contractNumber";
+
 import { readPiHistory, appendPiHistory, archivePiRecord, PiHistoryRecord } from "@/lib/piStore";
 import { logger } from "@/lib/logger";
 import { writableDir } from "@/lib/paths";
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
     // 3. Generate XLSX -> PDF
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-    const pdfBytes = await generatePiPdf({
+    const result = await generatePiWorkbook({
       piNumber: contractNo,
       date,
       buyerName: buyerName.trim(),
@@ -142,15 +143,28 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    const pdfName = buildFilename(contractNo, buyerName, "pdf");
-    const pdfPath = path.join(OUTPUT_DIR, pdfName);
+    const xlsxName = buildFilename(contractNo, buyerName, "xlsx");
+    const xlsxPath = path.join(OUTPUT_DIR, xlsxName);
+    fs.writeFileSync(xlsxPath, result.xlsxBuffer);
+    logger.gen(`[API/generate/pi] Saved XLSX file: ${xlsxName}`);
 
-    fs.writeFileSync(pdfPath, pdfBytes);
-    logger.gen(`[API/generate/pi] Saved active PDF file: ${pdfName}`);
+    let pdfName: string | null = null;
+    let message: string | undefined = undefined;
+
+    if (result.pdfBuffer) {
+      pdfName = buildFilename(contractNo, buyerName, "pdf");
+      const pdfPath = path.join(OUTPUT_DIR, pdfName);
+      fs.writeFileSync(pdfPath, result.pdfBuffer);
+      logger.gen(`[API/generate/pi] Saved active PDF file: ${pdfName}`);
+    } else {
+      message = 'PDF conversion available only in local environment.';
+      logger.gen(`[API/generate/pi] PDF conversion skipped/unavailable.`);
+    }
 
     // 4. Save to History (Only if NOT a preview)
     if (!preview) {
-      let grandTotal = 0;
+      let totalTaxable = 0;
+      let totalGst = 0;
       items.forEach((it) => {
         const amount = Number(it.amount) || 0;
         const isSkuMode = it.billingMode === 'sku';
@@ -158,9 +172,12 @@ export async function POST(req: NextRequest) {
         const effectiveRate = isSkuMode ? amount * sku : amount;
         const qty = Number(it.quantity) || 0;
         const gstPct = Number(it.gstPct) || 0;
-        const perMonthGst = effectiveRate * (gstPct / 100);
-        grandTotal += (perMonthGst + effectiveRate) * qty;
+        const rowGst = effectiveRate * (gstPct / 100);
+        const rowTaxable = effectiveRate * qty;
+        totalTaxable += rowTaxable;
+        totalGst += rowGst;
       });
+      const grandTotal = totalTaxable + totalGst;
 
       const record: PiHistoryRecord = {
         id: `${contractNo}-${Date.now()}`,
@@ -170,7 +187,7 @@ export async function POST(req: NextRequest) {
         buyerName: buyerName.trim(),
         date,
         grandTotal,
-        pdfFile: pdfName,
+        pdfFile: pdfName || xlsxName,
         generatedAt: new Date().toISOString(),
         deliveryAddress: deliveryAddress?.trim(),
         placeOfSupply: placeOfSupply.trim(),
@@ -180,7 +197,15 @@ export async function POST(req: NextRequest) {
       logger.gen(`[API/generate/pi] Appended new active history record for ${contractNo}`);
     }
 
-    return NextResponse.json({ contractNo, pdfName, isRegeneration });
+    return NextResponse.json({
+      success: true,
+      contractNo,
+      xlsxName,
+      pdfName,
+      isRegeneration,
+      message,
+    });
+
   } catch (e: any) {
     const errMsg = e.message || String(e);
     logger.error(`[API/generate/pi] Generation failed: ${errMsg}`);

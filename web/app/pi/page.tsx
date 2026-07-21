@@ -78,7 +78,8 @@ export default function ProformaInvoicePage() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState<{ contractNo: string; pdfName: string; isPreview: boolean; isRegeneration?: boolean } | null>(null);
+  const [success, setSuccess] = useState<{ contractNo: string; pdfName: string | null; xlsxName?: string; message?: string; isPreview: boolean; isRegeneration?: boolean } | null>(null);
+
 
   // Regeneration Confirmation Modal state
   const [confirmData, setConfirmData] = useState<{
@@ -158,7 +159,7 @@ export default function ProformaInvoicePage() {
     setItems(next);
   };
 
-  // Live calculations
+  // Live calculations (Option A: GST calculated on Rate only, quantity independent)
   let totalQuantity = 0;
   let totalTaxableAmount = 0;
   let totalGstAmount = 0;
@@ -170,14 +171,15 @@ export default function ProformaInvoicePage() {
     const sku = isSkuMode && Number(it.sku) > 0 ? Number(it.sku) : 1;
     const effectiveRate = isSkuMode ? amount * sku : amount;
     const gstPct = Number(it.gstPct) || 0;
-    const perMonthGst = effectiveRate * (gstPct / 100);
+    const rowGst = effectiveRate * (gstPct / 100);
 
     totalQuantity += qty;
     totalTaxableAmount += effectiveRate * qty;
-    totalGstAmount += perMonthGst * qty;
+    totalGstAmount += rowGst;
   });
 
   const grandTotal = totalTaxableAmount + totalGstAmount;
+
 
   // Submit Generation Function
   const handleGenerate = async (e?: React.FormEvent, isPreview = false, confirmRegenerate = false) => {
@@ -263,9 +265,12 @@ export default function ProformaInvoicePage() {
       setSuccess({
         contractNo: data.contractNo,
         pdfName: data.pdfName,
+        xlsxName: data.xlsxName,
+        message: data.message,
         isPreview,
         isRegeneration: data.isRegeneration,
       });
+
 
       if (!isPreview) {
         setBuyerName("");
@@ -427,19 +432,38 @@ export default function ProformaInvoicePage() {
               </p>
             </div>
           </div>
-          <div className="flex gap-2 pl-6">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleDownload(success.pdfName)}
-              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
-            >
-              <Download size={12} />
-              Download {success.isPreview ? "Preview" : ""} PDF
-            </Button>
+          <div className="flex gap-2 pl-6 flex-wrap items-center">
+            {success.pdfName && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleDownload(success.pdfName!)}
+                className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
+              >
+                <Download size={12} />
+                Download {success.isPreview ? "Preview" : ""} PDF
+              </Button>
+            )}
+            {success.xlsxName && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleDownload(success.xlsxName!)}
+                className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
+              >
+                <Download size={12} />
+                Download XLSX
+              </Button>
+            )}
+            {!success.pdfName && (
+              <span className="text-xs text-[var(--muted-foreground)]">
+                PDF conversion available only in local environment.
+              </span>
+            )}
           </div>
         </div>
       )}
+
 
       <form onSubmit={(e) => handleGenerate(e, false, false)} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form Entry Column */}

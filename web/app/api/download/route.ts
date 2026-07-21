@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import { writableDir } from '@/lib/paths';
-import { docxToPdf } from '@/lib/pdf';
+import { docxToPdf, isLibreOfficeAvailable } from '@/lib/pdf';
 
 const OUTPUT_DIR = writableDir('output');
 
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const ext = path.extname(filename).toLowerCase();
 
   // If PDF requested but file doesn't exist yet on disk, attempt on-the-fly conversion from DOCX if present
-  if (!fs.existsSync(filePath) && ext === '.pdf') {
+  if (!fs.existsSync(filePath) && ext === '.pdf' && isLibreOfficeAvailable()) {
     const docxName = filename.replace(/\.pdf$/i, '.docx');
     const docxPath = path.join(OUTPUT_DIR, folder, docxName);
     if (fs.existsSync(docxPath)) {
@@ -42,7 +42,9 @@ export async function GET(req: NextRequest) {
   const contentType =
     ext === '.pdf' ? 'application/pdf' :
     ext === '.docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+    ext === '.xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
     'application/octet-stream';
+
 
   return new NextResponse(fileBuffer, {
     headers: {

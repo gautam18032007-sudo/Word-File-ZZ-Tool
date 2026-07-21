@@ -332,7 +332,8 @@ function fillTags(xml: string, data: Record<string, string>, isLor = false): str
       return paragraphs
         .map(p => escapeXml(p.trim()))
         .filter(Boolean)
-        .join('</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="290" w:lineRule="auto" w:before="140"/><w:ind w:left="137" w:right="702"/><w:jc w:val="both"/></w:pPr><w:r><w:t xml:space="preserve">');
+        .join('</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="252" w:lineRule="auto" w:before="100"/><w:ind w:left="137" w:right="702"/><w:jc w:val="both"/></w:pPr><w:r><w:t xml:space="preserve">');
+
     }
 
     if (isLor) {

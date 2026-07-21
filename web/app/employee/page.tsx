@@ -617,8 +617,9 @@ export default function EmployeePage() {
                       </Button>
                     )}
                     {!genResult.pdfName && (
-                      <span className="text-xs text-[var(--muted-foreground)] self-center">PDF skipped — LibreOffice not found</span>
+                      <span className="text-xs text-[var(--muted-foreground)] self-center">PDF conversion available only in local environment.</span>
                     )}
+
                   </div>
                 </div>
               )}

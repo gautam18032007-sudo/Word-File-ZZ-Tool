@@ -11,7 +11,28 @@ import path from 'path';
 
 export class PdfError extends Error {}
 
+export function isLibreOfficeAvailable(): boolean {
+  if (process.env.VERCEL) return false;
+  const defaultPath = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+  if (process.env.LIBREOFFICE_PATH) {
+    return fs.existsSync(process.env.LIBREOFFICE_PATH);
+  }
+  if (fs.existsSync(defaultPath)) return true;
+  
+  const soffice = 'soffice';
+  try {
+    const res = execFileSync(soffice, ['--version'], { timeout: 2000, stdio: 'pipe' });
+    return !!res;
+  } catch {
+    return false;
+  }
+}
+
 export function docxToPdf(docxBytes: Buffer, timeoutMs = 60_000): Buffer {
+  if (!isLibreOfficeAvailable()) {
+    throw new PdfError('PDF conversion available only in local environment.');
+  }
+
   const defaultPath = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
   const soffice = process.env.LIBREOFFICE_PATH || (fs.existsSync(defaultPath) ? defaultPath : 'soffice');
   const tmpDir = os.tmpdir();
@@ -34,7 +55,7 @@ export function docxToPdf(docxBytes: Buffer, timeoutMs = 60_000): Buffer {
     return fs.readFileSync(pdfPath);
   } catch (e) {
     if (e instanceof PdfError) throw e;
-    throw new PdfError(`PDF conversion failed: ${e}`);
+    throw new PdfError(`PDF conversion failed: ${e instanceof Error ? e.message : String(e)}`);
   } finally {
     if (fs.existsSync(docxPath)) fs.unlinkSync(docxPath);
     if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
@@ -42,6 +63,10 @@ export function docxToPdf(docxBytes: Buffer, timeoutMs = 60_000): Buffer {
 }
 
 export function xlsxToPdf(xlsxBytes: Buffer, timeoutMs = 60_000): Buffer {
+  if (!isLibreOfficeAvailable()) {
+    throw new PdfError('PDF conversion available only in local environment.');
+  }
+
   const defaultPath = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
   const soffice = process.env.LIBREOFFICE_PATH || (fs.existsSync(defaultPath) ? defaultPath : 'soffice');
   const tmpDir = os.tmpdir();
@@ -64,9 +89,10 @@ export function xlsxToPdf(xlsxBytes: Buffer, timeoutMs = 60_000): Buffer {
     return fs.readFileSync(pdfPath);
   } catch (e) {
     if (e instanceof PdfError) throw e;
-    throw new PdfError(`PDF conversion failed: ${e}`);
+    throw new PdfError(`PDF conversion failed: ${e instanceof Error ? e.message : String(e)}`);
   } finally {
     if (fs.existsSync(xlsxPath)) fs.unlinkSync(xlsxPath);
     if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
   }
 }
+

@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
-import { docxToPdf } from './pdf';
+import { docxToPdf, isLibreOfficeAvailable } from './pdf';
+
 import { writableDir } from './paths';
 
 const TEMPLATES_DIR = path.resolve(process.cwd(), 'templates');
@@ -105,17 +106,21 @@ export function generateLor(options: GenerateLorOptions): GenerateLorResult {
 
   // 4. Convert to PDF using headless LibreOffice
   let pdfSaved = false;
-  try {
-    const pdfBytes = docxToPdf(docxBytes);
-    fs.writeFileSync(pdfPath, pdfBytes);
-    pdfSaved = true;
-  } catch (err) {
-    // If PDF conversion fails, save the DOCX anyway and do not block (save pdfFile as null in history)
-    console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
+  if (isLibreOfficeAvailable()) {
+    try {
+      const pdfBytes = docxToPdf(docxBytes);
+      fs.writeFileSync(pdfPath, pdfBytes);
+      pdfSaved = true;
+    } catch (err) {
+      console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
+    }
+  } else {
+    console.log(`[generateLor] LibreOffice unavailable or Vercel environment. Skipping PDF conversion for ${lorNumber}.`);
   }
 
   return {
     docxFile: docxFilename,
     pdfFile: pdfSaved ? pdfFilename : null
   };
+
 }

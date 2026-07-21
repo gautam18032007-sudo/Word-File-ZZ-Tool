@@ -77,7 +77,8 @@ async function runPreviewTest() {
 import pypdf
 reader = pypdf.PdfReader(r"${pdfPath}")
 text = reader.pages[0].extract_text()
-print("Contains '35,400.00':", "35,400.00" in text)
+print("Contains '31,800.00':", "31,800.00" in text)
+
 print("Contains 'INR 5000 +':", "INR 5000 +" in text)
 print("Contains '20% commission':", "20% commission" in text)
 `;
