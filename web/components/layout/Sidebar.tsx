@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
-const navItems = [
+const navItems: { href: string; label: string; icon: any; wip?: boolean }[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/brand", label: "Brand Contract", icon: FileText },
   { href: "/employee", label: "Employee Contract", icon: Users },
   { href: "/certificate", label: "Certificate", icon: Award },
   { href: "/lor", label: "LOR", icon: Scroll },
-  { href: "#", label: "Proforma Invoice", icon: Receipt, wip: true },
+  { href: "/pi", label: "Proforma Invoice", icon: Receipt },
 ];
 
 export function Sidebar() {

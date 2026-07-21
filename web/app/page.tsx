@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Download, FileText, RefreshCw, AlertCircle, LayoutDashboard, FileSpreadsheet, Users, Calendar, Award } from "lucide-react";
+import { Download, FileText, RefreshCw, AlertCircle, LayoutDashboard, FileSpreadsheet, Users, Calendar, Award, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +26,7 @@ function shortDate(iso: string): string {
 export default function DashboardPage() {
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
   const [lorCount, setLorCount] = useState<number>(0);
+  const [piCount, setPiCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -43,6 +44,12 @@ export default function DashboardPage() {
       if (lorRes.ok) {
         setLorCount(Array.isArray(lorData) ? lorData.length : 0);
       }
+
+      const piRes = await fetch("/api/pi/history");
+      const piData = await piRes.json();
+      if (piRes.ok) {
+        setPiCount(Array.isArray(piData) ? piData.length : 0);
+      }
     } catch (e) {
       setError(String(e));
     } finally {
@@ -58,7 +65,7 @@ export default function DashboardPage() {
   const brandCount = contracts.filter((c) => c.type === "brand").length;
   const employeeCount = contracts.filter((c) => c.type === "employee").length;
   const certificateCount = contracts.filter((c) => c.type === "certificate").length;
-  const totalDocuments = brandCount + employeeCount + certificateCount + lorCount;
+  const totalDocuments = brandCount + employeeCount + certificateCount + lorCount + piCount;
 
   const todayStr = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Kolkata",
@@ -182,6 +189,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{loading ? "..." : lorCount}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+              PI Generated
+            </CardTitle>
+            <Receipt size={15} className="text-[var(--muted-foreground)]" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{loading ? "..." : piCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -308,7 +327,7 @@ export default function DashboardPage() {
       {!loading && contracts.length > 0 && (
         <p className="text-xs text-[var(--muted-foreground)]">
           Showing {contracts.length} document{contracts.length !== 1 ? "s" : ""} · Stored in{" "}
-          <code className="font-mono">output/contracts.json</code>, <code className="font-mono">output/certificates.json</code>, and <code className="font-mono">output/lor-history.json</code>
+          <code className="font-mono">output/contracts.json</code>, <code className="font-mono">output/certificates.json</code>, <code className="font-mono">output/lor-history.json</code>, and <code className="font-mono">output/pi-history.json</code>
         </p>
       )}
     </div>

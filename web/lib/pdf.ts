@@ -12,7 +12,8 @@ import path from 'path';
 export class PdfError extends Error {}
 
 export function docxToPdf(docxBytes: Buffer, timeoutMs = 60_000): Buffer {
-  const soffice = process.env.LIBREOFFICE_PATH ?? 'soffice';
+  const defaultPath = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+  const soffice = process.env.LIBREOFFICE_PATH || (fs.existsSync(defaultPath) ? defaultPath : 'soffice');
   const tmpDir = os.tmpdir();
   const stamp = Date.now();
   const docxPath = path.join(tmpDir, `zz-${stamp}.docx`);
@@ -36,6 +37,36 @@ export function docxToPdf(docxBytes: Buffer, timeoutMs = 60_000): Buffer {
     throw new PdfError(`PDF conversion failed: ${e}`);
   } finally {
     if (fs.existsSync(docxPath)) fs.unlinkSync(docxPath);
+    if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+  }
+}
+
+export function xlsxToPdf(xlsxBytes: Buffer, timeoutMs = 60_000): Buffer {
+  const defaultPath = 'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+  const soffice = process.env.LIBREOFFICE_PATH || (fs.existsSync(defaultPath) ? defaultPath : 'soffice');
+  const tmpDir = os.tmpdir();
+  const stamp = Date.now();
+  const xlsxPath = path.join(tmpDir, `zz-${stamp}.xlsx`);
+  const pdfPath = path.join(tmpDir, `zz-${stamp}.pdf`);
+
+  try {
+    fs.writeFileSync(xlsxPath, xlsxBytes);
+    execFileSync(
+      soffice,
+      ['--headless', '--convert-to', 'pdf', '--outdir', tmpDir, xlsxPath],
+      { timeout: timeoutMs, stdio: 'pipe' }
+    );
+    if (!fs.existsSync(pdfPath)) {
+      throw new PdfError(
+        'PDF not created. Is LibreOffice installed and LIBREOFFICE_PATH correct?'
+      );
+    }
+    return fs.readFileSync(pdfPath);
+  } catch (e) {
+    if (e instanceof PdfError) throw e;
+    throw new PdfError(`PDF conversion failed: ${e}`);
+  } finally {
+    if (fs.existsSync(xlsxPath)) fs.unlinkSync(xlsxPath);
     if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
   }
 }
