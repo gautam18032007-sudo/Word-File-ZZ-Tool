@@ -15,8 +15,13 @@ export function downloadBase64(filename: string, base64: string, mime: string) {
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  // Chrome's download manager reads the blob URL asynchronously after click()
+  // returns; revoking immediately can invalidate it before the fetch completes
+  // ("File wasn't available on site"). Give it time to finish first.
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
 
 export const MIME = {
