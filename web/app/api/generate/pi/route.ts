@@ -10,6 +10,8 @@ import { writableDir } from "@/lib/paths";
 
 const OUTPUT_DIR = path.join(writableDir("output"), "pi");
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();

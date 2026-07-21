@@ -4,6 +4,8 @@ import { nextContractNumber } from "@/lib/contractNumber";
 import { appendLorHistory, LorHistoryRecord } from "@/lib/lorStore";
 import { logger } from "@/lib/logger";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();

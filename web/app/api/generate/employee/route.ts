@@ -17,6 +17,8 @@ import { writableDir } from '@/lib/paths';
 
 const OUTPUT_DIR = path.join(writableDir('output'), 'employees');
 
+export const maxDuration = 60;
+
 interface EmployeeGeneratePayload {
   employee: EmployeeRow;
   annualCTC: number;
