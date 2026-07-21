@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { downloadBase64, MIME } from "@/lib/clientDownload";
 
 interface Candidate {
   employeeName: string;
@@ -43,6 +44,8 @@ interface GenerateResult {
   lorNumber: string;
   docxFile: string;
   pdfFile: string | null;
+  docxBase64?: string;
+  pdfBase64?: string | null;
 }
 
 function normalizeDateToYYYYMMDD(dateStr: string): string {
@@ -357,7 +360,11 @@ export default function LorPage() {
     }
   };
 
-  const downloadFile = (filename: string) => {
+  const downloadFile = (filename: string, base64?: string, mime?: string) => {
+    if (base64) {
+      downloadBase64(filename, base64, mime!);
+      return;
+    }
     const a = document.createElement("a");
     a.href = `/api/download?folder=lors&file=${encodeURIComponent(filename)}`;
     a.download = filename;
@@ -754,11 +761,11 @@ export default function LorPage() {
                     </div>
 
                     <div className="flex gap-2 flex-wrap items-center pt-1">
-                      <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer" onClick={() => downloadFile(genResult.docxFile)}>
+                      <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer" onClick={() => downloadFile(genResult.docxFile, genResult.docxBase64, MIME.docx)}>
                         <Download size={13} /> DOCX
                       </Button>
                       {genResult.pdfFile ? (
-                        <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfFile!)}>
+                        <Button size="sm" variant="outline" className="text-xs gap-1.5 cursor-pointer text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfFile!, genResult.pdfBase64 ?? undefined, MIME.pdf)}>
                           <FileDown size={13} /> PDF
                         </Button>
                       ) : (

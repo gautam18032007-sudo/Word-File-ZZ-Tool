@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SheetLoader } from "@/components/shared/SheetLoader";
+import { downloadBase64, MIME } from "@/lib/clientDownload";
 
 interface CertificateCandidate {
   fullName: string;
@@ -38,6 +39,7 @@ interface CertificateHistoryRecord {
 interface GenerateResult {
   contractNo: string;
   pdfName: string;
+  pdfBase64?: string;
   existing?: boolean;
 }
 
@@ -374,7 +376,11 @@ export default function CertificatePage() {
     }
   }
 
-  function downloadFile(filename: string) {
+  function downloadFile(filename: string, base64?: string) {
+    if (base64) {
+      downloadBase64(filename, base64, MIME.pdf);
+      return;
+    }
     const a = document.createElement("a");
     a.href = `/api/download?folder=certificates&file=${encodeURIComponent(filename)}`;
     a.download = filename;
@@ -780,7 +786,7 @@ export default function CertificatePage() {
                     {genResult.contractNo} Generated Successfully!
                   </div>
                   <div className="pt-1">
-                    <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfName)}>
+                    <Button size="sm" variant="outline" className="w-full text-xs gap-1.5 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/40" onClick={() => downloadFile(genResult.pdfName, genResult.pdfBase64)}>
                       <FileDown size={14} /> Download PDF Certificate
                     </Button>
                   </div>

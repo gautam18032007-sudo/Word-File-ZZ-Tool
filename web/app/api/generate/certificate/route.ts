@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
       logger.gen(`[API/generate/certificate] Appended new history record for ${contractNo}`);
     }
 
-    return NextResponse.json({ contractNo, pdfName });
+    return NextResponse.json({ contractNo, pdfName, pdfBase64: pdfBytes.toString('base64') });
   } catch (e: any) {
     const errMsg = e.message || String(e);
     logger.error(`[API/generate/certificate] Generation failed: ${errMsg}`);

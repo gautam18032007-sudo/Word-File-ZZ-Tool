@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
+import { downloadBase64, MIME } from "@/lib/clientDownload";
 import { SheetLoader } from "@/components/shared/SheetLoader";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -226,7 +227,11 @@ export default function BrandPage() {
     }
   }
 
-  function downloadFile(filename: string, folder: string) {
+  function downloadFile(filename: string, folder: string, base64?: string, mime?: string) {
+    if (base64) {
+      downloadBase64(filename, base64, mime!);
+      return;
+    }
     const url = `/api/download?folder=${folder}&file=${encodeURIComponent(filename)}`;
     const a = document.createElement("a");
     a.href = url;
@@ -527,7 +532,7 @@ export default function BrandPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => downloadFile(genResult.docxName, "brands")}
+                      onClick={() => downloadFile(genResult.docxName, "brands", genResult.docxBase64, MIME.docx)}
                     >
                       <FileText size={13} />
                       DOCX
@@ -536,7 +541,7 @@ export default function BrandPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => downloadFile(genResult.pdfName!, "brands")}
+                        onClick={() => downloadFile(genResult.pdfName!, "brands", genResult.pdfBase64 ?? undefined, MIME.pdf)}
                       >
                         <Download size={13} />
                         PDF

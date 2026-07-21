@@ -212,6 +212,7 @@ export async function POST(req: NextRequest) {
     logger.gen(`[API/generate/brand] Saved DOCX: ${docxName}`);
 
     let pdfName: string | null = null;
+    let pdfBase64: string | null = null;
     let message: string | undefined = undefined;
 
     if (supportsLibreOffice()) {
@@ -220,6 +221,7 @@ export async function POST(req: NextRequest) {
         const pdfBytes = docxToPdf(docxBytes);
         pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
+        pdfBase64 = pdfBytes.toString('base64');
         logger.gen(`[API/generate/brand] Saved PDF: ${pdfName}`);
       } catch (e) {
         if (!(e instanceof PdfError)) throw e;
@@ -233,6 +235,7 @@ export async function POST(req: NextRequest) {
         const pdfBytes = await generatePdfFromHtml(html);
         pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
+        pdfBase64 = pdfBytes.toString('base64');
         logger.gen(`[API/generate/brand] Saved Puppeteer PDF: ${pdfName}`);
       } catch (e) {
         logger.error(`[API/generate/brand] Puppeteer PDF rendering failed: ${e}`);
@@ -262,6 +265,8 @@ export async function POST(req: NextRequest) {
       contractNo,
       docxName,
       pdfName,
+      docxBase64: docxBytes.toString('base64'),
+      pdfBase64,
       message,
     });
 

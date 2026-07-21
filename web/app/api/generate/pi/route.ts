@@ -204,6 +204,8 @@ export async function POST(req: NextRequest) {
       contractNo,
       xlsxName,
       pdfName,
+      xlsxBase64: result.xlsxBuffer.toString('base64'),
+      pdfBase64: result.pdfBuffer ? result.pdfBuffer.toString('base64') : null,
       isRegeneration,
       message,
     });

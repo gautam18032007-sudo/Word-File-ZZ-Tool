@@ -104,4 +104,6 @@ export interface GenerateResult {
   contractNo: string;
   docxName: string;
   pdfName: string | null;
+  docxBase64?: string;
+  pdfBase64?: string | null;
 }

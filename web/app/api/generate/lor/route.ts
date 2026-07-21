@@ -102,6 +102,8 @@ export async function POST(req: NextRequest) {
       lorNumber,
       docxFile: result.docxFile,
       pdfFile: result.pdfFile,
+      docxBase64: result.docxBase64,
+      pdfBase64: result.pdfBase64,
       message: !result.pdfFile ? 'PDF conversion available only in local environment.' : undefined,
     });
 

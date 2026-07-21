@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { downloadBase64, MIME } from "@/lib/clientDownload";
 
 interface LineItem {
   description: string;
@@ -78,7 +79,7 @@ export default function ProformaInvoicePage() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState<{ contractNo: string; pdfName: string | null; xlsxName?: string; message?: string; isPreview: boolean; isRegeneration?: boolean } | null>(null);
+  const [success, setSuccess] = useState<{ contractNo: string; pdfName: string | null; xlsxName?: string; xlsxBase64?: string; pdfBase64?: string | null; message?: string; isPreview: boolean; isRegeneration?: boolean } | null>(null);
 
 
   // Regeneration Confirmation Modal state
@@ -266,6 +267,8 @@ export default function ProformaInvoicePage() {
         contractNo: data.contractNo,
         pdfName: data.pdfName,
         xlsxName: data.xlsxName,
+        xlsxBase64: data.xlsxBase64,
+        pdfBase64: data.pdfBase64,
         message: data.message,
         isPreview,
         isRegeneration: data.isRegeneration,
@@ -334,7 +337,11 @@ export default function ProformaInvoicePage() {
     }
   };
 
-  const handleDownload = (filename: string) => {
+  const handleDownload = (filename: string, base64?: string, mime?: string) => {
+    if (base64) {
+      downloadBase64(filename, base64, mime!);
+      return;
+    }
     const a = document.createElement("a");
     a.href = `/api/download?folder=pi&file=${encodeURIComponent(filename)}`;
     a.download = filename;
@@ -437,7 +444,7 @@ export default function ProformaInvoicePage() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleDownload(success.pdfName!)}
+                onClick={() => handleDownload(success.pdfName!, success.pdfBase64 ?? undefined, MIME.pdf)}
                 className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
               >
                 <Download size={12} />
@@ -448,7 +455,7 @@ export default function ProformaInvoicePage() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleDownload(success.xlsxName!)}
+                onClick={() => handleDownload(success.xlsxName!, success.xlsxBase64, MIME.xlsx)}
                 className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
               >
                 <Download size={12} />

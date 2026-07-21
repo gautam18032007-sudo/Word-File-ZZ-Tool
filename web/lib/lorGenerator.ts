@@ -26,6 +26,8 @@ export interface GenerateLorOptions {
 export interface GenerateLorResult {
   docxFile: string;
   pdfFile: string | null;
+  docxBase64: string;
+  pdfBase64: string | null;
 }
 
 export async function generateLor(options: GenerateLorOptions): Promise<GenerateLorResult> {
@@ -109,12 +111,12 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
   fs.writeFileSync(docxPath, docxBytes);
 
   // 4. Convert to PDF using headless LibreOffice or Puppeteer on Vercel
-  let pdfSaved = false;
+  let pdfBase64: string | null = null;
   if (supportsLibreOffice()) {
     try {
       const pdfBytes = docxToPdf(docxBytes);
       fs.writeFileSync(pdfPath, pdfBytes);
-      pdfSaved = true;
+      pdfBase64 = pdfBytes.toString('base64');
     } catch (err) {
       console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
     }
@@ -123,7 +125,7 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
       const html = renderLorHtml(data);
       const pdfBytes = await generatePdfFromHtml(html);
       fs.writeFileSync(pdfPath, pdfBytes);
-      pdfSaved = true;
+      pdfBase64 = pdfBytes.toString('base64');
     } catch (err) {
       console.warn(`[generateLor] Puppeteer PDF rendering failed for ${lorNumber}, proceeding with DOCX only.`, err);
     }
@@ -134,7 +136,9 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
 
   return {
     docxFile: docxFilename,
-    pdfFile: pdfSaved ? pdfFilename : null
+    pdfFile: pdfBase64 ? pdfFilename : null,
+    docxBase64: docxBytes.toString('base64'),
+    pdfBase64,
   };
 
 }
