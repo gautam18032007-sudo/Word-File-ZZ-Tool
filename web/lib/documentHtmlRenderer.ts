@@ -1,4 +1,6 @@
 import type { PiGeneratorInput } from './piGenerator';
+import { LOR_CORNER_IMG, LOR_LOGO_IMG } from './lorAssets';
+import { PI_SIGNATURE_IMG } from './piAssets';
 
 function escapeHtml(str: string): string {
   if (!str) return '';
@@ -16,8 +18,9 @@ const COMMON_CSS = `
     color: #1a1a1a;
     line-height: 1.5;
     margin: 0;
-    padding: 20px;
+    padding: 20mm;
     font-size: 13px;
+    box-sizing: border-box;
   }
   h1, h2, h3 {
     margin-top: 0;
@@ -197,9 +200,15 @@ export function renderLorHtml(data: Record<string, string>): string {
   const fullName = escapeHtml(data.FULL_NAME || '');
   const designation = escapeHtml(data.DESIGNATION || '');
   const dateStr = escapeHtml(data.DATE || '');
-  const finalDraft = escapeHtml(data.FINAL_DRAFT || '').replace(/\n/g, '<br>');
   const signatoryName = escapeHtml(data.SIGNATORY_NAME || 'Tanmay Jain');
   const signatoryRole = escapeHtml(data.SIGNATORY_ROLE || 'Co-Founder');
+
+  const bodyHtml = (data.FINAL_DRAFT || '')
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${escapeHtml(p)}</p>`)
+    .join('');
 
   return `
 <!DOCTYPE html>
@@ -208,41 +217,120 @@ export function renderLorHtml(data: Record<string, string>): string {
   <meta charset="utf-8">
   <title>Letter of Recommendation — ${fullName}</title>
   <style>
-    ${COMMON_CSS}
-    .lor-header {
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      color: #1a1a1a;
+      font-size: 13px;
+      margin: 0;
+    }
+    .page {
+      position: relative;
+      width: 210mm;
+      background: #fff;
+    }
+    .corner-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 70mm;
+      z-index: 0;
+    }
+    .logo-box {
+      position: absolute;
+      top: 10mm;
+      right: 10mm;
+      width: 50mm;
+      z-index: 1;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 55mm 18mm 20mm 18mm;
+    }
+    .title-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16mm;
+    }
+    .gold-line {
+      flex: 1;
+      max-width: 55px;
+      height: 2px;
+      background: #b8935a;
+    }
+    .title-text {
+      text-align: center;
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.15;
+    }
+    .title-line1 { font-size: 26px; color: #2e2e2e; }
+    .title-line2 { font-size: 30px; font-style: italic; color: #2e2e2e; }
+    .info-row {
       display: flex;
       justify-content: space-between;
-      border-bottom: 2px solid #c3a77d;
-      padding-bottom: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 10mm;
+      font-size: 13px;
+    }
+    .info-right { text-align: right; }
+    .info-row p { margin: 2px 0; }
+    .body-text { text-align: justify; line-height: 1.7; }
+    .body-text p { margin: 0 0 12px 0; }
+    .signoff { margin-top: 16mm; }
+    .signoff p { margin: 2px 0; }
+    .bottom-bar {
+      /* fixed (not absolute) so it's pinned to the bottom of each printed
+         page rather than the bottom of the content div, which would push
+         it onto an orphan page if content runs even slightly past 297mm */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4mm;
+      background: #b8935a;
     }
   </style>
 </head>
 <body>
-  <div class="lor-header">
-    <div>
-      <h2 style="margin: 0; color: #2e2e2e; font-size: 18px;">ZenZebra</h2>
-      <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 12px;">Letter of Recommendation</p>
+  <div class="page">
+    <img class="corner-decoration" src="${LOR_CORNER_IMG}" />
+    <img class="logo-box" src="${LOR_LOGO_IMG}" />
+    <div class="content">
+      <div class="title-block">
+        <span class="gold-line"></span>
+        <div class="title-text">
+          <div class="title-line1">Letter of</div>
+          <div class="title-line2">Recommendation</div>
+        </div>
+        <span class="gold-line"></span>
+      </div>
+
+      <div class="info-row">
+        <div>
+          <p><strong>Letter to:</strong></p>
+          <p>${fullName}</p>
+          <p><strong>${designation}</strong></p>
+          <p><strong>ZenZebra</strong></p>
+        </div>
+        <div class="info-right">
+          <p><strong>Date:</strong></p>
+          <p>${dateStr}</p>
+        </div>
+      </div>
+
+      <p><strong>To Whom It May Concern:</strong></p>
+      <div class="body-text">${bodyHtml}</div>
+
+      <div class="signoff">
+        <p>Best Regards</p>
+        <br><br>
+        <p><strong>${signatoryName}</strong></p>
+        <p>${signatoryRole}</p>
+      </div>
     </div>
-    <div style="text-align: right; font-size: 12px; color: #4b5563;">
-      <p style="margin: 0;">Date: <strong>${dateStr}</strong></p>
-      <p style="margin: 4px 0 0 0;">Candidate: <strong>${fullName}</strong></p>
-    </div>
-  </div>
-
-  <div class="paragraph" style="margin-top: 20px;">
-    <strong>To Whom It May Concern:</strong>
-  </div>
-
-  <div class="paragraph" style="margin-top: 16px; line-height: 1.6;">
-    ${finalDraft}
-  </div>
-
-  <div style="margin-top: 48px;">
-    <p style="margin: 0;">Best Regards</p>
-    <br><br><br>
-    <p style="margin: 0; font-weight: bold;">${signatoryName}</p>
-    <p style="margin: 2px 0 0 0; color: #4b5563;">${signatoryRole}</p>
+    <div class="bottom-bar"></div>
   </div>
 </body>
 </html>
@@ -308,17 +396,25 @@ export function renderProformaInvoiceHtml(input: PiGeneratorInput): string {
   </style>
 </head>
 <body>
-  <div style="text-align: center; margin-bottom: 20px;">
-    <h1 style="font-size: 22px; margin-bottom: 4px;">PROFORMA INVOICE</h1>
-    <p style="margin: 0; color: #4b5563;">Bohemian Curations Private Limited (ZenZebra)</p>
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+    <div>
+      <h1 style="font-size: 20px; margin: 0 0 6px 0;">PROFORMA INVOICE</h1>
+      <p style="margin: 0; font-weight: bold; font-size: 14px;">BOHEMIAN CURATIONS PVT LTD</p>
+      <p style="margin: 2px 0 0 0;">GST NO. 07AAMCB2083P1Z5</p>
+      <p style="margin: 2px 0 0 0;">Plot No. 96, Pocket-2</p>
+      <p style="margin: 2px 0 0 0;">Jasola, New Delhi-110025</p>
+      <p style="margin: 2px 0 0 0;">Mobile No. 9910605187, 9958680856</p>
+      <p style="margin: 2px 0 0 0;">admin@zenzebra.in | www.zenzebra.in</p>
+    </div>
+    <img src="${LOR_LOGO_IMG}" style="width: 160px;" />
   </div>
 
   <table class="header-table" style="border: 1px solid #d1d5db; padding: 12px; background-color: #f9fafb;">
     <tr>
       <td style="width: 50%; vertical-align: top;">
-        <strong>Billed To:</strong><br>
+        <strong>Buyer:</strong><br>
         <span style="font-size: 14px; font-weight: bold;">${escapeHtml(buyerName)}</span><br>
-        ${escapeHtml(deliveryAddress)}<br>
+        <strong>Delivery Address:</strong> ${escapeHtml(deliveryAddress)}<br>
         Contact: ${escapeHtml(contactPerson)} ${contactNumber ? '(' + escapeHtml(contactNumber) + ')' : ''}
       </td>
       <td style="width: 50%; vertical-align: top; text-align: right;">
@@ -380,6 +476,30 @@ export function renderProformaInvoiceHtml(input: PiGeneratorInput): string {
 
   <div style="margin-top: 24px; font-size: 15px; font-weight: bold; text-align: right;">
     Grand Total: Rs. ${grandTotal.toFixed(2)}
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-top: 28px; gap: 24px;">
+    <div style="flex: 1;">
+      <p style="font-weight: bold; margin: 0 0 6px 0;">TERMS &amp; CONDITIONS</p>
+      <p style="margin: 2px 0;">1. The Rates are for Display.</p>
+      <p style="margin: 2px 0;">2. Freight : Your scope</p>
+      <p style="margin: 2px 0;">3. Payment terms : Against this PI, 100% Advance</p>
+      <p style="margin: 2px 0;">4. GST : Extra applicable as shown above</p>
+      <p style="margin: 10px 0 0 0;">Hope, our above offer will be best for your requirement.</p>
+    </div>
+    <div style="flex: 1;">
+      <p style="font-weight: bold; margin: 0 0 6px 0;">OUR BANK DETAILS</p>
+      <p style="margin: 2px 0;">ACCOUNT NAME : BOHEMIAN CURATIONS PRIVATE LIMITED</p>
+      <p style="margin: 2px 0;">Bank Name - ICICI Bank</p>
+      <p style="margin: 2px 0;">Account No. - 113405500373</p>
+      <p style="margin: 2px 0;">IFSC CODE : ICIC0001134</p>
+    </div>
+  </div>
+
+  <div style="text-align: right; margin-top: 24px;">
+    <p style="margin: 0; font-weight: bold;">For BOHEMIAN CURATIONS PVT. LTD.</p>
+    <img src="${PI_SIGNATURE_IMG}" style="width: 160px; margin: 4px 0;" />
+    <p style="margin: 0;">(Authorised Signatory)</p>
   </div>
 </body>
 </html>

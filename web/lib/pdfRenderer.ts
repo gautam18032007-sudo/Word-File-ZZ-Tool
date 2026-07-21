@@ -18,15 +18,13 @@ export async function generatePdfFromHtml(html: string): Promise<Buffer> {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'load' });
 
+    // No page margin here — each template's own CSS handles its content padding.
+    // This lets letterhead-style templates (e.g. LOR) bleed decorative graphics
+    // to the page edge, which a fixed Puppeteer margin would otherwise clip.
     const pdfUint8Array = await page.pdf({
       format: 'A4',
       printBackground: true,
-      margin: {
-        top: '15mm',
-        right: '15mm',
-        bottom: '15mm',
-        left: '15mm',
-      },
+      margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
     });
 
     logger.gen('[pdfRenderer] Puppeteer PDF generated successfully.');
