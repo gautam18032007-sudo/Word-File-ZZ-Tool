@@ -10,6 +10,8 @@ import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
 
 
 import { appendContract } from '@/lib/store';
+import { uploadToBlob } from '@/lib/blobStore';
+
 import { formatINR, formatDate } from '@/lib/formatting';
 import type { BrandRow, Location, ContractType } from '@/lib/types';
 import { logger } from '@/lib/logger';
@@ -248,6 +250,19 @@ export async function POST(req: NextRequest) {
 
 
 
+    let docxBlobUrl: string | undefined = undefined;
+    let pdfBlobUrl: string | undefined = undefined;
+
+    if (docxBytes && docxName) {
+      const u = await uploadToBlob(docxName, docxBytes, 'brands');
+      if (u) docxBlobUrl = u;
+    }
+    if (pdfBase64 && pdfName) {
+      const pdfBuf = Buffer.from(pdfBase64, 'base64');
+      const u = await uploadToBlob(pdfName, pdfBuf, 'brands');
+      if (u) pdfBlobUrl = u;
+    }
+
     appendContract({
       contract_no: contractNo,
       type: 'brand',
@@ -256,9 +271,12 @@ export async function POST(req: NextRequest) {
       docx: docxName,
       pdf: pdfName,
       folder: 'brands',
+      docx_blob_url: docxBlobUrl,
+      pdf_blob_url: pdfBlobUrl,
       location,
       total_amount: totalAmount,
     });
+
     logger.gen(`[API/generate/brand] Appended contract #${contractNo} to history.`);
 
     return NextResponse.json({

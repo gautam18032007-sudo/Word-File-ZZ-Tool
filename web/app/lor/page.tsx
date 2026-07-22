@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { downloadBase64, MIME } from "@/lib/clientDownload";
+import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+
 
 interface Candidate {
   employeeName: string;
@@ -360,16 +361,14 @@ export default function LorPage() {
     }
   };
 
-  const downloadFile = (filename: string, base64?: string, mime?: string) => {
+  const downloadFile = (filename: string, base64?: string, mime?: string, blobUrl?: string) => {
     if (base64) {
       downloadBase64(filename, base64, mime!);
       return;
     }
-    const a = document.createElement("a");
-    a.href = `/api/download?folder=lors&file=${encodeURIComponent(filename)}`;
-    a.download = filename;
-    a.click();
+    downloadHistoryFile('lors', filename, blobUrl);
   };
+
 
   // Search filter for candidates
   const filteredCandidates = candidates.filter((c) => {

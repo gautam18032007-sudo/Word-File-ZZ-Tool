@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { downloadBase64, MIME } from "@/lib/clientDownload";
+import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+
 
 interface LineItem {
   description: string;
@@ -28,8 +29,10 @@ interface PiHistoryRecord {
   date: string;
   grandTotal: number;
   pdfFile: string;
+  blobUrl?: string;
   generatedAt: string;
 }
+
 
 export default function ProformaInvoicePage() {
   // Buyer Details
@@ -337,16 +340,14 @@ export default function ProformaInvoicePage() {
     }
   };
 
-  const handleDownload = (filename: string, base64?: string, mime?: string) => {
+  const handleDownload = (filename: string, base64?: string, mime?: string, blobUrl?: string) => {
     if (base64) {
       downloadBase64(filename, base64, mime!);
       return;
     }
-    const a = document.createElement("a");
-    a.href = `/api/download?folder=pi&file=${encodeURIComponent(filename)}`;
-    a.download = filename;
-    a.click();
+    downloadHistoryFile('pi', filename, blobUrl);
   };
+
 
   const fmtINR = (val: number) => {
     return val.toLocaleString("en-IN", {
@@ -879,7 +880,8 @@ export default function ProformaInvoicePage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDownload(record.pdfFile)}
+                            onClick={() => handleDownload(record.pdfFile, undefined, undefined, record.blobUrl)}
+
                             className="h-7 px-2 text-xs"
                           >
                             <Download size={11} />

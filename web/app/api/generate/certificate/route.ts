@@ -4,7 +4,9 @@ import fs from "fs";
 import { generateCertificatePdf } from "@/lib/pdfLibGenerator";
 import { nextContractNumber, buildFilename } from "@/lib/contractNumber";
 import { readCertificates, appendCertificate, CertificateRecord } from "@/lib/certStore";
+import { uploadToBlob } from "@/lib/blobStore";
 import { logger } from "@/lib/logger";
+
 import { writableDir } from "@/lib/paths";
 import { formatDate } from "@/lib/formatting";
 
@@ -132,6 +134,12 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to verify generated PDF file.");
     }
 
+    let pdfBlobUrl: string | undefined = undefined;
+    if (pdfBytes && pdfName) {
+      const u = await uploadToBlob(pdfName, pdfBytes, 'certificates');
+      if (u) pdfBlobUrl = u;
+    }
+
     // 4. Save/Update History
     const record: CertificateRecord = {
       id: contractNo,
@@ -144,7 +152,9 @@ export async function POST(req: NextRequest) {
       lastWorkingDate,
       generatedAt: new Date().toISOString(),
       pdf: pdfName,
+      pdfBlobUrl,
     };
+
 
     if (existing) {
       // Overwrite history record instead of appending new duplicate

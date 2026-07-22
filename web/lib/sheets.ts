@@ -262,9 +262,23 @@ function parseCsv(text: string): string[][] {
 
 // ─── Column helpers ───────────────────────────────────────────────────────────
 
-function findCol(headers: string[], envKey: string, fallback: string): number {
-  const target = (process.env[envKey] ?? fallback).trim().toLowerCase();
-  return headers.findIndex(h => h.trim().toLowerCase() === target);
+function findColWithAliases(headers: string[], envKey: string, aliases: string[]): number {
+  const envVal = process.env[envKey]?.trim();
+  const searchList = envVal ? [envVal, ...aliases] : aliases;
+
+  const norm = (s: string) => s.trim().toLowerCase().replace(/[\(\)\_\-\.]/g, ' ').replace(/\s+/g, ' ');
+
+  // Level 1: Exact or cleaned match
+  let idx = headers.findIndex(h => searchList.some(a => norm(h) === norm(a)));
+  if (idx >= 0) return idx;
+
+  // Level 2: Substring inclusion match
+  idx = headers.findIndex(h => searchList.some(a => {
+    const nh = norm(h);
+    const na = norm(a);
+    return nh.length > 2 && na.length > 2 && (nh.includes(na) || na.includes(nh));
+  }));
+  return idx;
 }
 
 function cell(row: string[], idx: number): string {
@@ -283,26 +297,90 @@ export async function fetchBrandRows(sheetIdOrUrl: string | null): Promise<Brand
 
   const headers = rows[0].map(String);
   const c = {
-    legalName:     findCol(headers, 'BRAND_HEADER_LEGAL_NAME',     'Legal Name'),
-    brandCategory: findCol(headers, 'BRAND_HEADER_BRAND_CATEGORY', 'Brand Category'),
-    address:       findCol(headers, 'BRAND_HEADER_ADDRESS',        'Address'),
-    email:         findCol(headers, 'BRAND_HEADER_EMAIL',          'Email Address'),
-    phone:         findCol(headers, 'BRAND_HEADER_PHONE',          'Phone Number'),
-    contactPerson: findCol(headers, 'BRAND_HEADER_CONTACT_PERSON', 'Contact Person'),
+    legalName: findColWithAliases(headers, 'BRAND_HEADER_LEGAL_NAME', [
+      'Legal Name ( to be written in contract )',
+      'Legal Name (to be written in contract)',
+      'Legal Name',
+      'Brand Name',
+      'Brand Name / Legal Name',
+      'Company Name',
+      'Brand',
+      'Name of Brand',
+      'Name of Company',
+      'Legal Company Name',
+      'Name'
+    ]),
+    brandCategory: findColWithAliases(headers, 'BRAND_HEADER_BRAND_CATEGORY', [
+      'Products Category ( to be written in contract )',
+      'Products Category (to be written in contract)',
+      'Products Category',
+      'Product Category',
+      'Brand Category',
+      'Category',
+      'Type of Product',
+      'Product Type',
+      'Products'
+    ]),
+    address: findColWithAliases(headers, 'BRAND_HEADER_ADDRESS', [
+      'Address ( to be written in contract )',
+      'Address (to be written in contract)',
+      'Address',
+      'Registered Address',
+      'Office Address',
+      'Business Address',
+      'Location'
+    ]),
+    email: findColWithAliases(headers, 'BRAND_HEADER_EMAIL', [
+      'Email Address',
+      'Email ID',
+      'Email',
+      'Contact Email',
+      'Mail'
+    ]),
+    phone: findColWithAliases(headers, 'BRAND_HEADER_PHONE', [
+      'Phone Number',
+      'Phone',
+      'Contact Number',
+      'Contact No',
+      'Mobile Number',
+      'Mobile',
+      'Phone No'
+    ]),
+    contactPerson: findColWithAliases(headers, 'BRAND_HEADER_CONTACT_PERSON', [
+      'Contact Person Name',
+      'Contact Person',
+      'Authorized Signatory',
+      'Person Name',
+      'Name of Contact Person',
+      'Contact Name',
+      'Contact'
+    ]),
   };
 
   return rows.slice(1)
-    .map((r, i) => ({
-      index: i + 2,
-      legalName:     cell(r, c.legalName).trim(),
-      brandCategory: cell(r, c.brandCategory),
-      address:       cell(r, c.address),
-      email:         cell(r, c.email),
-      phone:         cell(r, c.phone),
-      contactPerson: cell(r, c.contactPerson),
-    }))
-    .filter(b => b.legalName);
+    .map((r, i) => {
+      const legalName = cell(r, c.legalName).trim();
+      const brandCategory = cell(r, c.brandCategory).trim();
+      const address = cell(r, c.address).trim();
+      const email = cell(r, c.email).trim();
+      const phone = cell(r, c.phone).trim();
+      const contactPerson = cell(r, c.contactPerson).trim();
+
+      const fallbackName = legalName || (r[1] ? r[1].trim() : r[0] ? r[0].trim() : '');
+
+      return {
+        index: i + 2,
+        legalName: fallbackName,
+        brandCategory,
+        address,
+        email,
+        phone,
+        contactPerson,
+      };
+    })
+    .filter(b => b.legalName || b.brandCategory || b.address);
 }
+
 
 export async function fetchEmployeeRows(sheetIdOrUrl: string | null): Promise<EmployeeRow[]> {
   const sid = (sheetIdOrUrl || '').trim() || process.env.GOOGLE_EMPLOYEE_SHEET_ID || '';
@@ -313,17 +391,18 @@ export async function fetchEmployeeRows(sheetIdOrUrl: string | null): Promise<Em
 
   const headers = rows[0].map(String);
   const c = {
-    name:        findCol(headers, 'EMPLOYEE_HEADER_NAME',        'Full Name'),
-    fatherName:  findCol(headers, 'EMPLOYEE_HEADER_FATHER_NAME', "Father's Name"),
-    address:     findCol(headers, 'EMPLOYEE_HEADER_ADDRESS',     'Address'),
-    phone:       findCol(headers, 'EMPLOYEE_HEADER_PHONE',       'Phone Number'),
-    email:       findCol(headers, 'EMPLOYEE_HEADER_EMAIL',       'Email Address'),
-    pan:         findCol(headers, 'EMPLOYEE_HEADER_PAN',         'PAN Number'),
-    aadhar:      findCol(headers, 'EMPLOYEE_HEADER_AADHAR',      'Aadhar Number'),
-    designation: findCol(headers, 'EMPLOYEE_HEADER_DESIGNATION', 'Designation'),
-    department:  findCol(headers, 'EMPLOYEE_HEADER_DEPARTMENT',  'Department'),
-    gender:      findCol(headers, 'EMPLOYEE_HEADER_GENDER',      'Gender'),
+    name:        findColWithAliases(headers, 'EMPLOYEE_HEADER_NAME',        ['Full Name', 'Name', 'Employee Name']),
+    fatherName:  findColWithAliases(headers, 'EMPLOYEE_HEADER_FATHER_NAME', ["Father's Name", 'Father Name', 'Fathers Name']),
+    address:     findColWithAliases(headers, 'EMPLOYEE_HEADER_ADDRESS',     ['Address', 'Registered Address', 'Location']),
+    phone:       findColWithAliases(headers, 'EMPLOYEE_HEADER_PHONE',       ['Phone Number', 'Phone', 'Mobile Number', 'Contact Number']),
+    email:       findColWithAliases(headers, 'EMPLOYEE_HEADER_EMAIL',       ['Email Address', 'Email ID', 'Email', 'Mail']),
+    pan:         findColWithAliases(headers, 'EMPLOYEE_HEADER_PAN',         ['PAN Number', 'PAN', 'PAN No']),
+    aadhar:      findColWithAliases(headers, 'EMPLOYEE_HEADER_AADHAR',      ['Aadhar Number', 'Aadhar', 'Aadhaar Number', 'Aadhaar']),
+    designation: findColWithAliases(headers, 'EMPLOYEE_HEADER_DESIGNATION', ['Designation', 'Role', 'Position']),
+    department:  findColWithAliases(headers, 'EMPLOYEE_HEADER_DEPARTMENT',  ['Department', 'Team', 'Dept']),
+    gender:      findColWithAliases(headers, 'EMPLOYEE_HEADER_GENDER',      ['Gender', 'Sex']),
   };
+
 
   return rows.slice(1)
     .map((r, i) => ({

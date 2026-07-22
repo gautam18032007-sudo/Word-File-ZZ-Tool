@@ -1,31 +1,82 @@
 /**
- * Client-side download from a base64 payload embedded in an API response.
- *
- * On Vercel each API route is its own serverless function with its own /tmp,
- * so a file written during generation is never visible to a later /api/download
- * request against a different function instance. Downloading straight from the
- * base64 the generate call already returned sidesteps that entirely.
+ * Binary-safe client-side download utility.
+ * Decodes base64 payload into a raw Uint8Array byte buffer and triggers
+ * a browser file download with explicit OpenXML / PDF MIME headers.
  */
-export function downloadBase64(filename: string, base64: string, mime: string) {
-  const byteChars = atob(base64);
-  const byteNumbers = new Array(byteChars.length);
-  for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
-  const blob = new Blob([new Uint8Array(byteNumbers)], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  // Chrome's download manager reads the blob URL asynchronously after click()
-  // returns; revoking immediately can invalidate it before the fetch completes
-  // ("File wasn't available on site"). Give it time to finish first.
-  setTimeout(() => URL.revokeObjectURL(url), 30_000);
-}
 
 export const MIME = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   pdf: "application/pdf",
 } as const;
+
+export function getMimeTypeForFilename(filename: string, fallbackMime?: string): string {
+  if (fallbackMime && fallbackMime.trim()) return fallbackMime;
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (ext === 'xlsx') return MIME.xlsx;
+  if (ext === 'docx') return MIME.docx;
+  if (ext === 'pdf') return MIME.pdf;
+  return 'application/octet-stream';
+}
+
+export function downloadBase64(filename: string, base64: string, mime?: string) {
+  if (!base64 || typeof base64 !== 'string') {
+    console.error('[clientDownload] Cannot download: base64 payload is missing or invalid');
+    return;
+  }
+
+  try {
+    // Strip data URL scheme prefix if present and remove whitespace/newlines
+    const cleanBase64 = base64.replace(/^data:[^;]+;base64,/, '').replace(/\s+/g, '');
+    const byteChars = atob(cleanBase64);
+    const byteArray = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+      byteArray[i] = byteChars.charCodeAt(i);
+    }
+
+    const resolvedMime = getMimeTypeForFilename(filename, mime);
+    const blob = new Blob([byteArray], { type: resolvedMime });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  } catch (err) {
+    console.error('[clientDownload] Base64 decoding failed for file:', filename, err);
+  }
+}
+
+/**
+ * Downloads a history file safely.
+ * If a persistent blobUrl is present, downloads directly from Vercel Blob storage.
+ * Otherwise performs a HEAD request check against /api/download to ensure the file
+ * actually exists on serverless disk, displaying an alert if expired instead of saving a 404 body.
+ */
+export async function downloadHistoryFile(folder: string, filename: string, blobUrl?: string) {
+  if (blobUrl && blobUrl.trim()) {
+    window.open(blobUrl, '_blank');
+    return;
+  }
+
+  const url = `/api/download?folder=${encodeURIComponent(folder)}&file=${encodeURIComponent(filename)}`;
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    if (!res.ok) {
+      alert(`This file (${filename}) is no longer available on serverless storage. Please regenerate the document.`);
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (err) {
+    alert(`Could not download ${filename}. Please try regenerating.`);
+  }
+}

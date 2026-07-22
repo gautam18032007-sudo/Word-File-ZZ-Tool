@@ -7,6 +7,10 @@ import { supportsLibreOffice } from '@/lib/environment';
 
 const OUTPUT_DIR = writableDir('output');
 
+export async function HEAD(req: NextRequest) {
+  return GET(req);
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const folder = searchParams.get('folder') ?? '';
@@ -14,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   // Basic path traversal protection
   if (!folder || !filename || filename.includes('..') || folder.includes('..')) {
-    return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    return new NextResponse('Invalid path', { status: 400, headers: { 'Content-Type': 'text/plain' } });
   }
 
   const filePath = path.join(OUTPUT_DIR, folder, filename);
@@ -22,7 +26,6 @@ export async function GET(req: NextRequest) {
 
   // If PDF requested but file doesn't exist yet on disk, attempt on-the-fly conversion from DOCX if present
   if (!fs.existsSync(filePath) && ext === '.pdf' && supportsLibreOffice()) {
-
     const docxName = filename.replace(/\.pdf$/i, '.docx');
     const docxPath = path.join(OUTPUT_DIR, folder, docxName);
     if (fs.existsSync(docxPath)) {
@@ -37,7 +40,10 @@ export async function GET(req: NextRequest) {
   }
 
   if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    return new NextResponse(`File not found: ${filename}`, {
+      status: 404,
+      headers: { 'Content-Type': 'text/plain' },
+    });
   }
 
   const fileBuffer = fs.readFileSync(filePath);
@@ -46,7 +52,6 @@ export async function GET(req: NextRequest) {
     ext === '.docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
     ext === '.xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
     'application/octet-stream';
-
 
   return new NextResponse(fileBuffer, {
     headers: {

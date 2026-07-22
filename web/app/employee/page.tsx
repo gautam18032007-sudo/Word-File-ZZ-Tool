@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { EmployeeRow, SalaryBreakup, GenerateResult } from "@/lib/types";
-import { downloadBase64, MIME } from "@/lib/clientDownload";
+import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+
 import { SheetLoader } from "@/components/shared/SheetLoader";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -197,11 +198,21 @@ export default function EmployeePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   function findColumnIndex(headersList: string[], possibleNames: string[]): number {
-    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
-    return headersList.findIndex(h => 
-      possibleNames.some(p => norm(h) === norm(p))
-    );
+    const norm = (s: string) => s.trim().toLowerCase().replace(/[\(\)\_\-\.]/g, ' ').replace(/\s+/g, ' ');
+    
+    // Level 1: Exact / cleaned match
+    let idx = headersList.findIndex(h => possibleNames.some(p => norm(h) === norm(p)));
+    if (idx >= 0) return idx;
+
+    // Level 2: Substring inclusion match
+    idx = headersList.findIndex(h => possibleNames.some(p => {
+      const nh = norm(h);
+      const np = norm(p);
+      return nh.length > 2 && np.length > 2 && (nh.includes(np) || np.includes(nh));
+    }));
+    return idx;
   }
+
 
   // Compute employee column indices dynamically
   const nameIdx = findColumnIndex(headers, ['Full Name', 'Name']);
@@ -357,16 +368,14 @@ export default function EmployeePage() {
     }
   }
 
-  function downloadFile(filename: string, folder: string, base64?: string, mime?: string) {
+  function downloadFile(filename: string, folder: string, base64?: string, mime?: string, blobUrl?: string) {
     if (base64) {
       downloadBase64(filename, base64, mime!);
       return;
     }
-    const a = document.createElement("a");
-    a.href = `/api/download?folder=${folder}&file=${encodeURIComponent(filename)}`;
-    a.download = filename;
-    a.click();
+    downloadHistoryFile(folder, filename, blobUrl);
   }
+
 
   return (
     <div className="max-w-5xl space-y-6">

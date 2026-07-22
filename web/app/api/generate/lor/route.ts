@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateLor } from "@/lib/lorGenerator";
 import { nextContractNumber } from "@/lib/contractNumber";
 import { appendLorHistory, LorHistoryRecord } from "@/lib/lorStore";
+import { uploadToBlob } from "@/lib/blobStore";
 import { logger } from "@/lib/logger";
+
 
 export const maxDuration = 60;
 
@@ -71,6 +73,18 @@ export async function POST(req: NextRequest) {
 
 
     // 4. Save/Append history
+    let docxBlobUrl: string | undefined = undefined;
+    let pdfBlobUrl: string | undefined = undefined;
+
+    if (result.docxBase64 && result.docxFile) {
+      const u = await uploadToBlob(result.docxFile, Buffer.from(result.docxBase64, 'base64'), 'lors');
+      if (u) docxBlobUrl = u;
+    }
+    if (result.pdfBase64 && result.pdfFile) {
+      const u = await uploadToBlob(result.pdfFile, Buffer.from(result.pdfBase64, 'base64'), 'lors');
+      if (u) pdfBlobUrl = u;
+    }
+
     const record: LorHistoryRecord = {
       id: lorNumber,
       lorNumber,
@@ -91,6 +105,8 @@ export async function POST(req: NextRequest) {
       edited: !!edited,
       docxFile: result.docxFile,
       pdfFile: result.pdfFile,
+      docxBlobUrl,
+      pdfBlobUrl,
       generatedBy: generatedBy || "manual",
     };
 

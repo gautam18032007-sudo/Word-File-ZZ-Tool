@@ -16,7 +16,9 @@ export interface CertificateRecord {
   lastWorkingDate: string;
   generatedAt: string;
   pdf: string; // PDF filename
+  pdfBlobUrl?: string;
 }
+
 
 export function readCertificates(): CertificateRecord[] {
   try {

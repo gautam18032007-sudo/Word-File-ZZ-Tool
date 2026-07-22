@@ -9,6 +9,8 @@ import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
 
 
 import { appendContract } from '@/lib/store';
+import { uploadToBlob } from '@/lib/blobStore';
+
 import { calcSalary } from '@/lib/salary';
 import { formatINR, numberToWords, formatDate } from '@/lib/formatting';
 import type { EmployeeRow } from '@/lib/types';
@@ -150,6 +152,19 @@ export async function POST(req: NextRequest) {
 
 
 
+    let docxBlobUrl: string | undefined = undefined;
+    let pdfBlobUrl: string | undefined = undefined;
+
+    if (docxBytes && docxName) {
+      const u = await uploadToBlob(docxName, docxBytes, 'employees');
+      if (u) docxBlobUrl = u;
+    }
+    if (pdfBase64 && pdfName) {
+      const pdfBuf = Buffer.from(pdfBase64, 'base64');
+      const u = await uploadToBlob(pdfName, pdfBuf, 'employees');
+      if (u) pdfBlobUrl = u;
+    }
+
     appendContract({
       contract_no: contractNo,
       type: 'employee',
@@ -158,9 +173,12 @@ export async function POST(req: NextRequest) {
       docx: docxName,
       pdf: pdfName,
       folder: 'employees',
+      docx_blob_url: docxBlobUrl,
+      pdf_blob_url: pdfBlobUrl,
       annual_ctc: s.annualCTC,
       designation: e.designation,
     });
+
     logger.gen(`[API/generate/employee] Appended contract #${contractNo} to history.`);
 
     return NextResponse.json({

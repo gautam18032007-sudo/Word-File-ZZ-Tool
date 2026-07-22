@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { SheetLoader } from "@/components/shared/SheetLoader";
-import { downloadBase64, MIME } from "@/lib/clientDownload";
+import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+
 
 interface CertificateCandidate {
   fullName: string;
@@ -376,16 +377,14 @@ export default function CertificatePage() {
     }
   }
 
-  function downloadFile(filename: string, base64?: string) {
+  function downloadFile(filename: string, base64?: string, blobUrl?: string) {
     if (base64) {
       downloadBase64(filename, base64, MIME.pdf);
       return;
     }
-    const a = document.createElement("a");
-    a.href = `/api/download?folder=certificates&file=${encodeURIComponent(filename)}`;
-    a.download = filename;
-    a.click();
+    downloadHistoryFile('certificates', filename, blobUrl);
   }
+
 
   // Filter candidates list by search query
   const filteredCandidates = candidates.filter((c) => {

@@ -16,10 +16,12 @@ export interface PiHistoryRecord {
   date: string;
   grandTotal: number;
   pdfFile: string;
+  blobUrl?: string;
   generatedAt: string;
   deliveryAddress?: string;
   placeOfSupply?: string;
 }
+
 
 export function readPiHistory(): PiHistoryRecord[] {
   try {

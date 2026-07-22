@@ -5,7 +5,9 @@ import { generatePiWorkbook } from "@/lib/piGenerator";
 import { nextContractNumber, buildFilename, peekNextPiNumber, commitPiNumber } from "@/lib/contractNumber";
 
 import { readPiHistory, appendPiHistory, archivePiRecord, PiHistoryRecord } from "@/lib/piStore";
+import { uploadToBlob } from "@/lib/blobStore";
 import { logger } from "@/lib/logger";
+
 import { writableDir } from "@/lib/paths";
 
 const OUTPUT_DIR = path.join(writableDir("output"), "pi");
@@ -181,6 +183,13 @@ export async function POST(req: NextRequest) {
       });
       const grandTotal = totalTaxable + totalGst;
 
+      let blobUrl: string | undefined = undefined;
+      const targetBuffer = result.pdfBuffer || result.xlsxBuffer;
+      const targetFileName = pdfName || xlsxName;
+      if (targetBuffer && targetFileName) {
+        const uploadRes = await uploadToBlob(targetFileName, targetBuffer, 'pi');
+        if (uploadRes) blobUrl = uploadRes;
+      }
 
       const record: PiHistoryRecord = {
         id: `${contractNo}-${Date.now()}`,
@@ -191,12 +200,14 @@ export async function POST(req: NextRequest) {
         date,
         grandTotal,
         pdfFile: pdfName || xlsxName,
+        blobUrl,
         generatedAt: new Date().toISOString(),
         deliveryAddress: deliveryAddress?.trim(),
         placeOfSupply: placeOfSupply.trim(),
       };
 
       appendPiHistory(record);
+
       logger.gen(`[API/generate/pi] Appended new active history record for ${contractNo}`);
     }
 

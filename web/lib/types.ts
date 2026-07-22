@@ -53,6 +53,8 @@ export interface ContractRecord {
   docx: string;
   pdf: string | null;
   folder: string;
+  docx_blob_url?: string;
+  pdf_blob_url?: string;
   location?: string;
   total_amount?: number;
   annual_ctc?: number;
@@ -61,6 +63,7 @@ export interface ContractRecord {
   certificateType?: string;
   template?: string;
 }
+
 
 // ─── Form Data ────────────────────────────────────────────────────────────────
 

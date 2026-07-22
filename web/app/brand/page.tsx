@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
-import { downloadBase64, MIME } from "@/lib/clientDownload";
+import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+
 import { SheetLoader } from "@/components/shared/SheetLoader";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -97,27 +98,103 @@ export default function BrandPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   function findColumnIndex(headersList: string[], possibleNames: string[]): number {
-    const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
-    return headersList.findIndex(h => 
-      possibleNames.some(p => norm(h) === norm(p))
-    );
+    const norm = (s: string) => s.trim().toLowerCase().replace(/[\(\)\_\-\.]/g, ' ').replace(/\s+/g, ' ');
+    
+    // Level 1: Exact / cleaned match
+    let idx = headersList.findIndex(h => possibleNames.some(p => norm(h) === norm(p)));
+    if (idx >= 0) return idx;
+
+    // Level 2: Substring inclusion match
+    idx = headersList.findIndex(h => possibleNames.some(p => {
+      const nh = norm(h);
+      const np = norm(p);
+      return nh.length > 2 && np.length > 2 && (nh.includes(np) || np.includes(nh));
+    }));
+    return idx;
   }
 
   // Compute brand column indices dynamically
-  const legalNameIdx = findColumnIndex(headers, ['Legal Name ( to be written in contract )', 'Legal Name']);
-  const brandCategoryIdx = findColumnIndex(headers, ['Products Category ( to be written in contract )', 'Products Category']);
-  const addressIdx = findColumnIndex(headers, ['Address ( to be written in contract )', 'Address']);
+  const legalNameIdx = findColumnIndex(headers, [
+    'Legal Name ( to be written in contract )',
+    'Legal Name (to be written in contract)',
+    'Legal Name',
+    'Brand Name',
+    'Brand Name / Legal Name',
+    'Company Name',
+    'Brand',
+    'Name of Brand',
+    'Name of Company',
+    'Legal Company Name',
+    'Name'
+  ]);
+  const brandCategoryIdx = findColumnIndex(headers, [
+    'Products Category ( to be written in contract )',
+    'Products Category (to be written in contract)',
+    'Products Category',
+    'Product Category',
+    'Brand Category',
+    'Category',
+    'Type of Product',
+    'Product Type',
+    'Products'
+  ]);
+  const addressIdx = findColumnIndex(headers, [
+    'Address ( to be written in contract )',
+    'Address (to be written in contract)',
+    'Address',
+    'Registered Address',
+    'Office Address',
+    'Business Address',
+    'Location'
+  ]);
+  const emailIdx = findColumnIndex(headers, [
+    'Email Address',
+    'Email ID',
+    'Email',
+    'Contact Email',
+    'Mail'
+  ]);
+  const phoneIdx = findColumnIndex(headers, [
+    'Phone Number',
+    'Phone',
+    'Contact Number',
+    'Contact No',
+    'Mobile Number',
+    'Mobile',
+    'Phone No'
+  ]);
+  const contactPersonIdx = findColumnIndex(headers, [
+    'Contact Person Name',
+    'Contact Person',
+    'Authorized Signatory',
+    'Person Name',
+    'Name of Contact Person',
+    'Contact Name',
+    'Contact'
+  ]);
 
   // Compute brands dynamically from rawRows
-  const brands: BrandRow[] = rawRows.map((r, i) => ({
-    index: i + 2,
-    legalName: legalNameIdx >= 0 ? (r[legalNameIdx] ?? '').trim() : '',
-    brandCategory: brandCategoryIdx >= 0 ? (r[brandCategoryIdx] ?? '').trim() : '',
-    address: addressIdx >= 0 ? (r[addressIdx] ?? '').trim() : '',
-    email: '',
-    phone: '',
-    contactPerson: '',
-  })).filter(b => b.legalName);
+  const brands: BrandRow[] = rawRows.map((r, i) => {
+    const legalName = legalNameIdx >= 0 ? (r[legalNameIdx] ?? '').trim() : '';
+    const brandCategory = brandCategoryIdx >= 0 ? (r[brandCategoryIdx] ?? '').trim() : '';
+    const address = addressIdx >= 0 ? (r[addressIdx] ?? '').trim() : '';
+    const email = emailIdx >= 0 ? (r[emailIdx] ?? '').trim() : '';
+    const phone = phoneIdx >= 0 ? (r[phoneIdx] ?? '').trim() : '';
+    const contactPerson = contactPersonIdx >= 0 ? (r[contactPersonIdx] ?? '').trim() : '';
+
+    const fallbackName = legalName || (r[1] ? r[1].trim() : r[0] ? r[0].trim() : '');
+
+    return {
+      index: i + 2,
+      legalName: fallbackName,
+      brandCategory,
+      address,
+      email,
+      phone,
+      contactPerson,
+    };
+  }).filter(b => b.legalName || b.brandCategory || b.address);
+
 
   const selected = brands[selectedIdx] ?? null;
 
@@ -227,17 +304,14 @@ export default function BrandPage() {
     }
   }
 
-  function downloadFile(filename: string, folder: string, base64?: string, mime?: string) {
+  function downloadFile(filename: string, folder: string, base64?: string, mime?: string, blobUrl?: string) {
     if (base64) {
       downloadBase64(filename, base64, mime!);
       return;
     }
-    const url = `/api/download?folder=${folder}&file=${encodeURIComponent(filename)}`;
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
+    downloadHistoryFile(folder, filename, blobUrl);
   }
+
 
   return (
     <div className="max-w-5xl space-y-6">
