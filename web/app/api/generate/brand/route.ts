@@ -231,7 +231,7 @@ export async function POST(req: NextRequest) {
     } else if (isVercel()) {
       try {
         logger.gen(`[API/generate/brand] Generating PDF via Puppeteer Chromium on Vercel...`);
-        const html = renderBrandContractHtml(data);
+        const html = renderBrandContractHtml(data, docxBytes);
         const pdfBytes = await generatePdfFromHtml(html);
         pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);

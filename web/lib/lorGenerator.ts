@@ -122,7 +122,7 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
     }
   } else if (isVercel()) {
     try {
-      const html = renderLorHtml(data);
+      const html = renderLorHtml(data, docxBytes);
       const pdfBytes = await generatePdfFromHtml(html);
       fs.writeFileSync(pdfPath, pdfBytes);
       pdfBase64 = pdfBytes.toString('base64');
