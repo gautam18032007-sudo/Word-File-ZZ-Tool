@@ -2,11 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
 import { docxToPdf } from './pdf';
-import { supportsLibreOffice, isVercel } from './environment';
-import { generatePdfFromHtml } from './pdfRenderer';
-import { renderLorHtml } from './documentHtmlRenderer';
+import { supportsLibreOffice, hasGotenberg } from './environment';
+import { convertViaGotenberg } from './gotenbergConvert';
 
 import { writableDir } from './paths';
+
 
 const TEMPLATES_DIR = path.resolve(process.cwd(), 'templates');
 const OUTPUT_DIR = path.join(writableDir('output'), 'lors');
@@ -110,7 +110,7 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
   // Write DOCX
   fs.writeFileSync(docxPath, docxBytes);
 
-  // 4. Convert to PDF using headless LibreOffice or Puppeteer on Vercel
+  // 4. Convert to PDF using headless LibreOffice or Gotenberg
   let pdfBase64: string | null = null;
   if (supportsLibreOffice()) {
     try {
@@ -120,18 +120,18 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
     } catch (err) {
       console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
     }
-  } else if (isVercel()) {
+  } else if (hasGotenberg()) {
     try {
-      const html = renderLorHtml(data, docxBytes);
-      const pdfBytes = await generatePdfFromHtml(html);
+      const pdfBytes = await convertViaGotenberg(docxBytes, docxFilename);
       fs.writeFileSync(pdfPath, pdfBytes);
       pdfBase64 = pdfBytes.toString('base64');
     } catch (err) {
-      console.warn(`[generateLor] Puppeteer PDF rendering failed for ${lorNumber}, proceeding with DOCX only.`, err);
+      console.warn(`[generateLor] Gotenberg PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
     }
   } else {
-    console.log(`[generateLor] LibreOffice and Vercel unavailable. Skipping PDF conversion for ${lorNumber}.`);
+    console.log(`[generateLor] LibreOffice and Gotenberg unavailable. Skipping PDF conversion for ${lorNumber}.`);
   }
+
 
 
   return {

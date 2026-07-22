@@ -177,9 +177,10 @@ export async function POST(req: NextRequest) {
         const rowGst = effectiveRate * (gstPct / 100);
         const rowTaxable = effectiveRate * qty;
         totalTaxable += rowTaxable;
-        totalGst += rowGst;
+        totalGst += rowGst * qty;
       });
       const grandTotal = totalTaxable + totalGst;
+
 
       const record: PiHistoryRecord = {
         id: `${contractNo}-${Date.now()}`,

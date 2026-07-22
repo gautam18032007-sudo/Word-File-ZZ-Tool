@@ -16,3 +16,13 @@ export function supportsLibreOffice(): boolean {
   }
   return fs.existsSync(defaultPath);
 }
+
+export function hasGotenberg(): boolean {
+  return !!(process.env.GOTENBERG_URL && process.env.GOTENBERG_URL.trim().length > 0);
+}
+
+export function getPdfConversionMethod(): 'local' | 'gotenberg' | 'none' {
+  if (supportsLibreOffice()) return 'local';
+  if (hasGotenberg()) return 'gotenberg';
+  return 'none';
+}

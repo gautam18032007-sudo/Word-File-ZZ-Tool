@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
 import { docxToPdf, PdfError } from '@/lib/pdf';
-import { supportsLibreOffice, isVercel } from '@/lib/environment';
-import { generatePdfFromHtml } from '@/lib/pdfRenderer';
-import { renderBrandContractHtml } from '@/lib/documentHtmlRenderer';
+import { supportsLibreOffice, hasGotenberg } from '@/lib/environment';
+import { convertViaGotenberg } from '@/lib/gotenbergConvert';
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
+
 
 
 import { appendContract } from '@/lib/store';
@@ -228,23 +228,24 @@ export async function POST(req: NextRequest) {
         logger.error(`[API/generate/brand] PDF conversion failed (skipped): ${e.message}`);
         message = 'PDF generation unavailable.';
       }
-    } else if (isVercel()) {
+    } else if (hasGotenberg()) {
       try {
-        logger.gen(`[API/generate/brand] Generating PDF via Puppeteer Chromium on Vercel...`);
-        const html = renderBrandContractHtml(data, docxBytes);
-        const pdfBytes = await generatePdfFromHtml(html);
         pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
+        logger.gen(`[API/generate/brand] Converting DOCX to PDF via Gotenberg...`);
+        const docxName = buildFilename(contractNo, brand.legalName, 'docx');
+        const pdfBytes = await convertViaGotenberg(docxBytes, docxName);
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
         pdfBase64 = pdfBytes.toString('base64');
-        logger.gen(`[API/generate/brand] Saved Puppeteer PDF: ${pdfName}`);
+        logger.gen(`[API/generate/brand] Saved Gotenberg PDF: ${pdfName}`);
       } catch (e) {
-        logger.error(`[API/generate/brand] Puppeteer PDF rendering failed: ${e}`);
+        logger.error(`[API/generate/brand] Gotenberg PDF rendering failed: ${e}`);
         message = 'PDF generation unavailable.';
       }
     } else {
       message = 'PDF generation unavailable.';
-      logger.gen(`[API/generate/brand] LibreOffice and Vercel unavailable. Skipping PDF conversion.`);
+      logger.gen(`[API/generate/brand] LibreOffice and Gotenberg unavailable. Skipping PDF conversion.`);
     }
+
 
 
     appendContract({

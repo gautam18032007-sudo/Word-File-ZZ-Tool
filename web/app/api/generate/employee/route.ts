@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
 import { docxToPdf, PdfError } from '@/lib/pdf';
-import { supportsLibreOffice, isVercel } from '@/lib/environment';
-import { generatePdfFromHtml } from '@/lib/pdfRenderer';
-import { renderEmployeeContractHtml } from '@/lib/documentHtmlRenderer';
+import { supportsLibreOffice, hasGotenberg } from '@/lib/environment';
+import { convertViaGotenberg } from '@/lib/gotenbergConvert';
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
+
 
 import { appendContract } from '@/lib/store';
 import { calcSalary } from '@/lib/salary';
@@ -130,23 +130,24 @@ export async function POST(req: NextRequest) {
         logger.error(`[API/generate/employee] PDF conversion failed (skipped): ${err.message}`);
         message = 'PDF generation unavailable.';
       }
-    } else if (isVercel()) {
+    } else if (hasGotenberg()) {
       try {
-        logger.gen(`[API/generate/employee] Generating PDF via Puppeteer Chromium on Vercel...`);
-        const html = renderEmployeeContractHtml(data, docxBytes);
-        const pdfBytes = await generatePdfFromHtml(html);
         pdfName = buildFilename(contractNo, e.name, 'pdf');
+        logger.gen(`[API/generate/employee] Converting DOCX to PDF via Gotenberg...`);
+        const docxName = buildFilename(contractNo, e.name, 'docx');
+        const pdfBytes = await convertViaGotenberg(docxBytes, docxName);
         fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
         pdfBase64 = pdfBytes.toString('base64');
-        logger.gen(`[API/generate/employee] Saved Puppeteer PDF: ${pdfName}`);
+        logger.gen(`[API/generate/employee] Saved Gotenberg PDF: ${pdfName}`);
       } catch (err) {
-        logger.error(`[API/generate/employee] Puppeteer PDF rendering failed: ${err}`);
+        logger.error(`[API/generate/employee] Gotenberg PDF rendering failed: ${err}`);
         message = 'PDF generation unavailable.';
       }
     } else {
       message = 'PDF generation unavailable.';
-      logger.gen(`[API/generate/employee] LibreOffice and Vercel unavailable. Skipping PDF conversion.`);
+      logger.gen(`[API/generate/employee] LibreOffice and Gotenberg unavailable. Skipping PDF conversion.`);
     }
+
 
 
     appendContract({

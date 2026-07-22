@@ -2,11 +2,12 @@ import ExcelJS from 'exceljs';
 import path from 'path';
 import fs from 'fs';
 import { xlsxToPdf } from './pdf';
-import { supportsLibreOffice, isVercel } from './environment';
-import { generatePdfFromHtml } from './pdfRenderer';
-import { renderProformaInvoiceHtml } from './documentHtmlRenderer';
+import { supportsLibreOffice, hasGotenberg } from './environment';
+import { convertViaGotenberg } from './gotenbergConvert';
+
 
 export interface PiGeneratorItem {
+
   description: string;
   billingMode?: 'month' | 'sku';
   amount: number;
@@ -113,16 +114,16 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
       // Rate (Rs.) = Amount * SKU if SKU mode, else Amount
       const effectiveRate = isSkuMode ? amount * sku : amount;
-      // GST Amount = Rate * GST% (calculated on Rate ONLY, quantity independent)
+      // GST Amount = Rate * GST% (calculated on Rate, per month)
       const rowGst = effectiveRate * (gstPct / 100);
       // Taxable Amount = Rate * Quantity
       const rowTaxable = effectiveRate * qty;
-      // Total Amount = (Rate * Quantity) + GST Amount
-      const rowTotal = rowTaxable + rowGst;
+      // Total Amount = (Rate + GST Amount) * Quantity
+      const rowTotal = (effectiveRate + rowGst) * qty;
 
       totalQuantity += qty;
       totalTaxableAmount += rowTaxable;
-      totalGstAmount += rowGst;
+      totalGstAmount += rowGst * qty;
 
       // Notes formatting
       const notesText = isSkuMode
@@ -136,7 +137,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
       sheet.getCell(`F${rowNum}`).value = effectiveRate;
       sheet.getCell(`G${rowNum}`).value = gstPct / 100;
       sheet.getCell(`H${rowNum}`).value = { formula: `=F${rowNum}*G${rowNum}`, result: rowGst };
-      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}*E${rowNum})+H${rowNum}`, result: rowTotal };
+      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}+H${rowNum})*E${rowNum}`, result: rowTotal };
     } else {
       // Clear unused slots in rows 25-28
       sheet.getCell(`B${rowNum}`).value = null;
@@ -144,7 +145,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
       sheet.getCell(`E${rowNum}`).value = null;
       sheet.getCell(`F${rowNum}`).value = null;
       sheet.getCell(`H${rowNum}`).value = { formula: `=F${rowNum}*G${rowNum}`, result: 0 };
-      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}*E${rowNum})+H${rowNum}`, result: 0 };
+      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}+H${rowNum})*E${rowNum}`, result: 0 };
     }
   }
 
@@ -160,9 +161,10 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
   // 3. Summary Rows and Tax Section Calculations (explicit formula result objects)
   sheet.getCell('E30').value = null;
-  sheet.getCell('H30').value = { formula: '=SUM(H25:H28)', result: totalGstAmount };
+  sheet.getCell('H30').value = { formula: '=SUMPRODUCT(E25:E28,H25:H28)', result: totalGstAmount };
 
   sheet.getCell('I30').value = { formula: '=SUM(I25:I28)', result: grandTotal };
+
 
   const displayGstPct = items[0]?.gstPct ?? 18;
   sheet.getCell('B32').value = Number(displayGstPct) / 100;
@@ -193,16 +195,16 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
     } catch (e) {
       console.warn('[generatePiWorkbook] LibreOffice PDF conversion skipped or failed:', e);
     }
-  } else if (isVercel()) {
+  } else if (hasGotenberg()) {
     try {
-      const html = renderProformaInvoiceHtml(input);
-      pdfBuffer = await generatePdfFromHtml(html);
+      pdfBuffer = await convertViaGotenberg(xlsxBuffer, `${piNumber.replace(/\//g, '_')}.xlsx`);
     } catch (e) {
-      console.warn('[generatePiWorkbook] Puppeteer PDF rendering skipped or failed:', e);
+      console.warn('[generatePiWorkbook] Gotenberg PDF conversion failed:', e);
     }
   }
 
   return { xlsxBuffer, pdfBuffer };
+
 }
 
 export async function generatePiPdf(input: PiGeneratorInput): Promise<Buffer> {
