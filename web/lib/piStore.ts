@@ -15,13 +15,15 @@ export interface PiHistoryRecord {
   buyerName: string;
   date: string;
   grandTotal: number;
-  pdfFile: string;
-  blobUrl?: string;
+  xlsxFile?: string;
+  xlsxBlobUrl?: string;
+  pdfFile?: string;
+  pdfBlobUrl?: string;
+  blobUrl?: string; // Legacy fallback for backwards compatibility
   generatedAt: string;
   deliveryAddress?: string;
   placeOfSupply?: string;
 }
-
 
 export function readPiHistory(): PiHistoryRecord[] {
   try {
@@ -133,6 +135,25 @@ export function archivePiRecord(targetPiNumber: string): PiHistoryRecord | null 
       }
     }
 
+    // Rename XLSX on disk if it exists
+    if (oldRecord.xlsxFile) {
+      const oldXlsxPath = path.join(PI_OUTPUT_DIR, oldRecord.xlsxFile);
+      if (fs.existsSync(oldXlsxPath)) {
+        const ext = path.extname(oldRecord.xlsxFile);
+        const nameWithoutExt = path.basename(oldRecord.xlsxFile, ext);
+        const newXlsxName = `${nameWithoutExt}_ARCHIVED${ext}`;
+        const newXlsxPath = path.join(PI_OUTPUT_DIR, newXlsxName);
+
+        try {
+          fs.renameSync(oldXlsxPath, newXlsxPath);
+          oldRecord.xlsxFile = newXlsxName;
+          logger.gen(`[piStore] Renamed archived XLSX on disk: ${oldRecord.xlsxFile} -> ${newXlsxName}`);
+        } catch (err: any) {
+          logger.error(`[piStore] Failed to rename archived XLSX file: ${err.message}`);
+        }
+      }
+    }
+
     // Update old record status and label
     oldRecord.status = 'archived';
     oldRecord.originalPiNumber = cleanTarget;
@@ -148,6 +169,7 @@ export function archivePiRecord(targetPiNumber: string): PiHistoryRecord | null 
     return null;
   }
 }
+
 
 export function deletePiRecord(id: string): boolean {
   try {

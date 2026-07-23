@@ -28,10 +28,14 @@ interface PiHistoryRecord {
   buyerName: string;
   date: string;
   grandTotal: number;
-  pdfFile: string;
+  xlsxFile?: string;
+  xlsxBlobUrl?: string;
+  pdfFile?: string;
+  pdfBlobUrl?: string;
   blobUrl?: string;
   generatedAt: string;
 }
+
 
 
 export default function ProformaInvoicePage() {
@@ -876,17 +880,39 @@ export default function ProformaInvoicePage() {
                       <td className="px-4 py-3 text-xs text-[var(--muted-foreground)]">{record.date}</td>
                       <td className="px-4 py-3 font-mono text-xs">₹{fmtINR(record.grandTotal)}</td>
                       <td className="px-4 py-3 pr-5">
-                        <div className="flex gap-1.5">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDownload(record.pdfFile, undefined, undefined, record.blobUrl)}
-
-                            className="h-7 px-2 text-xs"
-                          >
-                            <Download size={11} />
-                            PDF
-                          </Button>
+                        <div className="flex gap-1.5 font-sans">
+                          {(record.xlsxFile || record.pdfFile?.endsWith('.xlsx') || record.xlsxBlobUrl) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDownload(
+                                record.xlsxFile || record.pdfFile?.replace(/\.pdf$/i, '.xlsx') || 'invoice.xlsx',
+                                undefined,
+                                MIME.xlsx,
+                                record.xlsxBlobUrl || (!record.pdfFile?.endsWith('.pdf') ? record.blobUrl : undefined)
+                              )}
+                              className="h-7 px-2 text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
+                            >
+                              <Download size={11} />
+                              XLSX
+                            </Button>
+                          )}
+                          {(record.pdfFile?.endsWith('.pdf') || record.pdfBlobUrl || (record.pdfFile && !record.xlsxFile && record.blobUrl)) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDownload(
+                                record.pdfFile || 'invoice.pdf',
+                                undefined,
+                                MIME.pdf,
+                                record.pdfBlobUrl || record.blobUrl
+                              )}
+                              className="h-7 px-2 text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
+                            >
+                              <Download size={11} />
+                              PDF
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"
@@ -903,6 +929,7 @@ export default function ProformaInvoicePage() {
                           </Button>
                         </div>
                       </td>
+
                     </tr>
                   );
                 })}

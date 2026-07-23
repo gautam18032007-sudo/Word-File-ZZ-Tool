@@ -183,12 +183,19 @@ export async function POST(req: NextRequest) {
       });
       const grandTotal = totalTaxable + totalGst;
 
-      let blobUrl: string | undefined = undefined;
-      const targetBuffer = result.pdfBuffer || result.xlsxBuffer;
-      const targetFileName = pdfName || xlsxName;
-      if (targetBuffer && targetFileName) {
-        const uploadRes = await uploadToBlob(targetFileName, targetBuffer, 'pi');
-        if (uploadRes) blobUrl = uploadRes;
+      let xlsxBlobUrl: string | undefined = undefined;
+      let pdfBlobUrl: string | undefined = undefined;
+
+      if (result.xlsxBuffer && xlsxName) {
+        const blobFilename = isRegeneration ? `${path.basename(xlsxName, '.xlsx')}_v${Date.now()}.xlsx` : xlsxName;
+        const uploadRes = await uploadToBlob(blobFilename, result.xlsxBuffer, 'pi');
+        if (uploadRes) xlsxBlobUrl = uploadRes;
+      }
+
+      if (result.pdfBuffer && pdfName) {
+        const blobFilename = isRegeneration ? `${path.basename(pdfName, '.pdf')}_v${Date.now()}.pdf` : pdfName;
+        const uploadRes = await uploadToBlob(blobFilename, result.pdfBuffer, 'pi');
+        if (uploadRes) pdfBlobUrl = uploadRes;
       }
 
       const record: PiHistoryRecord = {
@@ -199,12 +206,16 @@ export async function POST(req: NextRequest) {
         buyerName: buyerName.trim(),
         date,
         grandTotal,
-        pdfFile: pdfName || xlsxName,
-        blobUrl,
+        xlsxFile: xlsxName,
+        xlsxBlobUrl,
+        pdfFile: pdfName || undefined,
+        pdfBlobUrl,
+        blobUrl: pdfBlobUrl || xlsxBlobUrl,
         generatedAt: new Date().toISOString(),
         deliveryAddress: deliveryAddress?.trim(),
         placeOfSupply: placeOfSupply.trim(),
       };
+
 
       appendPiHistory(record);
 

@@ -59,7 +59,33 @@ export function downloadBase64(filename: string, base64: string, mime?: string) 
  */
 export async function downloadHistoryFile(folder: string, filename: string, blobUrl?: string) {
   if (blobUrl && blobUrl.trim()) {
-    window.open(blobUrl, '_blank');
+    try {
+      const res = await fetch(blobUrl);
+      if (res.ok) {
+        const blobData = await res.blob();
+        const mimeType = getMimeTypeForFilename(filename);
+        const typedBlob = new Blob([blobData], { type: mimeType });
+        const url = URL.createObjectURL(typedBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 30_000);
+        return;
+      }
+    } catch (err) {
+      console.warn('[downloadHistoryFile] Blob fetch failed, falling back to direct link:', err);
+    }
+    // Fallback if fetch is blocked or fails
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = filename;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     return;
   }
 
@@ -67,7 +93,7 @@ export async function downloadHistoryFile(folder: string, filename: string, blob
   try {
     const res = await fetch(url, { method: 'HEAD' });
     if (!res.ok) {
-      alert(`This file (${filename}) is no longer available on serverless storage. Please regenerate the document.`);
+      alert(`File unavailable: "${filename}" was generated before persistent storage was added (or serverless temp storage expired). Please regenerate this document or delete this old record.`);
       return;
     }
     const a = document.createElement("a");
@@ -80,3 +106,4 @@ export async function downloadHistoryFile(folder: string, filename: string, blob
     alert(`Could not download ${filename}. Please try regenerating.`);
   }
 }
+
