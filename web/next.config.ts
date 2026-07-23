@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./templates/**/*'],
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },
@@ -10,5 +13,6 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["pizzip", "googleapis"],
 };
+
 
 export default nextConfig;
