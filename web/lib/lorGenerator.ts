@@ -1,9 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
-import { docxToPdf } from './pdf';
-import { supportsLibreOffice, hasGotenberg } from './environment';
-import { convertViaGotenberg } from './gotenbergConvert';
+import { convertDocumentToPdf } from './pdfProvider';
+
 
 import { writableDir } from './paths';
 
@@ -112,25 +111,13 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
 
   // 4. Convert to PDF using headless LibreOffice or Gotenberg
   let pdfBase64: string | null = null;
-  if (supportsLibreOffice()) {
-    try {
-      const pdfBytes = docxToPdf(docxBytes);
-      fs.writeFileSync(pdfPath, pdfBytes);
-      pdfBase64 = pdfBytes.toString('base64');
-    } catch (err) {
-      console.warn(`[generateLor] PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
-    }
-  } else if (hasGotenberg()) {
-    try {
-      const pdfBytes = await convertViaGotenberg(docxBytes, docxFilename);
-      fs.writeFileSync(pdfPath, pdfBytes);
-      pdfBase64 = pdfBytes.toString('base64');
-    } catch (err) {
-      console.warn(`[generateLor] Gotenberg PDF conversion failed for ${lorNumber}, proceeding with DOCX only.`, err);
-    }
-  } else {
-    console.log(`[generateLor] LibreOffice and Gotenberg unavailable. Skipping PDF conversion for ${lorNumber}.`);
+  const pdfResult = await convertDocumentToPdf(docxBytes, docxFilename);
+
+  if (pdfResult.pdfBuffer) {
+    fs.writeFileSync(pdfPath, pdfResult.pdfBuffer);
+    pdfBase64 = pdfResult.pdfBuffer.toString('base64');
   }
+
 
 
 

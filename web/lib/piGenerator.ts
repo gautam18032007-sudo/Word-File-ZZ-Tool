@@ -1,9 +1,8 @@
 import ExcelJS from 'exceljs';
 import path from 'path';
 import fs from 'fs';
-import { xlsxToPdf } from './pdf';
-import { supportsLibreOffice, hasGotenberg } from './environment';
-import { convertViaGotenberg } from './gotenbergConvert';
+import { convertDocumentToPdf } from './pdfProvider';
+
 
 
 export interface PiGeneratorItem {
@@ -188,22 +187,11 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   // Write sheet changes to buffer
   const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer());
 
-  let pdfBuffer: Buffer | null = null;
-  if (supportsLibreOffice()) {
-    try {
-      pdfBuffer = xlsxToPdf(xlsxBuffer);
-    } catch (e) {
-      console.warn('[generatePiWorkbook] LibreOffice PDF conversion skipped or failed:', e);
-    }
-  } else if (hasGotenberg()) {
-    try {
-      pdfBuffer = await convertViaGotenberg(xlsxBuffer, `${piNumber.replace(/\//g, '_')}.xlsx`);
-    } catch (e) {
-      console.warn('[generatePiWorkbook] Gotenberg PDF conversion failed:', e);
-    }
-  }
+  const xlsxFileName = `${piNumber.replace(/\//g, '_')}.xlsx`;
+  const pdfResult = await convertDocumentToPdf(xlsxBuffer, xlsxFileName);
 
-  return { xlsxBuffer, pdfBuffer };
+  return { xlsxBuffer, pdfBuffer: pdfResult.pdfBuffer };
+
 
 }
 

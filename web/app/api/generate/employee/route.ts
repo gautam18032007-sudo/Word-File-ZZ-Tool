@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
-import { docxToPdf, PdfError } from '@/lib/pdf';
-import { supportsLibreOffice, hasGotenberg } from '@/lib/environment';
-import { convertViaGotenberg } from '@/lib/gotenbergConvert';
+import { convertDocumentToPdf } from '@/lib/pdfProvider';
+
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
 
 
@@ -119,36 +118,18 @@ export async function POST(req: NextRequest) {
     let pdfBase64: string | null = null;
     let message: string | undefined = undefined;
 
-    if (supportsLibreOffice()) {
-      try {
-        logger.gen(`[API/generate/employee] Converting DOCX to PDF via LibreOffice...`);
-        const pdfBytes = docxToPdf(docxBytes);
-        pdfName = buildFilename(contractNo, e.name, 'pdf');
-        fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
-        pdfBase64 = pdfBytes.toString('base64');
-        logger.gen(`[API/generate/employee] Saved PDF: ${pdfName}`);
-      } catch (err) {
-        if (!(err instanceof PdfError)) throw err;
-        logger.error(`[API/generate/employee] PDF conversion failed (skipped): ${err.message}`);
-        message = 'PDF generation unavailable.';
-      }
-    } else if (hasGotenberg()) {
-      try {
-        pdfName = buildFilename(contractNo, e.name, 'pdf');
-        logger.gen(`[API/generate/employee] Converting DOCX to PDF via Gotenberg...`);
-        const docxName = buildFilename(contractNo, e.name, 'docx');
-        const pdfBytes = await convertViaGotenberg(docxBytes, docxName);
-        fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBytes);
-        pdfBase64 = pdfBytes.toString('base64');
-        logger.gen(`[API/generate/employee] Saved Gotenberg PDF: ${pdfName}`);
-      } catch (err) {
-        logger.error(`[API/generate/employee] Gotenberg PDF rendering failed: ${err}`);
-        message = 'PDF generation unavailable.';
-      }
+    const docxNameForPdf = buildFilename(contractNo, e.name, 'docx');
+    const pdfResult = await convertDocumentToPdf(docxBytes, docxNameForPdf);
+
+    if (pdfResult.pdfBuffer) {
+      pdfName = buildFilename(contractNo, e.name, 'pdf');
+      fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfResult.pdfBuffer);
+      pdfBase64 = pdfResult.pdfBuffer.toString('base64');
+      logger.gen(`[API/generate/employee] Saved PDF (${pdfResult.method}): ${pdfName}`);
     } else {
-      message = 'PDF generation unavailable.';
-      logger.gen(`[API/generate/employee] LibreOffice and Gotenberg unavailable. Skipping PDF conversion.`);
+      message = pdfResult.error || 'PDF generation unavailable.';
     }
+
 
 
 
