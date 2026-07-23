@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+import { ExportButton } from "@/components/export-button";
 
 import { SheetLoader } from "@/components/shared/SheetLoader";
+
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -367,12 +369,30 @@ export default function BrandPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2">
-                <Input
-                  placeholder="Search brand by name or category..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  disabled={brands.length === 0}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Search brand by name or category..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    disabled={brands.length === 0}
+                    className="flex-1"
+                  />
+                  {brands.length > 0 && (
+                    <ExportButton
+                      data={filteredBrands.map((b) => ({
+                        "Legal Name": b.legalName,
+                        "Brand Category": b.brandCategory || "N/A",
+                        "Address": b.address || "N/A",
+                        "Email": b.email || "N/A",
+                        "Phone": b.phone || "N/A",
+                        "Contact Person": b.contactPerson || "N/A",
+                      }))}
+                      filename="brand-sheet-data"
+                      label="Export"
+                    />
+                  )}
+                </div>
+
 
                 {brands.length === 0 && (
                   <p className="p-3 text-center text-xs text-[var(--muted-foreground)] border border-dashed border-[var(--border)] rounded-md">

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+import { ExportButton } from "@/components/export-button";
+
 
 
 interface LineItem {
@@ -820,17 +822,34 @@ export default function ProformaInvoicePage() {
       <Card>
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
           <CardTitle>Recent Proforma Invoices</CardTitle>
-          <div className="relative w-full sm:w-64">
-            <Search size={14} className="absolute left-2.5 top-2.5 text-[var(--muted-foreground)]" />
-            <Input
-              type="text"
-              placeholder="Search by PI# or Buyer..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9 text-xs"
-            />
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            {filteredHistory.length > 0 && (
+              <ExportButton
+                data={filteredHistory.map((r) => ({
+                  "PI Number": r.piNumber,
+                  "Buyer Name": r.buyerName,
+                  "Date": r.date,
+                  "Grand Total (INR)": r.grandTotal,
+                  "Status": r.status || "active",
+                  "Generated At": r.generatedAt,
+                }))}
+                filename="proforma-invoices-report"
+                label="Export History"
+              />
+            )}
+            <div className="relative w-full sm:w-64">
+              <Search size={14} className="absolute left-2.5 top-2.5 text-[var(--muted-foreground)]" />
+              <Input
+                type="text"
+                placeholder="Search by PI# or Buyer..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9 text-xs"
+              />
+            </div>
           </div>
         </CardHeader>
+
         <CardContent className="p-0 overflow-x-auto">
           {loadingHistory && (
             <div className="py-8 text-center text-sm text-[var(--muted-foreground)]">

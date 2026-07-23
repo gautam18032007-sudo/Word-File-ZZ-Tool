@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { EmployeeRow, SalaryBreakup, GenerateResult } from "@/lib/types";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
+import { ExportButton } from "@/components/export-button";
 
 import { SheetLoader } from "@/components/shared/SheetLoader";
+
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -436,12 +438,30 @@ export default function EmployeePage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2">
-                <Input
-                  placeholder="Search employee by name, dept or title..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  disabled={employees.length === 0}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Search employee by name, dept or title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    disabled={employees.length === 0}
+                    className="flex-1"
+                  />
+                  {employees.length > 0 && (
+                    <ExportButton
+                      data={filteredEmployees.map((e) => ({
+                        "Name": e.name,
+                        "Designation": e.designation || "N/A",
+                        "Department": e.department || "N/A",
+                        "Address": e.address || "N/A",
+                        "Phone": e.phone || "N/A",
+                        "Email": e.email || "N/A",
+                      }))}
+                      filename="employee-sheet-data"
+                      label="Export"
+                    />
+                  )}
+                </div>
+
 
                 {employees.length === 0 && (
                   <p className="p-3 text-center text-xs text-[var(--muted-foreground)] border border-dashed border-[var(--border)] rounded-md">
