@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
 import { convertDocumentToPdf } from './pdfProvider';
-import { generateLorPdfNative } from './lorPdfNative';
 
 
 
@@ -118,12 +117,7 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
   if (pdfResult.pdfBuffer) {
     pdfBuffer = pdfResult.pdfBuffer;
   } else {
-    // Native serverless fallback: generate PDF directly via pdf-lib
-    try {
-      pdfBuffer = await generateLorPdfNative(options);
-    } catch (e) {
-      console.warn('[generateLor] Native PDF fallback failed:', e);
-    }
+    console.warn('[generateLor] No PDF engine available — DOCX only. Set GOTENBERG_URL to enable PDF generation.');
   }
 
   let pdfBase64: string | null = null;

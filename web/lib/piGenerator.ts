@@ -2,7 +2,6 @@ import ExcelJS from 'exceljs';
 import path from 'path';
 import fs from 'fs';
 import { convertDocumentToPdf } from './pdfProvider';
-import { generatePiPdfNative } from './piPdfNative';
 
 
 
@@ -195,11 +194,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
   let pdfBuffer = pdfResult.pdfBuffer;
   if (!pdfBuffer) {
-    try {
-      pdfBuffer = await generatePiPdfNative(input);
-    } catch (err) {
-      console.warn('[generatePiWorkbook] Native PDF fallback failed:', err);
-    }
+    console.warn('[generatePiWorkbook] No PDF engine available — XLSX only. Set GOTENBERG_URL to enable PDF generation.');
   }
 
   return { xlsxBuffer, pdfBuffer };

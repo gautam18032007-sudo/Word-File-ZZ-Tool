@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
 import { convertDocumentToPdf } from '@/lib/pdfProvider';
-import { generateEmployeePdfNative } from '@/lib/employeePdfNative';
 
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
 
@@ -124,12 +123,7 @@ export async function POST(req: NextRequest) {
 
     let pdfBuffer = pdfResult.pdfBuffer;
     if (!pdfBuffer) {
-      try {
-        pdfBuffer = await generateEmployeePdfNative(data);
-        logger.gen(`[API/generate/employee] Used native pdf-lib fallback for contract #${contractNo}`);
-      } catch (err) {
-        logger.error(`[API/generate/employee] Native PDF fallback failed: ${err}`);
-      }
+      logger.gen(`[API/generate/employee] No PDF engine available for contract #${contractNo} — DOCX only. Set GOTENBERG_URL to enable PDF generation.`);
     }
 
     if (pdfBuffer) {

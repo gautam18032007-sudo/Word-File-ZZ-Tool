@@ -30,8 +30,9 @@ Settings → **Environment Variables** → add for **Production** (and Preview i
 | `CONTRACT_PREFIX` | `ZZ` | No (defaults to `ZZ`) |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | — | No — **skip it.** Both sheets are shared "Anyone with the link (Viewer)", so the public-CSV path is used and no Google credentials are needed. Only add this if a sheet is ever made private again. |
 | `LIBREOFFICE_PATH` | — | **Never set on Vercel.** There is no LibreOffice binary there. |
+| `GOTENBERG_URL` | e.g. `https://your-gotenberg.railway.app` | **Yes — required for PDF generation.** Without this, PDF is skipped and only DOCX is returned. See [`GOTENBERG.md`](GOTENBERG.md) for deployment steps. |
 
-Full local-dev reference lives in `.env.example`.
+Full local-dev reference lives in `.env`.
 
 ## 3. Deploy
 
@@ -45,7 +46,7 @@ Full local-dev reference lives in `.env.example`.
 |---|---|---|
 | Load brands/employees from Google Sheets | ✅ | ✅ (public CSV, auto-loads on page open) |
 | Generate DOCX | ✅ | ✅ (templates ship inside `web/templates/`) |
-| Convert to PDF | ✅ (LibreOffice) | ❌ — `pdfName` returns `null`; download the DOCX. This is by design, not an error. |
+| Convert to PDF | ✅ (LibreOffice) | ✅ when `GOTENBERG_URL` is set — LibreOffice via Gotenberg Docker. `pdfBase64: null` (DOCX only) if not set. |
 | Contract history + sequence numbers | ✅ persistent (`output/`) | ⚠️ **ephemeral** — writes go to the function's temp dir and vanish between cold starts. Numbering can repeat. Needs Vercel Blob/KV if production-grade history is ever required. |
 
 Because of the last two rows, the recommended workflow is: **generate on Vercel, download
