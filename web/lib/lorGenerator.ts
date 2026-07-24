@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { renderDocx } from './template';
 import { convertDocumentToPdf } from './pdfProvider';
+import { generateLorPdfNative } from './lorPdfNative';
+
 
 
 import { writableDir } from './paths';
@@ -109,14 +111,27 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
   // Write DOCX
   fs.writeFileSync(docxPath, docxBytes);
 
-  // 4. Convert to PDF using headless LibreOffice or Gotenberg
-  let pdfBase64: string | null = null;
+  // 4. Convert to PDF using Gotenberg or native pdf-lib fallback on Vercel
+  let pdfBuffer: Buffer | null = null;
   const pdfResult = await convertDocumentToPdf(docxBytes, docxFilename);
 
   if (pdfResult.pdfBuffer) {
-    fs.writeFileSync(pdfPath, pdfResult.pdfBuffer);
-    pdfBase64 = pdfResult.pdfBuffer.toString('base64');
+    pdfBuffer = pdfResult.pdfBuffer;
+  } else {
+    // Native serverless fallback: generate PDF directly via pdf-lib
+    try {
+      pdfBuffer = await generateLorPdfNative(options);
+    } catch (e) {
+      console.warn('[generateLor] Native PDF fallback failed:', e);
+    }
   }
+
+  let pdfBase64: string | null = null;
+  if (pdfBuffer) {
+    fs.writeFileSync(pdfPath, pdfBuffer);
+    pdfBase64 = pdfBuffer.toString('base64');
+  }
+
 
 
 
