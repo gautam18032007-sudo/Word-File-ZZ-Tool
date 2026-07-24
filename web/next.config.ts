@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   env: {
     // Read from .env at build/dev time
   },
-  serverExternalPackages: ["pizzip", "googleapis"],
+  serverExternalPackages: ["pizzip", "googleapis", "exceljs"],
 };
 
 
