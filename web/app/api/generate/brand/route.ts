@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { renderDocx } from '@/lib/template';
 import { convertDocumentToPdf } from '@/lib/pdfProvider';
+import { generateBrandPdfNative } from '@/lib/brandPdfNative';
 
 import { nextContractNumber, buildFilename } from '@/lib/contractNumber';
 
@@ -219,10 +220,20 @@ export async function POST(req: NextRequest) {
     const docxNameForPdf = buildFilename(contractNo, brand.legalName, 'docx');
     const pdfResult = await convertDocumentToPdf(docxBytes, docxNameForPdf);
 
-    if (pdfResult.pdfBuffer) {
+    let pdfBuffer = pdfResult.pdfBuffer;
+    if (!pdfBuffer) {
+      try {
+        pdfBuffer = await generateBrandPdfNative(data);
+        logger.gen(`[API/generate/brand] Used native pdf-lib fallback for contract #${contractNo}`);
+      } catch (err) {
+        logger.error(`[API/generate/brand] Native PDF fallback failed: ${err}`);
+      }
+    }
+
+    if (pdfBuffer) {
       pdfName = buildFilename(contractNo, brand.legalName, 'pdf');
-      fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfResult.pdfBuffer);
-      pdfBase64 = pdfResult.pdfBuffer.toString('base64');
+      fs.writeFileSync(path.join(OUTPUT_DIR, pdfName), pdfBuffer);
+      pdfBase64 = pdfBuffer.toString('base64');
       logger.gen(`[API/generate/brand] Saved PDF (${pdfResult.method}): ${pdfName}`);
     } else {
       message = pdfResult.error || 'PDF generation unavailable.';

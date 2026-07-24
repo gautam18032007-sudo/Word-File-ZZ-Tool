@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 import path from 'path';
 import fs from 'fs';
 import { convertDocumentToPdf } from './pdfProvider';
+import { generatePiPdfNative } from './piPdfNative';
 
 
 
@@ -192,7 +193,16 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   const xlsxFileName = `${piNumber.replace(/\//g, '_')}.xlsx`;
   const pdfResult = await convertDocumentToPdf(xlsxBuffer, xlsxFileName);
 
-  return { xlsxBuffer, pdfBuffer: pdfResult.pdfBuffer };
+  let pdfBuffer = pdfResult.pdfBuffer;
+  if (!pdfBuffer) {
+    try {
+      pdfBuffer = await generatePiPdfNative(input);
+    } catch (err) {
+      console.warn('[generatePiWorkbook] Native PDF fallback failed:', err);
+    }
+  }
+
+  return { xlsxBuffer, pdfBuffer };
 
 
 }
