@@ -138,16 +138,16 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
       sheet.getCell(`E${rowNum}`).value = qty;
       sheet.getCell(`F${rowNum}`).value = effectiveRate;
       sheet.getCell(`G${rowNum}`).value = gstPct / 100;
-      sheet.getCell(`H${rowNum}`).value = { formula: `=F${rowNum}*G${rowNum}`, result: rowGst };
-      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}+H${rowNum})*E${rowNum}`, result: rowTotal };
+      sheet.getCell(`H${rowNum}`).value = { formula: `F${rowNum}*G${rowNum}`, result: rowGst };
+      sheet.getCell(`I${rowNum}`).value = { formula: `(F${rowNum}+H${rowNum})*E${rowNum}`, result: rowTotal };
     } else {
       // Clear unused slots in rows 25-28
       sheet.getCell(`B${rowNum}`).value = null;
       sheet.getCell(`C${rowNum}`).value = null;
       sheet.getCell(`E${rowNum}`).value = null;
       sheet.getCell(`F${rowNum}`).value = null;
-      sheet.getCell(`H${rowNum}`).value = { formula: `=F${rowNum}*G${rowNum}`, result: 0 };
-      sheet.getCell(`I${rowNum}`).value = { formula: `=(F${rowNum}+H${rowNum})*E${rowNum}`, result: 0 };
+      sheet.getCell(`H${rowNum}`).value = { formula: `F${rowNum}*G${rowNum}`, result: 0 };
+      sheet.getCell(`I${rowNum}`).value = { formula: `(F${rowNum}+H${rowNum})*E${rowNum}`, result: 0 };
     }
   }
 
@@ -163,9 +163,9 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
   // 3. Summary Rows and Tax Section Calculations (explicit formula result objects)
   sheet.getCell('E30').value = null;
-  sheet.getCell('H30').value = { formula: '=SUM(H25:H28)', result: displayedGstTotal };
+  sheet.getCell('H30').value = { formula: 'SUM(H25:H28)', result: displayedGstTotal };
 
-  sheet.getCell('I30').value = { formula: '=SUM(I25:I28)', result: grandTotal };
+  sheet.getCell('I30').value = { formula: 'SUM(I25:I28)', result: grandTotal };
 
 
   const displayGstPct = items[0]?.gstPct ?? 18;
@@ -174,8 +174,8 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
   const isDelhi = (placeOfSupply || '').trim().toLowerCase() === 'delhi';
   if (isDelhi) {
-    sheet.getCell('D32').value = { formula: '=G32/2', result: totalGstAmount / 2 };
-    sheet.getCell('E32').value = { formula: '=G32/2', result: totalGstAmount / 2 };
+    sheet.getCell('D32').value = { formula: 'G32/2', result: totalGstAmount / 2 };
+    sheet.getCell('E32').value = { formula: 'G32/2', result: totalGstAmount / 2 };
     sheet.getCell('F32').value = null;
   } else {
     sheet.getCell('D32').value = null;
@@ -183,9 +183,9 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
     sheet.getCell('F32').value = totalGstAmount;
   }
 
-  sheet.getCell('G32').value = { formula: '=SUM(D32:F32)', result: totalGstAmount };
-  sheet.getCell('I31').value = { formula: '=C32+G32', result: grandTotal };
-  sheet.getCell('C34').value = { formula: '=C32+G32', result: grandTotal };
+  sheet.getCell('G32').value = { formula: 'SUM(D32:F32)', result: totalGstAmount };
+  sheet.getCell('I31').value = { formula: 'C32+G32', result: grandTotal };
+  sheet.getCell('C34').value = { formula: 'C32+G32', result: grandTotal };
 
   // Write sheet changes to buffer
   const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer());
