@@ -98,6 +98,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   let totalQuantity = 0;
   let totalTaxableAmount = 0;
   let totalGstAmount = 0;
+  let displayedGstTotal = 0; // plain sum of the per-row GST Amount (H) column, unscaled by quantity
 
   // 2. Fill Line Items (Option A: Up to 4 rows using template slots 25 to 28)
   for (let i = 0; i < 4; i++) {
@@ -123,6 +124,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
       totalQuantity += qty;
       totalTaxableAmount += rowTaxable;
       totalGstAmount += rowGst * qty;
+      displayedGstTotal += rowGst;
 
       // Notes formatting
       const notesText = isSkuMode
@@ -160,7 +162,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
   // 3. Summary Rows and Tax Section Calculations (explicit formula result objects)
   sheet.getCell('E30').value = null;
-  sheet.getCell('H30').value = { formula: '=SUMPRODUCT(E25:E28,H25:H28)', result: totalGstAmount };
+  sheet.getCell('H30').value = { formula: '=SUM(H25:H28)', result: displayedGstTotal };
 
   sheet.getCell('I30').value = { formula: '=SUM(I25:I28)', result: grandTotal };
 
@@ -177,7 +179,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   } else {
     sheet.getCell('D32').value = null;
     sheet.getCell('E32').value = null;
-    sheet.getCell('F32').value = { formula: '=H30', result: totalGstAmount };
+    sheet.getCell('F32').value = totalGstAmount;
   }
 
   sheet.getCell('G32').value = { formula: '=SUM(D32:F32)', result: totalGstAmount };
