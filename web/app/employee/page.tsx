@@ -152,7 +152,7 @@ function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
   ];
   return (
     <div className="border border-[var(--border)] rounded-md overflow-hidden text-sm">
-      <div className="px-4 py-2.5 bg-[oklch(0.975_0_0)] border-b border-[var(--border)]">
+      <div className="px-4 py-2.5 bg-[var(--muted)]/40 border-b border-[var(--border)]">
         <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Annexure A — Salary Breakup</p>
       </div>
       <div className="px-4 py-2">
@@ -177,7 +177,7 @@ function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
           <span className="font-mono">{fmt(salary.salaryInHand)}</span>
         </div>
       </div>
-      <div className="px-4 py-2 border-t border-[var(--border)] bg-[oklch(0.975_0_0)]">
+      <div className="px-4 py-2 border-t border-[var(--border)] bg-[var(--muted)]/40">
         <div className="flex justify-between text-xs text-[var(--muted-foreground)]">
           <span>Annual CTC</span>
           <span className="font-mono font-semibold text-[var(--foreground)]">{fmt(salary.annualCTC)}</span>
@@ -380,7 +380,7 @@ export default function EmployeePage() {
 
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 px-2 sm:px-4">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Employee Contract</h1>
         <p className="text-[var(--muted-foreground)] text-sm mt-1">
@@ -388,9 +388,9 @@ export default function EmployeePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* ── LEFT ── */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -401,7 +401,7 @@ export default function EmployeePage() {
             <CardContent>
               <SheetLoader onLoad={handleLoadEmployees} loadedCount={employees.length} storageKey="employee_sheet_url" />
               {headers.length > 0 && (
-                <div className="border border-[var(--border)] rounded-md p-3 bg-[oklch(0.99_0_0)] text-xs space-y-2 mt-3">
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[var(--muted)]/30 text-xs space-y-2 mt-3">
                   <p className="font-semibold text-[var(--foreground)]">Sheet Status</p>
                   <div className="space-y-1.5 pt-1 border-t border-[var(--border)]">
                     {[
@@ -418,7 +418,7 @@ export default function EmployeePage() {
                     ].map(([label, found]) => (
                       <div key={label as string} className="flex items-center justify-between text-[11px]">
                         <span className="text-[var(--muted-foreground)]">{label}</span>
-                        <span className={found ? "text-emerald-600 font-bold" : "text-rose-500 font-bold"}>
+                        <span className={found ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-rose-500 font-bold"}>
                           {found ? "✓ Found" : "✗ Missing"}
                         </span>
                       </div>
@@ -482,7 +482,7 @@ export default function EmployeePage() {
                             onClick={() => handleSelectEmployee(originalIdx)}
                             className={cn(
                               "w-full text-left px-3 py-2 text-xs flex justify-between items-center hover:bg-[var(--muted)] transition-colors",
-                              selectedIdx === originalIdx && "bg-[oklch(0.95_0_0)] border-l-2 border-[var(--foreground)]"
+                              selectedIdx === originalIdx && "bg-[var(--accent)] border-l-2 border-[var(--primary)] font-semibold text-[var(--foreground)]"
                             )}
                           >
                             <div className="pr-2 truncate">
@@ -505,7 +505,7 @@ export default function EmployeePage() {
               </div>
 
               {selected && (
-                <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[oklch(0.975_0_0)]">
+                <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[var(--muted)]/30 text-[var(--foreground)]">
                   {[
                     ["Name", selected.name],
                     ["Father", selected.fatherName],

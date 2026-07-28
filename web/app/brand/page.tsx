@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
+import { BrandRow, Location, ContractType, GenerateResult } from "@/lib/types";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
 import { ExportButton } from "@/components/export-button";
 
@@ -40,6 +40,13 @@ function buildClause(
   noOfMonths: string, noOfSku: string,
   commissionPct: string
 ): { clause: string; total: number } | null {
+  if (contractType === "COMMISSION") {
+    return {
+      total: 0,
+      clause: "",
+    };
+  }
+
   const months = num(noOfMonths);
   const sku = num(noOfSku);
 
@@ -258,6 +265,7 @@ export default function BrandPage() {
       setGenError("Please fill commercial details to preview contract.");
       return;
     }
+
     if (location === "BOTH") {
       const swnPctNum = parseFloat(commissionPctSwn) || 0;
       const kljPctNum = parseFloat(commissionPctKlj) || 0;
@@ -316,7 +324,7 @@ export default function BrandPage() {
 
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 px-2 sm:px-4">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Brand Contract</h1>
         <p className="text-[var(--muted-foreground)] text-sm mt-1">
@@ -324,9 +332,9 @@ export default function BrandPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* ── LEFT COLUMN ─────────────────────────────────────── */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Step 1 — Sheet Loader */}
           <Card>
             <CardHeader>
@@ -338,7 +346,7 @@ export default function BrandPage() {
             <CardContent>
               <SheetLoader onLoad={handleLoadBrands} loadedCount={brands.length} storageKey="brand_sheet_url" />
               {headers.length > 0 && (
-                <div className="border border-[var(--border)] rounded-md p-3 bg-[oklch(0.99_0_0)] text-xs space-y-2 mt-3">
+                <div className="border border-[var(--border)] rounded-md p-3 bg-[var(--muted)]/30 text-xs space-y-2 mt-3">
                   <p className="font-semibold text-[var(--foreground)]">Sheet Status</p>
                   <div className="space-y-1.5 pt-1 border-t border-[var(--border)]">
                     {[
@@ -348,7 +356,7 @@ export default function BrandPage() {
                     ].map(([label, found]) => (
                       <div key={label as string} className="flex items-center justify-between text-[11px]">
                         <span className="text-[var(--muted-foreground)]">{label}</span>
-                        <span className={found ? "text-emerald-600 font-bold" : "text-rose-500 font-bold"}>
+                        <span className={found ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-rose-500 font-bold"}>
                           {found ? "✓ Found" : "✗ Missing"}
                         </span>
                       </div>
@@ -413,7 +421,7 @@ export default function BrandPage() {
                             onClick={() => setSelectedIdx(originalIdx)}
                             className={cn(
                               "w-full text-left px-3 py-2 text-xs flex justify-between hover:bg-[var(--muted)] transition-colors",
-                              selectedIdx === originalIdx && "bg-[oklch(0.95_0_0)] border-l-2 border-[var(--foreground)]"
+                              selectedIdx === originalIdx && "bg-[var(--accent)] border-l-2 border-[var(--primary)] font-semibold text-[var(--foreground)]"
                             )}
                           >
                             <div className="pr-2 truncate">
@@ -434,7 +442,7 @@ export default function BrandPage() {
               </div>
 
               {selected && (
-                <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[oklch(0.975_0_0)]">
+                <div className="space-y-1 text-sm border border-[var(--border)] rounded-md p-3 bg-[var(--muted)]/30 text-[var(--foreground)]">
                   {[
                     ["Legal Name", selected.legalName],
                     ["Products Category", selected.brandCategory],
@@ -493,58 +501,63 @@ export default function BrandPage() {
                   >
                     <option value="MONTH">MONTH</option>
                     <option value="SKU">SKU</option>
+                    <option value="COMMISSION">COMMISSION</option>
                   </select>
                 </Field>
               </FieldRow>
 
-              {/* Dynamic amount inputs */}
-              {location === "BOTH" ? (
-                <FieldRow>
-                  <Field label="Amount — SWN (₹)">
-                    <Input type="number" placeholder="0" value={amountSwn} onChange={(e) => setAmountSwn(e.target.value)} />
-                  </Field>
-                  <Field label="Amount — KLJ (₹)">
-                    <Input type="number" placeholder="0" value={amountKlj} onChange={(e) => setAmountKlj(e.target.value)} />
-                  </Field>
-                </FieldRow>
-              ) : contractType === "MONTH" ? (
-                <Field label="Amount / Month (₹)">
-                  <Input type="number" placeholder="0" value={amountPerMonth} onChange={(e) => setAmountPerMonth(e.target.value)} />
+              {/* Dynamic inputs based on contractType */}
+              {contractType === "COMMISSION" ? null : (
+                <>
+                  {location === "BOTH" ? (
+                    <FieldRow>
+                      <Field label="Amount — SWN (₹)">
+                        <Input type="number" placeholder="0" value={amountSwn} onChange={(e) => setAmountSwn(e.target.value)} />
+                      </Field>
+                      <Field label="Amount — KLJ (₹)">
+                        <Input type="number" placeholder="0" value={amountKlj} onChange={(e) => setAmountKlj(e.target.value)} />
+                      </Field>
+                    </FieldRow>
+                  ) : contractType === "MONTH" ? (
+                    <Field label="Amount / Month (₹)">
+                      <Input type="number" placeholder="0" value={amountPerMonth} onChange={(e) => setAmountPerMonth(e.target.value)} />
+                    </Field>
+                  ) : (
+                    <FieldRow>
+                      <Field label="Amount / SKU (₹)">
+                        <Input type="number" placeholder="0" value={amountPerSku} onChange={(e) => setAmountPerSku(e.target.value)} />
+                      </Field>
+                      <Field label="No. of SKUs">
+                        <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
+                      </Field>
+                    </FieldRow>
+                  )}
+
+                  <FieldRow>
+                    {location === "BOTH" && contractType === "SKU" && (
+                      <Field label="No. of SKUs">
+                        <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
+                      </Field>
+                    )}
+                    <Field label="No. of Months">
+                      <Input type="number" placeholder="0" value={noOfMonths} onChange={(e) => setNoOfMonths(e.target.value)} />
+                    </Field>
+                  </FieldRow>
+                </>
+              )}
+
+              {/* Manual Commission Inputs */}
+              {location !== "BOTH" ? (
+                <Field label="Commission %">
+                  <Input type="number" placeholder="e.g. 19" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} />
                 </Field>
               ) : (
                 <FieldRow>
-                  <Field label="Amount / SKU (₹)">
-                    <Input type="number" placeholder="0" value={amountPerSku} onChange={(e) => setAmountPerSku(e.target.value)} />
-                  </Field>
-                  <Field label="No. of SKUs">
-                    <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
-                  </Field>
-                </FieldRow>
-              )}
-
-              <FieldRow>
-                {location === "BOTH" && contractType === "SKU" && (
-                  <Field label="No. of SKUs">
-                    <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
-                  </Field>
-                )}
-                <Field label="No. of Months">
-                  <Input type="number" placeholder="0" value={noOfMonths} onChange={(e) => setNoOfMonths(e.target.value)} />
-                </Field>
-                {location !== "BOTH" && (
-                  <Field label="Commission %">
-                    <Input type="number" placeholder="0" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} />
-                  </Field>
-                )}
-              </FieldRow>
-
-              {location === "BOTH" && (
-                <FieldRow>
                   <Field label="Commission % — SWN">
-                    <Input type="number" placeholder="0" value={commissionPctSwn} onChange={(e) => setCommissionPctSwn(e.target.value)} />
+                    <Input type="number" placeholder="e.g. 19" value={commissionPctSwn} onChange={(e) => setCommissionPctSwn(e.target.value)} />
                   </Field>
                   <Field label="Commission % — KLJ">
-                    <Input type="number" placeholder="0" value={commissionPctKlj} onChange={(e) => setCommissionPctKlj(e.target.value)} />
+                    <Input type="number" placeholder="e.g. 19" value={commissionPctKlj} onChange={(e) => setCommissionPctKlj(e.target.value)} />
                   </Field>
                 </FieldRow>
               )}
@@ -565,10 +578,10 @@ export default function BrandPage() {
                 {!selected ? (
                   <span className="text-[var(--muted-foreground)]">Select a brand to see preview.</span>
                 ) : !preview ? (
-                  <span className="text-[var(--muted-foreground)]">Fill in the amount and month/SKU fields to see preview.</span>
+                  <span className="text-[var(--muted-foreground)]">Fill in commercial details to see preview.</span>
                 ) : (
                   <div className="space-y-2">
-                    <p>{preview.clause}</p>
+                    {preview.clause ? <p>{preview.clause}</p> : null}
                     {location === "BOTH" ? (
                       (commissionPctSwn || commissionPctKlj) && (
                         <p>
@@ -582,9 +595,11 @@ export default function BrandPage() {
                         <p>A commission of {commissionPct}% on the sale price of each product sold.</p>
                       )
                     )}
-                    <p className="text-[var(--muted-foreground)] text-xs pt-1 border-t border-[var(--border)]">
-                      Total: <strong className="text-[var(--foreground)]">{formatINRClient(preview.total)}</strong>
-                    </p>
+                    {contractType !== "COMMISSION" && (
+                      <p className="text-[var(--muted-foreground)] text-xs pt-1 border-t border-[var(--border)]">
+                        Total: <strong className="text-[var(--foreground)]">{formatINRClient(preview.total)}</strong>
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

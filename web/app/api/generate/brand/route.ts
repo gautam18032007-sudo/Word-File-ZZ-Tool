@@ -48,6 +48,10 @@ function calcTotal(payload: BrandGeneratePayload): {
   const { location, contractType, amountPerMonth = 0, amountPerSku = 0,
     amountSwn = 0, amountKlj = 0, noOfMonths = 0, noOfSku = 0 } = payload;
 
+  if (contractType === 'COMMISSION') {
+    return { displayAmount: 0, totalAmount: 0 };
+  }
+
   if (location === 'BOTH') {
     if (contractType === 'MONTH') {
       return {
@@ -85,6 +89,25 @@ function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
   const { location, contractType, amountPerMonth = 0, amountPerSku = 0,
     amountSwn = 0, amountKlj = 0, noOfMonths = 0, noOfSku = 0,
     commissionPct, commissionPctSwn, commissionPctKlj } = payload;
+
+  if (contractType === 'COMMISSION') {
+    if (location === 'BOTH') {
+      return {
+        feeClause: '',
+        commissionClause:
+          `A commission of ${commissionPctSwn}% on the sale price of each product sold through the SWN setup and ` +
+          `${commissionPctKlj}% on the sale price of each product sold through the KLJ setup, as disclosed in the Proforma Invoice (PI).`,
+      };
+    }
+    const locationLabel = location === 'SWN' ? 'SWN' : 'KLJ';
+    return {
+      feeClause: '',
+      commissionClause:
+        `A commission of ${commissionPct}% on the sale price of each product sold through the ${locationLabel} setup, ` +
+        `as disclosed in the Proforma Invoice (PI).`,
+    };
+  }
+
   const months = monthsWord(noOfMonths);
 
   if (location === 'BOTH') {
@@ -134,14 +157,26 @@ export async function POST(req: NextRequest) {
     commissionPct, commissionPctSwn, commissionPctKlj } = payload;
 
   // Enforce zero and negative checks
-  if (noOfMonths <= 0) {
-    logger.error(`[API/generate/brand] Invalid Months count: ${noOfMonths}`);
-    return NextResponse.json({ error: 'Months count must be greater than 0.' }, { status: 400 });
+  if (contractType !== 'COMMISSION') {
+    if (noOfMonths <= 0) {
+      logger.error(`[API/generate/brand] Invalid Months count: ${noOfMonths}`);
+      return NextResponse.json({ error: 'Months count must be greater than 0.' }, { status: 400 });
+    }
+    if (contractType === 'SKU' && noOfSku <= 0) {
+      logger.error(`[API/generate/brand] Invalid SKU count: ${noOfSku}`);
+      return NextResponse.json({ error: 'SKU count must be greater than 0 for SKU contracts.' }, { status: 400 });
+    }
+    if (
+      (payload.amountPerMonth !== undefined && payload.amountPerMonth <= 0 && contractType === 'MONTH' && location !== 'BOTH') ||
+      (payload.amountPerSku !== undefined && payload.amountPerSku <= 0 && contractType === 'SKU' && location !== 'BOTH') ||
+      (payload.amountSwn !== undefined && payload.amountSwn <= 0 && location === 'BOTH') ||
+      (payload.amountKlj !== undefined && payload.amountKlj <= 0 && location === 'BOTH')
+    ) {
+      logger.error(`[API/generate/brand] Amount must be greater than 0.`);
+      return NextResponse.json({ error: 'All amount fields must be greater than 0.' }, { status: 400 });
+    }
   }
-  if (contractType === 'SKU' && noOfSku <= 0) {
-    logger.error(`[API/generate/brand] Invalid SKU count: ${noOfSku}`);
-    return NextResponse.json({ error: 'SKU count must be greater than 0 for SKU contracts.' }, { status: 400 });
-  }
+
   if (location === 'BOTH') {
     const swnPctNum = parseFloat(commissionPctSwn ?? '') || 0;
     const kljPctNum = parseFloat(commissionPctKlj ?? '') || 0;

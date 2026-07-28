@@ -288,6 +288,24 @@ function feeCommissionClauseOps(concat: string): Op[] {
   return [];
 }
 
+/**
+ * When contractType is COMMISSION (feeClause is empty), remove the list numbering
+ * prefix (a) and (b) under clause 4.1 in Brand contracts.
+ * 1. Delete the paragraph carrying {{FEE_CLAUSE}} (which was item (a)).
+ * 2. Strip <w:numPr> from the paragraph carrying {{COMMISSION_CLAUSE}} (which was item (b)).
+ */
+function cleanBrandCommissionOnlyXml(xml: string): string {
+  // 1. Delete paragraph containing {{FEE_CLAUSE}}
+  xml = xml.replace(/<w:p\b[^>]*>(?:(?!<\/w:p>)[\s\S])*?\{\{FEE_CLAUSE\}\}(?:(?!<\/w:p>)[\s\S])*?<\/w:p>/gi, '');
+
+  // 2. Strip <w:numPr> from paragraph containing {{COMMISSION_CLAUSE}}
+  xml = xml.replace(/(<w:p\b[^>]*>(?:(?!<\/w:p>)[\s\S])*?\{\{COMMISSION_CLAUSE\}\}(?:(?!<\/w:p>)[\s\S])*?<\/w:p>)/gi, (match) => {
+    return match.replace(/<w:numPr\b[^>]*>[\s\S]*?<\/w:numPr>/gi, '');
+  });
+
+  return xml;
+}
+
 function preprocessBrandXml(xml: string): string {
   xml = applyOpsToParagraphs(xml, feeCommissionClauseOps);
   const brandPairs: [string, string][] = [
@@ -328,12 +346,18 @@ function fillTags(xml: string, data: Record<string, string>, isLor = false): str
     if (val === undefined || val === '') return '';
 
     if (key === 'FINAL_DRAFT') {
-      const paragraphs = val.split(/\r?\n\r?\n|\r?\n/);
-      return paragraphs
-        .map(p => escapeXml(p.trim()))
-        .filter(Boolean)
-        .join('</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="252" w:lineRule="auto" w:before="100"/><w:ind w:left="137" w:right="702"/><w:jc w:val="both"/></w:pPr><w:r><w:t xml:space="preserve">');
+      const rawParas = val.includes('\n\n') ? val.split(/\r?\n\s*\r?\n/) : val.split(/\r?\n/);
+      const paragraphs = rawParas.map(p => p.trim()).filter(Boolean);
 
+      const runPr = '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:color w:val="2E2E2E"/><w:sz w:val="20"/></w:rPr>';
+      const pPr = '<w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:line="252" w:lineRule="auto" w:before="100" w:after="0"/><w:ind w:left="137" w:right="0"/><w:jc w:val="both"/><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr></w:pPr>';
+
+      const formattedParas = paragraphs.map(p => {
+        const lines = p.split(/\r?\n/).map(l => escapeXml(l.trim())).filter(Boolean);
+        return lines.join(`</w:t><w:br/>${runPr}<w:t xml:space="preserve">`);
+      });
+
+      return `</w:t>${runPr}<w:t xml:space="preserve">` + formattedParas.join(`</w:t></w:r></w:p><w:p>${pPr}<w:r>${runPr}<w:t xml:space="preserve">`);
     }
 
     if (isLor) {
@@ -377,6 +401,9 @@ export function renderDocx(templateFile: string, data: Record<string, string>): 
     xml = preprocessEmployeeXml(xml);
   } else if (templateFile.includes('brand')) {
     xml = preprocessBrandXml(xml);
+    if (!data.FEE_CLAUSE || data.FEE_CLAUSE.trim() === '') {
+      xml = cleanBrandCommissionOnlyXml(xml);
+    }
   }
 
   const isLor = templateFile.includes('lor');

@@ -9,8 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
 import { ExportButton } from "@/components/export-button";
 
-
-
 interface LineItem {
   description: string;
   billingMode: 'month' | 'sku';
@@ -373,7 +371,7 @@ export default function ProformaInvoicePage() {
   });
 
   return (
-    <div className="max-w-5xl space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto space-y-6 px-2 sm:px-4 pb-12">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Proforma Invoice (PI)</h1>
         <p className="text-[var(--muted-foreground)] text-sm mt-1">

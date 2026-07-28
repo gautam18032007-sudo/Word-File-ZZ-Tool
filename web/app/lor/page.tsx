@@ -378,7 +378,7 @@ export default function LorPage() {
   });
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 px-2 sm:px-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div>
@@ -395,9 +395,9 @@ export default function LorPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* ── LEFT SIDEBAR: CANDIDATES & HISTORY TAB SWITCHER ── */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Card className="overflow-hidden">
             <CardHeader className="pb-3 border-b border-[var(--border)] bg-[var(--muted)]/40">
               <div className="flex items-center justify-between">

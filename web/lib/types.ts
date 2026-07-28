@@ -68,7 +68,7 @@ export interface ContractRecord {
 // ─── Form Data ────────────────────────────────────────────────────────────────
 
 export type Location = 'SWN' | 'KLJ' | 'BOTH';
-export type ContractType = 'MONTH' | 'SKU';
+export type ContractType = 'MONTH' | 'SKU' | 'COMMISSION';
 
 export interface BrandFormData {
   sheetUrl: string;
@@ -110,3 +110,43 @@ export interface GenerateResult {
   docxBase64?: string;
   pdfBase64?: string | null;
 }
+export interface CommissionOption {
+  id: string;
+  label: string;
+  clause: string;
+  value: string;
+}
+
+export const COMMISSION_OPTIONS: CommissionOption[] = [
+  {
+    id: "19",
+    label: "A. Commission of 19% on the sale price of each product sold.",
+    clause: "A commission of 19% on the sale price of each product sold.",
+    value: "19"
+  },
+  {
+    id: "15",
+    label: "B. Commission of 15% on the sale price of each product sold.",
+    clause: "A commission of 15% on the sale price of each product sold.",
+    value: "15"
+  },
+  {
+    id: "12",
+    label: "C. Commission of 12% on the sale price of each product sold.",
+    clause: "A commission of 12% on the sale price of each product sold.",
+    value: "12"
+  },
+  {
+    id: "10",
+    label: "D. Commission of 10% on the sale price of each product sold.",
+    clause: "A commission of 10% on the sale price of each product sold.",
+    value: "10"
+  },
+  {
+    id: "custom",
+    label: "E. Custom Commission",
+    clause: "Custom Commission",
+    value: "custom"
+  }
+];
+

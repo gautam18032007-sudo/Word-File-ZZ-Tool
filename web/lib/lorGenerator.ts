@@ -8,6 +8,8 @@ import { convertDocumentToPdf } from './pdfProvider';
 import { writableDir } from './paths';
 
 
+import { toTitleCase } from './formatting';
+
 const TEMPLATES_DIR = path.resolve(process.cwd(), 'templates');
 const OUTPUT_DIR = path.join(writableDir('output'), 'lors');
 
@@ -58,6 +60,23 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
 
   const templateFile = `lor/${activeTemplate.file}`;
 
+  // Clean and format names/roles with Title Case
+  const cleanFullName = toTitleCase(fullName);
+  const cleanDesignation = toTitleCase(designation);
+  const cleanDepartment = toTitleCase(department);
+  const cleanSignatoryName = toTitleCase(signatoryName);
+  const cleanSignatoryRole = toTitleCase(signatoryRole);
+
+  let cleanDraft = finalDraft || '';
+  if (fullName && fullName.trim() && fullName !== cleanFullName) {
+    const rawRegex = new RegExp(fullName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    cleanDraft = cleanDraft.replace(rawRegex, cleanFullName);
+  }
+  if (designation && designation.trim() && designation !== cleanDesignation) {
+    const rawRegex = new RegExp(designation.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    cleanDraft = cleanDraft.replace(rawRegex, cleanDesignation);
+  }
+
   // 2. Prepare data map matching uppercase placeholders in the docx
   const formatDateFmt = (iso: string) => {
     if (!iso) return '';
@@ -78,14 +97,14 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
   const todayStr = formatDateFmt(new Date().toISOString().split('T')[0]);
 
   const data: Record<string, string> = {
-    FULL_NAME: fullName,
-    DESIGNATION: designation,
-    DEPARTMENT: department,
+    FULL_NAME: cleanFullName,
+    DESIGNATION: cleanDesignation,
+    DEPARTMENT: cleanDepartment,
     JOINING_DATE: formatDateFmt(joiningDate),
     LAST_WORKING_DATE: formatDateFmt(lastWorkingDate),
-    FINAL_DRAFT: finalDraft,
-    SIGNATORY_NAME: signatoryName,
-    SIGNATORY_ROLE: signatoryRole,
+    FINAL_DRAFT: cleanDraft,
+    SIGNATORY_NAME: cleanSignatoryName,
+    SIGNATORY_ROLE: cleanSignatoryRole,
     DATE: todayStr
   };
 
