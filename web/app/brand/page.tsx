@@ -32,6 +32,13 @@ function formatINRClient(n: number): string {
 
 function num(s: string): number { const n = parseFloat(s); return isNaN(n) || n <= 0 ? 0 : n; }
 
+function isValidCommission(val: string): boolean {
+  if (!val || !val.trim()) return false;
+  const n = Number(val);
+  if (isNaN(n)) return false;
+  return n > 0 && n <= 100;
+}
+
 function buildClause(
   location: Location,
   contractType: ContractType,
@@ -68,13 +75,13 @@ function buildClause(
     };
   }
 
-  const locText = location === "SWN" ? "SWN setup" : "KLJ setup";
+  const locText = `${location} setup`;
 
   if (contractType === "MONTH") {
     const a = num(amountPerMonth);
     if (!a || !months) return null;
     const total = a * months;
-    return { total, clause: `An advanced fixed fee of ${formatINRClient(a)} per Month for ${months} months, totalling ${formatINRClient(total)} at our ${locText}.` };
+    return { total, clause: `An advanced fixed fee of ${formatINRClient(a)} per Month for the ${locText}, payable for a period of ${months} month(s), amounting to a total of ${formatINRClient(total)} (exclusive of GST); and` };
   }
 
   const a = num(amountPerSku);
@@ -267,16 +274,13 @@ export default function BrandPage() {
     }
 
     if (location === "BOTH") {
-      const swnPctNum = parseFloat(commissionPctSwn) || 0;
-      const kljPctNum = parseFloat(commissionPctKlj) || 0;
-      if (swnPctNum <= 0 || kljPctNum <= 0) {
-        setGenError("Commission % must be greater than 0 for both SWN and KLJ.");
+      if (!isValidCommission(commissionPctSwn) || !isValidCommission(commissionPctKlj)) {
+        setGenError("Commission % must be a number between 0 and 100 for both SWN and KLJ.");
         return;
       }
     } else {
-      const commPctNum = parseFloat(commissionPct) || 0;
-      if (commPctNum <= 0) {
-        setGenError("Commission % must be greater than 0.");
+      if (!isValidCommission(commissionPct)) {
+        setGenError("Commission % must be a number between 0 and 100.");
         return;
       }
     }

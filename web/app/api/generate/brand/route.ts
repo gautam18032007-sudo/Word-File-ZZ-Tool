@@ -82,6 +82,13 @@ function monthsWord(n: number): string {
  * with small per-field tags, so the whole sentence is composed here and
  * dropped into a single {{FEE_CLAUSE}} / {{COMMISSION_CLAUSE}} tag.
  */
+function isValidCommission(val: string | undefined): boolean {
+  if (val === undefined || val === null || val.trim() === '') return false;
+  const num = Number(val);
+  if (isNaN(num)) return false;
+  return num > 0 && num <= 100;
+}
+
 function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
   feeClause: string;
   commissionClause: string;
@@ -89,6 +96,8 @@ function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
   const { location, contractType, amountPerMonth = 0, amountPerSku = 0,
     amountSwn = 0, amountKlj = 0, noOfMonths = 0, noOfSku = 0,
     commissionPct, commissionPctSwn, commissionPctKlj } = payload;
+
+  const locStr = String(location);
 
   if (contractType === 'COMMISSION') {
     if (location === 'BOTH') {
@@ -99,11 +108,10 @@ function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
           `${commissionPctKlj}% on the sale price of each product sold through the KLJ setup, as disclosed in the Proforma Invoice (PI).`,
       };
     }
-    const locationLabel = location === 'SWN' ? 'SWN' : 'KLJ';
     return {
       feeClause: '',
       commissionClause:
-        `A commission of ${commissionPct}% on the sale price of each product sold through the ${locationLabel} setup, ` +
+        `A commission of ${commissionPct}% on the sale price of each product sold through the ${locStr} setup, ` +
         `as disclosed in the Proforma Invoice (PI).`,
     };
   }
@@ -127,7 +135,6 @@ function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
     };
   }
 
-  const locationLabel = location === 'SWN' ? 'SWN' : 'KLJ';
   const amount = contractType === 'MONTH' ? amountPerMonth : amountPerSku;
   const total = contractType === 'MONTH' ? amount * noOfMonths : amount * noOfSku * noOfMonths;
   const perUnit = contractType === 'MONTH' ? 'month' : 'SKU';
@@ -135,10 +142,10 @@ function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
 
   return {
     feeClause:
-      `An advance fixed fee of ${formatINR(amount)} per ${perUnit} for the ${locationLabel} setup${skuSuffix}, ` +
+      `An advance fixed fee of ${formatINR(amount)} per ${perUnit} for the ${locStr} setup${skuSuffix}, ` +
       `payable for a period of ${months}, amounting to a total of ${formatINR(total)} (exclusive of GST); and`,
     commissionClause:
-      `A commission of ${commissionPct}% on the sale price of each product sold through the ${locationLabel} setup, ` +
+      `A commission of ${commissionPct}% on the sale price of each product sold through the ${locStr} setup, ` +
       `as disclosed in the Proforma Invoice (PI).`,
   };
 }
@@ -178,17 +185,14 @@ export async function POST(req: NextRequest) {
   }
 
   if (location === 'BOTH') {
-    const swnPctNum = parseFloat(commissionPctSwn ?? '') || 0;
-    const kljPctNum = parseFloat(commissionPctKlj ?? '') || 0;
-    if (swnPctNum <= 0 || kljPctNum <= 0) {
+    if (!isValidCommission(commissionPctSwn) || !isValidCommission(commissionPctKlj)) {
       logger.error(`[API/generate/brand] Invalid Commission %: SWN=${commissionPctSwn}, KLJ=${commissionPctKlj}`);
-      return NextResponse.json({ error: 'Commission % must be greater than 0 for both SWN and KLJ.' }, { status: 400 });
+      return NextResponse.json({ error: 'Commission % must be a number between 0 and 100 for both SWN and KLJ.' }, { status: 400 });
     }
   } else {
-    const commPctNum = parseFloat(commissionPct) || 0;
-    if (commPctNum <= 0) {
+    if (!isValidCommission(commissionPct)) {
       logger.error(`[API/generate/brand] Invalid Commission %: ${commissionPct}`);
-      return NextResponse.json({ error: 'Commission % must be greater than 0.' }, { status: 400 });
+      return NextResponse.json({ error: 'Commission % must be a number between 0 and 100.' }, { status: 400 });
     }
   }
   if (
