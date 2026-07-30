@@ -128,8 +128,8 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
 
       // Notes formatting
       const notesText = isSkuMode
-        ? `(INR ${amount}*${sku})/Month +\n${commission}% commission`
-        : `INR ${amount}/Month +\n${commission}% commission`;
+        ? `(INR ${amount}*${sku} SKUs) +\n${commission}% commission`
+        : `INR ${amount} +\n${commission}% commission`;
 
       sheet.getCell(`B${rowNum}`).value = item.description;
       sheet.getCell(`C${rowNum}`).value = notesText;
@@ -171,20 +171,17 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
   sheet.getCell('B32').value = Number(displayGstPct) / 100;
   sheet.getCell('C32').value = totalTaxableAmount;
 
-  const isDelhi = (placeOfSupply || '').trim().toLowerCase() === 'delhi';
-  if (isDelhi) {
-    sheet.getCell('D32').value = { formula: 'G32/2', result: totalGstAmount / 2 };
-    sheet.getCell('E32').value = { formula: 'G32/2', result: totalGstAmount / 2 };
-    sheet.getCell('F32').value = null;
-  } else {
-    sheet.getCell('D32').value = null;
-    sheet.getCell('E32').value = null;
-    sheet.getCell('F32').value = totalGstAmount;
-  }
+  sheet.getCell('D32').value = null;
+  sheet.getCell('E32').value = null;
+  sheet.getCell('F32').value = { formula: 'C32*B32', result: totalGstAmount };
 
   sheet.getCell('G32').value = { formula: 'SUM(D32:F32)', result: totalGstAmount };
   sheet.getCell('I31').value = { formula: 'C32+G32', result: grandTotal };
   sheet.getCell('C34').value = { formula: 'C32+G32', result: grandTotal };
+
+  // Explicitly clear CGST and SGST formulas in row 34 total row to prevent displaying 0 in PDF output
+  sheet.getCell('D34').value = null;
+  sheet.getCell('E34').value = null;
 
   // Write sheet changes to buffer
   const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer());

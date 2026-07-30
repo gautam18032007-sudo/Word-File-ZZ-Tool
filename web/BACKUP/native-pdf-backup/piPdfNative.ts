@@ -219,8 +219,8 @@ export async function generatePiPdfNative(input: PiGeneratorInput): Promise<Buff
       totalAmountSum += rowTotal;
 
       const notesText = isSkuMode
-        ? `(INR ${amount}*${sku})/Month + ${commission}% commission`
-        : `INR ${amount}/Month + ${commission}% commission`;
+        ? `(INR ${amount}*${sku} SKUs) + ${commission}% commission`
+        : `INR ${amount} + ${commission}% commission`;
 
       const cellText = (t: string, colIdx: number, size = 8, useFont = font, align: 'left' | 'center' = 'left') => {
         const c = cols[colIdx];
