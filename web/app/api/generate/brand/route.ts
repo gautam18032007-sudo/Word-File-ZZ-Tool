@@ -195,15 +195,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Commission % must be a number between 0 and 100.' }, { status: 400 });
     }
   }
-  if (
-    (payload.amountPerMonth !== undefined && payload.amountPerMonth <= 0 && contractType === 'MONTH' && location !== 'BOTH') ||
-    (payload.amountPerSku !== undefined && payload.amountPerSku <= 0 && contractType === 'SKU' && location !== 'BOTH') ||
-    (payload.amountSwn !== undefined && payload.amountSwn <= 0 && location === 'BOTH') ||
-    (payload.amountKlj !== undefined && payload.amountKlj <= 0 && location === 'BOTH')
-  ) {
-    logger.error(`[API/generate/brand] Amount must be greater than 0.`);
-    return NextResponse.json({ error: 'All amount fields must be greater than 0.' }, { status: 400 });
-  }
+
 
   // Generate current date in Asia/Kolkata (IST) timezone
   const today = new Date();
