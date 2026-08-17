@@ -22,7 +22,10 @@ export const maxDuration = 60;
 
 interface BrandGeneratePayload {
   brand: BrandRow;
-  location: Location;
+  location?: Location;
+  locations?: string[];
+  amountsByLocation?: Record<string, number>;
+  commissionsByLocation?: Record<string, string>;
   contractType: ContractType;
   amountPerMonth?: number;
   amountPerSku?: number;
@@ -30,58 +33,79 @@ interface BrandGeneratePayload {
   amountKlj?: number;
   noOfMonths?: number;
   noOfSku?: number;
-  commissionPct: string;        // used when location !== 'BOTH'
+  commissionPct?: string;        // used when location !== 'BOTH'
   commissionPctSwn?: string;    // used when location === 'BOTH'
   commissionPctKlj?: string;    // used when location === 'BOTH'
   effectiveDate?: string;  // ISO date (optional)
   stampingDate?: string;   // ISO date (optional)
 }
 
-function buildLocationText(location: Location): string {
-  return { SWN: 'SWN setup', KLJ: 'KLJ setup', BOTH: 'SWN and KLJ setups' }[location];
+function resolveLocationData(payload: BrandGeneratePayload): {
+  locations: string[];
+  amounts: Record<string, number>;
+  commissions: Record<string, string>;
+} {
+  if (payload.locations && Array.isArray(payload.locations) && payload.locations.length > 0) {
+    const locs = payload.locations;
+    const amounts: Record<string, number> = {};
+    const commissions: Record<string, string> = {};
+    locs.forEach(loc => {
+      amounts[loc] = payload.amountsByLocation?.[loc] ?? (payload.contractType === 'MONTH' ? payload.amountPerMonth : payload.amountPerSku) ?? 0;
+      commissions[loc] = payload.commissionsByLocation?.[loc] ?? payload.commissionPct ?? '';
+    });
+    return { locations: locs, amounts, commissions };
+  }
+
+  const loc = payload.location || 'SWN';
+  if (loc === 'BOTH') {
+    return {
+      locations: ['SWN', 'KLJ'],
+      amounts: { SWN: payload.amountSwn || 0, KLJ: payload.amountKlj || 0 },
+      commissions: { SWN: payload.commissionPctSwn || '', KLJ: payload.commissionPctKlj || '' },
+    };
+  }
+
+  const unitAmt = (payload.contractType === 'MONTH' ? payload.amountPerMonth : payload.amountPerSku) || 0;
+  return {
+    locations: [loc],
+    amounts: { [loc]: unitAmt },
+    commissions: { [loc]: payload.commissionPct || '' },
+  };
 }
 
-function calcTotal(payload: BrandGeneratePayload): {
+function buildLocationText(locations: string[]): string {
+  if (!locations || locations.length === 0) return 'SWN setup';
+  if (locations.length === 1) return `${locations[0]} setup`;
+  if (locations.length === 2) return `${locations[0]} and ${locations[1]} setups`;
+  const allButLast = locations.slice(0, -1).join(', ');
+  return `${allButLast} and ${locations[locations.length - 1]} setups`;
+}
+
+function calcTotal(payload: BrandGeneratePayload, locations: string[], amounts: Record<string, number>): {
   displayAmount: number;
   totalAmount: number;
 } {
-  const { location, contractType, amountPerMonth = 0, amountPerSku = 0,
-    amountSwn = 0, amountKlj = 0, noOfMonths = 0, noOfSku = 0 } = payload;
+  const { contractType, noOfMonths = 0, noOfSku = 0 } = payload;
 
   if (contractType === 'COMMISSION') {
     return { displayAmount: 0, totalAmount: 0 };
   }
 
-  if (location === 'BOTH') {
-    if (contractType === 'MONTH') {
-      return {
-        displayAmount: amountSwn,
-        totalAmount: (amountSwn + amountKlj) * noOfMonths,
-      };
-    }
-    return {
-      displayAmount: amountSwn,
-      totalAmount: (amountSwn + amountKlj) * noOfSku * noOfMonths,
-    };
-  }
+  const sumPerUnit = locations.reduce((sum, loc) => sum + (amounts[loc] || 0), 0);
+  const totalAmount = contractType === 'MONTH' 
+    ? sumPerUnit * noOfMonths 
+    : sumPerUnit * noOfSku * noOfMonths;
 
-  if (contractType === 'MONTH') {
-    return { displayAmount: amountPerMonth, totalAmount: amountPerMonth * noOfMonths };
-  }
-  return { displayAmount: amountPerSku, totalAmount: amountPerSku * noOfSku * noOfMonths };
+  return {
+    displayAmount: amounts[locations[0]] || sumPerUnit,
+    totalAmount,
+  };
 }
 
 function monthsWord(n: number): string {
   return `${n} month${n === 1 ? '' : 's'}`;
 }
 
-/**
- * Builds the two "Rental and Commission Structure" list-item sentences.
- * Wording branches structurally on Location (BOTH names both setups with two
- * amounts; a single location names just that one) — this can't be expressed
- * with small per-field tags, so the whole sentence is composed here and
- * dropped into a single {{FEE_CLAUSE}} / {{COMMISSION_CLAUSE}} tag.
- */
 function isValidCommission(val: string | undefined): boolean {
   if (val === undefined || val === null || val.trim() === '') return false;
   const num = Number(val);
@@ -89,65 +113,68 @@ function isValidCommission(val: string | undefined): boolean {
   return num > 0 && num <= 100;
 }
 
-function buildFeeAndCommissionClauses(payload: BrandGeneratePayload): {
+function buildFeeAndCommissionClauses(
+  payload: BrandGeneratePayload,
+  locations: string[],
+  amounts: Record<string, number>,
+  commissions: Record<string, string>
+): {
   feeClause: string;
   commissionClause: string;
 } {
-  const { location, contractType, amountPerMonth = 0, amountPerSku = 0,
-    amountSwn = 0, amountKlj = 0, noOfMonths = 0, noOfSku = 0,
-    commissionPct, commissionPctSwn, commissionPctKlj } = payload;
-
-  const locStr = String(location);
+  const { contractType, noOfMonths = 0, noOfSku = 0 } = payload;
+  const { totalAmount } = calcTotal(payload, locations, amounts);
 
   if (contractType === 'COMMISSION') {
-    if (location === 'BOTH') {
-      return {
-        feeClause: '',
-        commissionClause:
-          `A commission of ${commissionPctSwn}% on the sale price of each product sold through the SWN setup and ` +
-          `${commissionPctKlj}% on the sale price of each product sold through the KLJ setup, as disclosed in the Proforma Invoice (PI).`,
-      };
+    let commText = '';
+    if (locations.length === 1) {
+      commText = `A commission of ${commissions[locations[0]] || '0'}% on the sale price of each product sold through the ${locations[0]} setup, as disclosed in the Proforma Invoice (PI).`;
+    } else if (locations.length === 2) {
+      commText = `A commission of ${commissions[locations[0]] || '0'}% on the sale price of each product sold through the ${locations[0]} setup and ${commissions[locations[1]] || '0'}% on the sale price of each product sold through the ${locations[1]} setup, as disclosed in the Proforma Invoice (PI).`;
+    } else {
+      const parts = locations.map(loc => `${commissions[loc] || '0'}% on the sale price of each product sold through the ${loc} setup`);
+      const allButLast = parts.slice(0, -1).join(', ');
+      commText = `A commission of ${allButLast}, and ${parts[parts.length - 1]}, as disclosed in the Proforma Invoice (PI).`;
     }
+
     return {
       feeClause: '',
-      commissionClause:
-        `A commission of ${commissionPct}% on the sale price of each product sold through the ${locStr} setup, ` +
-        `as disclosed in the Proforma Invoice (PI).`,
+      commissionClause: commText,
     };
   }
 
   const months = monthsWord(noOfMonths);
-
-  if (location === 'BOTH') {
-    const perUnit = contractType === 'MONTH' ? 'month' : 'SKU';
-    const totalSwn = contractType === 'MONTH' ? amountSwn * noOfMonths : amountSwn * noOfSku * noOfMonths;
-    const totalKlj = contractType === 'MONTH' ? amountKlj * noOfMonths : amountKlj * noOfSku * noOfMonths;
-    const skuSuffix = contractType === 'SKU' ? `, for ${noOfSku} SKUs` : '';
-
-    return {
-      feeClause:
-        `An advance fixed fee of ${formatINR(amountSwn)} per ${perUnit} for the SWN setup and ` +
-        `${formatINR(amountKlj)} per ${perUnit} for the KLJ setup${skuSuffix}, payable for a period of ${months}, ` +
-        `amounting to a total of ${formatINR(totalSwn + totalKlj)} (exclusive of GST); and`,
-      commissionClause:
-        `A commission of ${commissionPctSwn}% on the sale price of each product sold through the SWN setup and ` +
-        `${commissionPctKlj}% on the sale price of each product sold through the KLJ setup, as disclosed in the Proforma Invoice (PI).`,
-    };
-  }
-
-  const amount = contractType === 'MONTH' ? amountPerMonth : amountPerSku;
-  const total = contractType === 'MONTH' ? amount * noOfMonths : amount * noOfSku * noOfMonths;
   const perUnit = contractType === 'MONTH' ? 'month' : 'SKU';
   const skuSuffix = contractType === 'SKU' ? `, for ${noOfSku} SKUs` : '';
 
-  return {
-    feeClause:
-      `An advance fixed fee of ${formatINR(amount)} per ${perUnit} for the ${locStr} setup${skuSuffix}, ` +
-      `payable for a period of ${months}, amounting to a total of ${formatINR(total)} (exclusive of GST); and`,
-    commissionClause:
-      `A commission of ${commissionPct}% on the sale price of each product sold through the ${locStr} setup, ` +
-      `as disclosed in the Proforma Invoice (PI).`,
-  };
+  let feeText = '';
+  if (locations.length === 1) {
+    const loc = locations[0];
+    const amt = amounts[loc] || 0;
+    const total = contractType === 'MONTH' ? amt * noOfMonths : amt * noOfSku * noOfMonths;
+    feeText = `An advance fixed fee of ${formatINR(amt)} per ${perUnit} for the ${loc} setup${skuSuffix}, payable for a period of ${months}, amounting to a total of ${formatINR(total)} (exclusive of GST); and`;
+  } else if (locations.length === 2) {
+    const loc1 = locations[0], loc2 = locations[1];
+    const amt1 = amounts[loc1] || 0, amt2 = amounts[loc2] || 0;
+    feeText = `An advance fixed fee of ${formatINR(amt1)} per ${perUnit} for the ${loc1} setup and ${formatINR(amt2)} per ${perUnit} for the ${loc2} setup${skuSuffix}, payable for a period of ${months}, amounting to a total of ${formatINR(totalAmount)} (exclusive of GST); and`;
+  } else {
+    const parts = locations.map(loc => `${formatINR(amounts[loc] || 0)} per ${perUnit} for the ${loc} setup`);
+    const allButLast = parts.slice(0, -1).join(', ');
+    feeText = `An advance fixed fee of ${allButLast}, and ${parts[parts.length - 1]}${skuSuffix}, payable for a period of ${months}, amounting to a total of ${formatINR(totalAmount)} (exclusive of GST); and`;
+  }
+
+  let commText = '';
+  if (locations.length === 1) {
+    commText = `A commission of ${commissions[locations[0]] || '0'}% on the sale price of each product sold through the ${locations[0]} setup, as disclosed in the Proforma Invoice (PI).`;
+  } else if (locations.length === 2) {
+    commText = `A commission of ${commissions[locations[0]] || '0'}% on the sale price of each product sold through the ${locations[0]} setup and ${commissions[locations[1]] || '0'}% on the sale price of each product sold through the ${locations[1]} setup, as disclosed in the Proforma Invoice (PI).`;
+  } else {
+    const parts = locations.map(loc => `${commissions[loc] || '0'}% on the sale price of each product sold through the ${loc} setup`);
+    const allButLast = parts.slice(0, -1).join(', ');
+    commText = `A commission of ${allButLast}, and ${parts[parts.length - 1]}, as disclosed in the Proforma Invoice (PI).`;
+  }
+
+  return { feeClause: feeText, commissionClause: commText };
 }
 
 export async function POST(req: NextRequest) {
@@ -160,8 +187,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { brand, location, contractType, noOfMonths = 0, noOfSku = 0,
-    commissionPct, commissionPctSwn, commissionPctKlj } = payload;
+  const { brand, contractType, noOfMonths = 0, noOfSku = 0 } = payload;
+
+  const { locations, amounts, commissions } = resolveLocationData(payload);
+
+  if (locations.length === 0) {
+    return NextResponse.json({ error: 'Please select at least one location.' }, { status: 400 });
+  }
 
   // Enforce zero and negative checks
   if (contractType !== 'COMMISSION') {
@@ -173,29 +205,21 @@ export async function POST(req: NextRequest) {
       logger.error(`[API/generate/brand] Invalid SKU count: ${noOfSku}`);
       return NextResponse.json({ error: 'SKU count must be greater than 0 for SKU contracts.' }, { status: 400 });
     }
-    if (
-      (payload.amountPerMonth !== undefined && payload.amountPerMonth <= 0 && contractType === 'MONTH' && location !== 'BOTH') ||
-      (payload.amountPerSku !== undefined && payload.amountPerSku <= 0 && contractType === 'SKU' && location !== 'BOTH') ||
-      (payload.amountSwn !== undefined && payload.amountSwn <= 0 && location === 'BOTH') ||
-      (payload.amountKlj !== undefined && payload.amountKlj <= 0 && location === 'BOTH')
-    ) {
-      logger.error(`[API/generate/brand] Amount must be greater than 0.`);
-      return NextResponse.json({ error: 'All amount fields must be greater than 0.' }, { status: 400 });
+
+    for (const loc of locations) {
+      if ((amounts[loc] ?? 0) <= 0) {
+        logger.error(`[API/generate/brand] Amount for location ${loc} must be greater than 0.`);
+        return NextResponse.json({ error: `Amount for location "${loc}" must be greater than 0.` }, { status: 400 });
+      }
     }
   }
 
-  if (location === 'BOTH') {
-    if (!isValidCommission(commissionPctSwn) || !isValidCommission(commissionPctKlj)) {
-      logger.error(`[API/generate/brand] Invalid Commission %: SWN=${commissionPctSwn}, KLJ=${commissionPctKlj}`);
-      return NextResponse.json({ error: 'Commission % must be a number between 0 and 100 for both SWN and KLJ.' }, { status: 400 });
-    }
-  } else {
-    if (!isValidCommission(commissionPct)) {
-      logger.error(`[API/generate/brand] Invalid Commission %: ${commissionPct}`);
-      return NextResponse.json({ error: 'Commission % must be a number between 0 and 100.' }, { status: 400 });
+  for (const loc of locations) {
+    if (!isValidCommission(commissions[loc])) {
+      logger.error(`[API/generate/brand] Invalid Commission % for location ${loc}: ${commissions[loc]}`);
+      return NextResponse.json({ error: `Commission % for location "${loc}" must be a number between 0 and 100.` }, { status: 400 });
     }
   }
-
 
   // Generate current date in Asia/Kolkata (IST) timezone
   const today = new Date();
@@ -214,9 +238,9 @@ export async function POST(req: NextRequest) {
   const effectiveDateFmt = formatDate(todayIso);
   const stampingDateFmt = formatDate(todayIso);
 
-  const locationText = buildLocationText(location);
-  const { totalAmount } = calcTotal(payload);
-  const { feeClause, commissionClause } = buildFeeAndCommissionClauses(payload);
+  const locationText = buildLocationText(locations);
+  const { totalAmount } = calcTotal(payload, locations, amounts);
+  const { feeClause, commissionClause } = buildFeeAndCommissionClauses(payload, locations, amounts, commissions);
 
   try {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -290,7 +314,7 @@ export async function POST(req: NextRequest) {
       folder: 'brands',
       docx_blob_url: docxBlobUrl,
       pdf_blob_url: pdfBlobUrl,
-      location,
+      location: locationText,
       total_amount: totalAmount,
     });
 

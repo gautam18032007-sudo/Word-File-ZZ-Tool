@@ -68,13 +68,13 @@ CONTRACT TOOL/
 1. User pastes a Google Sheet URL → `GET /api/sheets/brand` loads rows.
 2. User selects a brand row (auto-fills Legal Name, Brand Category, Address, Email, Phone,
    Contact Person).
-3. User enters: Location (`SWN` / `KLJ` / `BOTH`), Contract Type (`MONTH` / `SKU`), amount(s),
+3. User enters: Location (Multi-Select Checkbox Dropdown: `SWN`, `KLJ`, `HQ27`, or any multi-combination), Contract Type (`MONTH` / `SKU` / `COMMISSION`), amount(s),
    months/SKU count, commission %. (Effective Date and Stamping Date are no longer manual inputs,
    and are automatically set to the current system date in IST during generation).
 4. Total is computed client/server-side:
-   - `MONTH`: `Amount × Months`
-   - `SKU`: `Amount × SKUs × Months`
-   - `BOTH`: sums SWN + KLJ amounts first, then applies the same MONTH/SKU formula.
+   - `MONTH`: `Sum(Amounts for selected locations) × Months`
+   - `SKU`: `Sum(Amounts for selected locations) × SKUs × Months`
+   - Multi-location: sums amounts across all selected locations (`SWN`, `KLJ`, `HQ27`), then applies the MONTH/SKU formula.
 5. `POST /api/generate/brand` → renders `templates/brand-contract-template.docx`, converts to
    PDF via LibreOffice, writes both to `output/brands/`, appends a record to `contracts.json`.
 

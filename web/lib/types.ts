@@ -67,13 +67,18 @@ export interface ContractRecord {
 
 // ─── Form Data ────────────────────────────────────────────────────────────────
 
-export type Location = 'SWN' | 'KLJ' | 'BOTH';
+export const AVAILABLE_LOCATIONS = ['SWN', 'KLJ', 'HQ27'] as const;
+export type LocationOption = (typeof AVAILABLE_LOCATIONS)[number];
+export type Location = 'SWN' | 'KLJ' | 'HQ27' | 'BOTH';
 export type ContractType = 'MONTH' | 'SKU' | 'COMMISSION';
 
 export interface BrandFormData {
   sheetUrl: string;
   selectedBrand: BrandRow | null;
   location: Location;
+  locations?: string[];
+  amountsByLocation?: Record<string, string>;
+  commissionsByLocation?: Record<string, string>;
   contractType: ContractType;
   amountPerMonth: string;
   amountPerSku: string;

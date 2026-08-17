@@ -39,55 +39,73 @@ function isValidCommission(val: string): boolean {
   return n > 0 && n <= 100;
 }
 
+const ALL_LOCATIONS = ["SWN", "KLJ", "HQ27"];
+
 function buildClause(
-  location: Location,
+  selectedLocations: string[],
   contractType: ContractType,
-  amountPerMonth: string, amountPerSku: string,
-  amountSwn: string, amountKlj: string,
-  noOfMonths: string, noOfSku: string,
-  commissionPct: string
+  amountsByLoc: Record<string, string>,
+  singleAmountMonth: string,
+  singleAmountSku: string,
+  noOfMonths: string,
+  noOfSku: string
 ): { clause: string; total: number } | null {
   if (contractType === "COMMISSION") {
-    return {
-      total: 0,
-      clause: "",
-    };
+    return { total: 0, clause: "" };
   }
 
   const months = num(noOfMonths);
   const sku = num(noOfSku);
+  if (!months) return null;
+  if (contractType === "SKU" && !sku) return null;
 
-  if (location === "BOTH") {
-    const swn = num(amountSwn), klj = num(amountKlj);
-    if (!swn || !klj || !months) return null;
-    if (contractType === "SKU") {
-      if (!sku) return null;
-      const total = (swn + klj) * sku * months;
+  if (selectedLocations.length === 0) return null;
+
+  const perUnitLabel = contractType === "MONTH" ? "Month" : "SKU";
+
+  if (selectedLocations.length === 1) {
+    const loc = selectedLocations[0];
+    const unitAmt = contractType === "MONTH" ? num(singleAmountMonth) : num(singleAmountSku);
+    if (!unitAmt) return null;
+    const total = contractType === "MONTH" ? unitAmt * months : unitAmt * sku * months;
+    const locText = `${loc} setup`;
+
+    if (contractType === "MONTH") {
       return {
         total,
-        clause: `An advanced fixed fee of ${formatINRClient(swn)} per SKU at SWN and ${formatINRClient(klj)} per SKU at KLJ, for ${sku} SKUs for ${months} months, totalling ${formatINRClient(total)} across both setups.`,
+        clause: `An advanced fixed fee of ${formatINRClient(unitAmt)} per Month for the ${locText}, payable for a period of ${months} month(s), amounting to a total of ${formatINRClient(total)} (exclusive of GST); and`,
       };
     }
-    const total = (swn + klj) * months;
     return {
       total,
-      clause: `An advanced fixed fee of ${formatINRClient(swn)} per Month at SWN and ${formatINRClient(klj)} per Month at KLJ, for ${months} months, totalling ${formatINRClient(total)} across both setups.`,
+      clause: `An advanced fixed fee of ${formatINRClient(unitAmt)} per SKU for ${sku} SKUs for ${months} months, totalling ${formatINRClient(total)} at our ${locText}.`,
     };
   }
 
-  const locText = `${location} setup`;
-
-  if (contractType === "MONTH") {
-    const a = num(amountPerMonth);
-    if (!a || !months) return null;
-    const total = a * months;
-    return { total, clause: `An advanced fixed fee of ${formatINRClient(a)} per Month for the ${locText}, payable for a period of ${months} month(s), amounting to a total of ${formatINRClient(total)} (exclusive of GST); and` };
+  for (const loc of selectedLocations) {
+    if (!num(amountsByLoc[loc] || "")) return null;
   }
 
-  const a = num(amountPerSku);
-  if (!a || !sku || !months) return null;
-  const total = a * sku * months;
-  return { total, clause: `An advanced fixed fee of ${formatINRClient(a)} per SKU for ${sku} SKUs for ${months} months, totalling ${formatINRClient(total)} at our ${locText}.` };
+  const sumPerUnit = selectedLocations.reduce((sum, loc) => sum + num(amountsByLoc[loc] || ""), 0);
+  const total = contractType === "MONTH" ? sumPerUnit * months : sumPerUnit * sku * months;
+
+  if (selectedLocations.length === 2) {
+    const loc1 = selectedLocations[0], loc2 = selectedLocations[1];
+    const a1 = num(amountsByLoc[loc1] || ""), a2 = num(amountsByLoc[loc2] || "");
+    const skuClause = contractType === "SKU" ? `, for ${sku} SKUs` : "";
+    return {
+      total,
+      clause: `An advanced fixed fee of ${formatINRClient(a1)} per ${perUnitLabel} at ${loc1} and ${formatINRClient(a2)} per ${perUnitLabel} at ${loc2}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across both setups.`,
+    };
+  }
+
+  const parts = selectedLocations.map((loc) => `${formatINRClient(num(amountsByLoc[loc] || ""))} per ${perUnitLabel} at ${loc}`);
+  const allButLast = parts.slice(0, -1).join(", ");
+  const skuClause = contractType === "SKU" ? `, for ${sku} SKUs` : "";
+  return {
+    total,
+    clause: `An advanced fixed fee of ${allButLast}, and ${parts[parts.length - 1]}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across setups.`,
+  };
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -230,25 +248,52 @@ export default function BrandPage() {
   }
 
   // commercial inputs
-  const [location, setLocation] = useState<Location>("SWN");
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(["SWN"]);
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   const [contractType, setContractType] = useState<ContractType>("MONTH");
+  
   const [amountPerMonth, setAmountPerMonth] = useState("");
   const [amountPerSku, setAmountPerSku] = useState("");
-  const [amountSwn, setAmountSwn] = useState("");
-  const [amountKlj, setAmountKlj] = useState("");
+  const [amountsByLoc, setAmountsByLoc] = useState<Record<string, string>>({ SWN: "", KLJ: "", HQ27: "" });
+  
   const [noOfMonths, setNoOfMonths] = useState("");
   const [noOfSku, setNoOfSku] = useState("");
+
   const [commissionPct, setCommissionPct] = useState("");
-  const [commissionPctSwn, setCommissionPctSwn] = useState("");
-  const [commissionPctKlj, setCommissionPctKlj] = useState("");
+  const [commissionsByLoc, setCommissionsByLoc] = useState<Record<string, string>>({ SWN: "", KLJ: "", HQ27: "" });
 
   // generate state
   const [genState, setGenState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [genResult, setGenResult] = useState<GenerateResult | null>(null);
   const [genError, setGenError] = useState("");
 
+  function toggleLocation(loc: string) {
+    if (selectedLocations.includes(loc)) {
+      if (selectedLocations.length === 1) return; // Must keep at least 1 selected
+      setSelectedLocations(selectedLocations.filter((l) => l !== loc));
+    } else {
+      setSelectedLocations([...selectedLocations, loc]);
+    }
+  }
+
+  function toggleSelectAll() {
+    if (selectedLocations.length === ALL_LOCATIONS.length) {
+      setSelectedLocations(["SWN"]);
+    } else {
+      setSelectedLocations([...ALL_LOCATIONS]);
+    }
+  }
+
   // Live clause preview
-  const preview = buildClause(location, contractType, amountPerMonth, amountPerSku, amountSwn, amountKlj, noOfMonths, noOfSku, commissionPct);
+  const preview = buildClause(
+    selectedLocations,
+    contractType,
+    amountsByLoc,
+    amountPerMonth,
+    amountPerSku,
+    noOfMonths,
+    noOfSku
+  );
 
   async function handleLoadBrands(url: string, loadedHeaders: string[], loadedRows: string[][]) {
     setSelectedIdx(-1);
@@ -273,33 +318,52 @@ export default function BrandPage() {
       return;
     }
 
-    if (location === "BOTH") {
-      if (!isValidCommission(commissionPctSwn) || !isValidCommission(commissionPctKlj)) {
-        setGenError("Commission % must be a number between 0 and 100 for both SWN and KLJ.");
+    if (selectedLocations.length === 1) {
+      const loc = selectedLocations[0];
+      const comm = selectedLocations.length === 1 ? commissionPct : commissionsByLoc[loc];
+      if (!isValidCommission(comm)) {
+        setGenError(`Commission % must be a number between 0 and 100.`);
         return;
       }
     } else {
-      if (!isValidCommission(commissionPct)) {
-        setGenError("Commission % must be a number between 0 and 100.");
-        return;
+      for (const loc of selectedLocations) {
+        if (!isValidCommission(commissionsByLoc[loc])) {
+          setGenError(`Commission % for ${loc} must be a number between 0 and 100.`);
+          return;
+        }
       }
     }
 
     setGenState("loading");
 
+    const parsedAmounts: Record<string, number> = {};
+    const parsedCommissions: Record<string, string> = {};
+
+    selectedLocations.forEach((loc) => {
+      parsedAmounts[loc] = selectedLocations.length === 1
+        ? (contractType === "MONTH" ? parseFloat(amountPerMonth) || 0 : parseFloat(amountPerSku) || 0)
+        : parseFloat(amountsByLoc[loc]) || 0;
+      parsedCommissions[loc] = selectedLocations.length === 1 ? commissionPct : (commissionsByLoc[loc] || "");
+    });
+
+    const isBoth = selectedLocations.length === 2 && selectedLocations.includes("SWN") && selectedLocations.includes("KLJ");
+
     const payload = {
       brand: selected,
-      location,
+      location: (isBoth ? "BOTH" : selectedLocations[0]) as Location,
+      locations: selectedLocations,
+      amountsByLocation: parsedAmounts,
+      commissionsByLocation: parsedCommissions,
       contractType,
       amountPerMonth: parseFloat(amountPerMonth) || 0,
       amountPerSku: parseFloat(amountPerSku) || 0,
-      amountSwn: parseFloat(amountSwn) || 0,
-      amountKlj: parseFloat(amountKlj) || 0,
+      amountSwn: parseFloat(amountsByLoc["SWN"]) || 0,
+      amountKlj: parseFloat(amountsByLoc["KLJ"]) || 0,
       noOfMonths: parseFloat(noOfMonths) || 0,
       noOfSku: parseFloat(noOfSku) || 0,
       commissionPct,
-      commissionPctSwn,
-      commissionPctKlj,
+      commissionPctSwn: commissionsByLoc["SWN"] || "",
+      commissionPctKlj: commissionsByLoc["KLJ"] || "",
     };
 
     try {
@@ -487,16 +551,53 @@ export default function BrandPage() {
             <CardContent className="space-y-4">
               <FieldRow>
                 <Field label="Location">
-                  <select
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value as Location)}
-                    className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <option value="SWN">SWN</option>
-                    <option value="KLJ">KLJ</option>
-                    <option value="BOTH">BOTH</option>
-                  </select>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setLocationDropdownOpen(!locationDropdownOpen)}
+                      className="flex h-9 w-full items-center justify-between rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left"
+                    >
+                      <span className="font-medium truncate">
+                        {selectedLocations.length === ALL_LOCATIONS.length
+                          ? "ALL LOCATIONS"
+                          : selectedLocations.length === 2 && selectedLocations.includes("SWN") && selectedLocations.includes("KLJ")
+                          ? "BOTH (SWN & KLJ)"
+                          : selectedLocations.join(", ")}
+                      </span>
+                      <span className="ml-2 text-xs opacity-60">▼</span>
+                    </button>
+
+                    {locationDropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setLocationDropdownOpen(false)} />
+                        <div className="absolute left-0 top-full mt-1 z-20 w-full rounded-md border border-[var(--border)] bg-[var(--background)] p-2 shadow-lg space-y-1 text-sm">
+                          <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--muted)] rounded cursor-pointer font-semibold border-b border-[var(--border)] pb-1.5 mb-1 select-none">
+                            <input
+                              type="checkbox"
+                              checked={selectedLocations.length === ALL_LOCATIONS.length}
+                              onChange={toggleSelectAll}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                            />
+                            <span>Select All Locations</span>
+                          </label>
+
+                          {ALL_LOCATIONS.map((loc) => (
+                            <label key={loc} className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--muted)] rounded cursor-pointer font-medium select-none">
+                              <input
+                                type="checkbox"
+                                checked={selectedLocations.includes(loc)}
+                                onChange={() => toggleLocation(loc)}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                              />
+                              <span>{loc}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </Field>
+
                 <Field label="Contract Type">
                   <select
                     value={contractType}
@@ -510,18 +611,22 @@ export default function BrandPage() {
                 </Field>
               </FieldRow>
 
-              {/* Dynamic inputs based on contractType */}
+              {/* Dynamic inputs based on contractType and selectedLocations */}
               {contractType === "COMMISSION" ? null : (
                 <>
-                  {location === "BOTH" ? (
-                    <FieldRow>
-                      <Field label="Amount — SWN (₹)">
-                        <Input type="number" placeholder="0" value={amountSwn} onChange={(e) => setAmountSwn(e.target.value)} />
-                      </Field>
-                      <Field label="Amount — KLJ (₹)">
-                        <Input type="number" placeholder="0" value={amountKlj} onChange={(e) => setAmountKlj(e.target.value)} />
-                      </Field>
-                    </FieldRow>
+                  {selectedLocations.length > 1 ? (
+                    <div className="space-y-3">
+                      {selectedLocations.map((loc) => (
+                        <Field key={loc} label={`Amount — ${loc} (₹)`}>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            value={amountsByLoc[loc] || ""}
+                            onChange={(e) => setAmountsByLoc({ ...amountsByLoc, [loc]: e.target.value })}
+                          />
+                        </Field>
+                      ))}
+                    </div>
                   ) : contractType === "MONTH" ? (
                     <Field label="Amount / Month (₹)">
                       <Input type="number" placeholder="0" value={amountPerMonth} onChange={(e) => setAmountPerMonth(e.target.value)} />
@@ -538,7 +643,7 @@ export default function BrandPage() {
                   )}
 
                   <FieldRow>
-                    {location === "BOTH" && contractType === "SKU" && (
+                    {selectedLocations.length > 1 && contractType === "SKU" && (
                       <Field label="No. of SKUs">
                         <Input type="number" placeholder="0" value={noOfSku} onChange={(e) => setNoOfSku(e.target.value)} />
                       </Field>
@@ -550,20 +655,24 @@ export default function BrandPage() {
                 </>
               )}
 
-              {/* Manual Commission Inputs */}
-              {location !== "BOTH" ? (
+              {/* Dynamic Commission Inputs */}
+              {selectedLocations.length === 1 ? (
                 <Field label="Commission %">
                   <Input type="number" placeholder="e.g. 19" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} />
                 </Field>
               ) : (
-                <FieldRow>
-                  <Field label="Commission % — SWN">
-                    <Input type="number" placeholder="e.g. 19" value={commissionPctSwn} onChange={(e) => setCommissionPctSwn(e.target.value)} />
-                  </Field>
-                  <Field label="Commission % — KLJ">
-                    <Input type="number" placeholder="e.g. 19" value={commissionPctKlj} onChange={(e) => setCommissionPctKlj(e.target.value)} />
-                  </Field>
-                </FieldRow>
+                <div className="space-y-3">
+                  {selectedLocations.map((loc) => (
+                    <Field key={loc} label={`Commission % — ${loc}`}>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 19"
+                        value={commissionsByLoc[loc] || ""}
+                        onChange={(e) => setCommissionsByLoc({ ...commissionsByLoc, [loc]: e.target.value })}
+                      />
+                    </Field>
+                  ))}
+                </div>
               )}
 
             </CardContent>
@@ -586,12 +695,11 @@ export default function BrandPage() {
                 ) : (
                   <div className="space-y-2">
                     {preview.clause ? <p>{preview.clause}</p> : null}
-                    {location === "BOTH" ? (
-                      (commissionPctSwn || commissionPctKlj) && (
+                    {selectedLocations.length > 1 ? (
+                      selectedLocations.some((loc) => commissionsByLoc[loc]) && (
                         <p>
-                          A commission of {commissionPctSwn || "0"}% on the sale price of each product sold
-                          through the SWN setup and {commissionPctKlj || "0"}% on the sale price of each
-                          product sold through the KLJ setup.
+                          A commission of{" "}
+                          {selectedLocations.map((loc) => `${commissionsByLoc[loc] || "0"}% through ${loc}`).join(" and ")}.
                         </p>
                       )
                     ) : (

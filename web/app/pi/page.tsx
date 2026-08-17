@@ -146,10 +146,12 @@ export default function ProformaInvoicePage() {
 
   const handleAddRow = () => {
     if (items.length >= 4) return;
+    const defaultLocations = ["KLJ Noida One", "Smartworks Noida", "HQ27"];
+    const locName = defaultLocations[items.length % defaultLocations.length] || `Location ${items.length + 1}`;
     setItems([
       ...items,
       {
-        description: `Service Charge for advertisement of Products - Location ${items.length + 1}`,
+        description: `Service Charge for advertisement of Products - ${locName}`,
         billingMode: "month",
         amount: 0,
         sku: 1,
@@ -657,11 +659,30 @@ export default function ProformaInvoicePage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label>Description *</Label>
+                    <div className="flex items-center justify-between">
+                      <Label>Description *</Label>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-[var(--muted-foreground)]">Location Preset:</span>
+                        {[
+                          { label: "HQ27", full: "HQ27" },
+                          { label: "KLJ", full: "KLJ Noida One" },
+                          { label: "SWN", full: "Smartworks Noida" },
+                        ].map((loc) => (
+                          <button
+                            key={loc.label}
+                            type="button"
+                            onClick={() => handleItemChange(idx, "description", `Service Charge for advertisement of Products - ${loc.full}`)}
+                            className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--muted)] hover:bg-blue-600 hover:text-white transition-colors font-medium"
+                          >
+                            {loc.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <Input
                       value={item.description}
                       onChange={(e) => handleItemChange(idx, "description", e.target.value)}
-                      placeholder="e.g. Service Charge for advertisement of Products"
+                      placeholder="e.g. Service Charge for advertisement of Products - HQ27"
                       required
                     />
                   </div>
