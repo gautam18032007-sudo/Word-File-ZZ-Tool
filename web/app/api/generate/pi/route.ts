@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       fs.writeFileSync(pdfPath, result.pdfBuffer);
       logger.gen(`[API/generate/pi] Saved active PDF file: ${pdfName}`);
     } else {
-      message = 'PDF conversion available only in local environment.';
+      message = result.error || 'PDF conversion unavailable.';
       logger.gen(`[API/generate/pi] PDF conversion skipped/unavailable.`);
     }
 

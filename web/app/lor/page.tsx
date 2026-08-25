@@ -768,8 +768,8 @@ export default function LorPage() {
                           <FileDown size={13} /> PDF
                         </Button>
                       ) : (
-                        <span className="text-xs text-[var(--muted-foreground)] self-center">
-                          PDF conversion available only in local environment.
+                        <span className="text-xs text-amber-600 dark:text-amber-400 self-center font-medium">
+                          {genResult.message || "PDF conversion unavailable."}
                         </span>
                       )}
                     </div>

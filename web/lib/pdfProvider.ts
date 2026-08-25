@@ -22,7 +22,8 @@ export async function convertDocumentToPdf(
   filename: string
 ): Promise<PdfConversionResult> {
   const startTime = Date.now();
-  const maxRetries = parseInt(process.env.PDF_RETRY_COUNT || '3', 10);
+  const defaultRetries = process.env.VERCEL ? '1' : '3';
+  const maxRetries = parseInt(process.env.PDF_RETRY_COUNT || defaultRetries, 10);
   const isXlsx = filename.endsWith('.xlsx');
 
   const providerVersion = process.env.PDF_PROVIDER_VERSION || '1.0';

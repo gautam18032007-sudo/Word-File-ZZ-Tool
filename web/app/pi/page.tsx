@@ -470,8 +470,8 @@ export default function ProformaInvoicePage() {
               </Button>
             )}
             {!success.pdfName && (
-              <span className="text-xs text-[var(--muted-foreground)]">
-                PDF conversion available only in local environment.
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                {success.message || "PDF conversion unavailable."}
               </span>
             )}
           </div>

@@ -30,6 +30,7 @@ export interface GenerateLorResult {
   pdfFile: string | null;
   docxBase64: string;
   pdfBase64: string | null;
+  error?: string;
 }
 
 export async function generateLor(options: GenerateLorOptions): Promise<GenerateLorResult> {
@@ -154,6 +155,7 @@ export async function generateLor(options: GenerateLorOptions): Promise<Generate
     pdfFile: pdfBase64 ? pdfFilename : null,
     docxBase64: docxBytes.toString('base64'),
     pdfBase64,
+    error: pdfResult.error,
   };
 
 }

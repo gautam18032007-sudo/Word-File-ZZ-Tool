@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
       pdfFile: result.pdfFile,
       docxBase64: result.docxBase64,
       pdfBase64: result.pdfBase64,
-      message: !result.pdfFile ? 'PDF conversion available only in local environment.' : undefined,
+      message: !result.pdfFile ? (result.error || 'PDF conversion unavailable.') : undefined,
     });
 
 

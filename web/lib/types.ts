@@ -114,6 +114,7 @@ export interface GenerateResult {
   pdfName: string | null;
   docxBase64?: string;
   pdfBase64?: string | null;
+  message?: string;
 }
 export interface CommissionOption {
   id: string;

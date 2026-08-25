@@ -33,6 +33,7 @@ export interface PiGeneratorInput {
 export interface PiGeneratorOutput {
   xlsxBuffer: Buffer;
   pdfBuffer: Buffer | null;
+  error?: string;
 }
 
 function formatDate(dateStr: string): string {
@@ -194,7 +195,7 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
     console.warn('[generatePiWorkbook] No PDF engine available — XLSX only. Set GOTENBERG_URL to enable PDF generation.');
   }
 
-  return { xlsxBuffer, pdfBuffer };
+  return { xlsxBuffer, pdfBuffer, error: pdfResult.error };
 
 
 }
