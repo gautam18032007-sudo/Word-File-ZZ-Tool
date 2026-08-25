@@ -47,6 +47,7 @@ interface GenerateResult {
   pdfFile: string | null;
   docxBase64?: string;
   pdfBase64?: string | null;
+  message?: string;
 }
 
 function normalizeDateToYYYYMMDD(dateStr: string): string {
