@@ -13,6 +13,7 @@ import { uploadToBlob } from '@/lib/blobStore';
 
 import { formatINR, formatDate } from '@/lib/formatting';
 import type { BrandRow, Location, ContractType } from '@/lib/types';
+import { getApplicableStores, isStoreApplicable, normalizeDateToIso } from '@/lib/storeMaster';
 import { logger } from '@/lib/logger';
 import { writableDir } from '@/lib/paths';
 
@@ -40,7 +41,7 @@ interface BrandGeneratePayload {
   stampingDate?: string;   // ISO date (optional)
 }
 
-function resolveLocationData(payload: BrandGeneratePayload): {
+function resolveLocationData(payload: BrandGeneratePayload, contractDate?: string): {
   locations: string[];
   amounts: Record<string, number>;
   commissions: Record<string, string>;
@@ -56,7 +57,8 @@ function resolveLocationData(payload: BrandGeneratePayload): {
     return { locations: locs, amounts, commissions };
   }
 
-  const loc = payload.location || 'SWN';
+  const defaultLoc = getApplicableStores(contractDate)[0]?.storeCode || 'SWN';
+  const loc = payload.location || defaultLoc;
   if (loc === 'BOTH') {
     return {
       locations: ['SWN', 'KLJ'],
@@ -189,10 +191,34 @@ export async function POST(req: NextRequest) {
 
   const { brand, contractType, noOfMonths = 0, noOfSku = 0 } = payload;
 
-  const { locations, amounts, commissions } = resolveLocationData(payload);
+  // Resolve contract date in Asia/Kolkata (IST) timezone
+  const today = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
+  const parts = formatter.formatToParts(today);
+  const year = parts.find(p => p.type === 'year')?.value;
+  const month = parts.find(p => p.type === 'month')?.value.padStart(2, '0');
+  const day = parts.find(p => p.type === 'day')?.value.padStart(2, '0');
+  const todayIso = payload.effectiveDate ? normalizeDateToIso(payload.effectiveDate) : `${year}-${month}-${day}`;
+
+  const { locations, amounts, commissions } = resolveLocationData(payload, todayIso);
 
   if (locations.length === 0) {
     return NextResponse.json({ error: 'Please select at least one location.' }, { status: 400 });
+  }
+
+  // Validate that each location is open and applicable as of contract date
+  for (const loc of locations) {
+    if (!isStoreApplicable(loc, todayIso)) {
+      logger.error(`[API/generate/brand] Store "${loc}" is not open or applicable for contract date ${todayIso}`);
+      return NextResponse.json({
+        error: `Location "${loc}" is not applicable for contract date ${todayIso} (store opening date constraint).`
+      }, { status: 400 });
+    }
   }
 
   // Enforce zero and negative checks
@@ -220,20 +246,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Commission % for location "${loc}" must be a number between 0 and 100.` }, { status: 400 });
     }
   }
-
-  // Generate current date in Asia/Kolkata (IST) timezone
-  const today = new Date();
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-  });
-  const parts = formatter.formatToParts(today);
-  const year = parts.find(p => p.type === 'year')?.value;
-  const month = parts.find(p => p.type === 'month')?.value.padStart(2, '0');
-  const day = parts.find(p => p.type === 'day')?.value.padStart(2, '0');
-  const todayIso = `${year}-${month}-${day}`;
 
   const effectiveDateFmt = formatDate(todayIso);
   const stampingDateFmt = formatDate(todayIso);

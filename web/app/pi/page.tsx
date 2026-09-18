@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { getApplicableStores, Store } from "@/lib/storeMaster";
 import { CheckCircle2, AlertCircle, Download, FileText, Loader2, Receipt, Trash2, AlertTriangle, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,29 +56,37 @@ export default function ProformaInvoicePage() {
     return `${yyyy}-${mm}-${dd}`;
   });
 
+  // Dynamic store resolution based on Proforma Date
+  const applicableStores = useMemo(() => getApplicableStores(proformaDate), [proformaDate]);
+
   // Line Items (Defaults to 2 initial rows, expandable up to 4)
-  const [items, setItems] = useState<LineItem[]>([
-    {
-      description: "Service Charge for advertisement of Products - KLJ Noida One",
-      billingMode: "month",
-      amount: 0,
-      sku: 1,
-      commission: 0,
-      uom: "NOS",
-      quantity: 1,
-      gstPct: 18,
-    },
-    {
-      description: "Service Charge for advertisement of Products - Smartworks Noida",
-      billingMode: "month",
-      amount: 0,
-      sku: 1,
-      commission: 0,
-      uom: "NOS",
-      quantity: 1,
-      gstPct: 18,
-    },
-  ]);
+  const [items, setItems] = useState<LineItem[]>(() => {
+    const stores = getApplicableStores();
+    const s1 = stores[0]?.storeName || "Smartworks Noida";
+    const s2 = stores[1]?.storeName || "KLJ Noida One";
+    return [
+      {
+        description: `Service Charge for advertisement of Products - ${s1}`,
+        billingMode: "month",
+        amount: 0,
+        sku: 1,
+        commission: 0,
+        uom: "NOS",
+        quantity: 1,
+        gstPct: 18,
+      },
+      {
+        description: `Service Charge for advertisement of Products - ${s2}`,
+        billingMode: "month",
+        amount: 0,
+        sku: 1,
+        commission: 0,
+        uom: "NOS",
+        quantity: 1,
+        gstPct: 18,
+      },
+    ];
+  });
 
   // PI number states
   const [piSeq, setPiSeq] = useState("");
@@ -146,8 +155,8 @@ export default function ProformaInvoicePage() {
 
   const handleAddRow = () => {
     if (items.length >= 4) return;
-    const defaultLocations = ["KLJ Noida One", "Smartworks Noida", "HQ27"];
-    const locName = defaultLocations[items.length % defaultLocations.length] || `Location ${items.length + 1}`;
+    const storeNames = applicableStores.map((s) => s.storeName);
+    const locName = storeNames[items.length % (storeNames.length || 1)] || `Location ${items.length + 1}`;
     setItems([
       ...items,
       {
@@ -292,9 +301,11 @@ export default function ProformaInvoicePage() {
         setDestination("");
         setContactPerson("");
         setContactNumber("");
+        const s1 = applicableStores[0]?.storeName || "Smartworks Noida";
+        const s2 = applicableStores[1]?.storeName || "KLJ Noida One";
         setItems([
           {
-            description: "Service Charge for advertisement of Products - KLJ Noida One",
+            description: `Service Charge for advertisement of Products - ${s1}`,
             billingMode: "month",
             amount: 0,
             sku: 1,
@@ -304,7 +315,7 @@ export default function ProformaInvoicePage() {
             gstPct: 18,
           },
           {
-            description: "Service Charge for advertisement of Products - Smartworks Noida",
+            description: `Service Charge for advertisement of Products - ${s2}`,
             billingMode: "month",
             amount: 0,
             sku: 1,
@@ -661,20 +672,17 @@ export default function ProformaInvoicePage() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <Label>Description *</Label>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-[10px] text-[var(--muted-foreground)]">Location Preset:</span>
-                        {[
-                          { label: "HQ27", full: "HQ27" },
-                          { label: "KLJ", full: "KLJ Noida One" },
-                          { label: "SWN", full: "Smartworks Noida" },
-                        ].map((loc) => (
+                        {applicableStores.map((store) => (
                           <button
-                            key={loc.label}
+                            key={store.storeCode}
                             type="button"
-                            onClick={() => handleItemChange(idx, "description", `Service Charge for advertisement of Products - ${loc.full}`)}
+                            onClick={() => handleItemChange(idx, "description", `Service Charge for advertisement of Products - ${store.storeName}`)}
                             className="text-[10px] px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--muted)] hover:bg-blue-600 hover:text-white transition-colors font-medium"
+                            title={store.storeName}
                           >
-                            {loc.label}
+                            {store.storeCode}
                           </button>
                         ))}
                       </div>
@@ -682,7 +690,7 @@ export default function ProformaInvoicePage() {
                     <Input
                       value={item.description}
                       onChange={(e) => handleItemChange(idx, "description", e.target.value)}
-                      placeholder="e.g. Service Charge for advertisement of Products - HQ27"
+                      placeholder={`e.g. Service Charge for advertisement of Products - ${applicableStores[0]?.storeName || "Club 125"}`}
                       required
                     />
                   </div>

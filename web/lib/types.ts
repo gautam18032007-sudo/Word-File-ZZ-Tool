@@ -65,11 +65,12 @@ export interface ContractRecord {
 }
 
 
-// ─── Form Data ────────────────────────────────────────────────────────────────
+import { STORE_MASTER, type Store } from './storeMaster';
+export type { Store };
 
-export const AVAILABLE_LOCATIONS = ['SWN', 'KLJ', 'HQ27'] as const;
-export type LocationOption = (typeof AVAILABLE_LOCATIONS)[number];
-export type Location = 'SWN' | 'KLJ' | 'HQ27' | 'BOTH';
+export const AVAILABLE_LOCATIONS = STORE_MASTER.map((s) => s.storeCode);
+export type LocationOption = string;
+export type Location = string;
 export type ContractType = 'MONTH' | 'SKU' | 'COMMISSION';
 
 export interface BrandFormData {

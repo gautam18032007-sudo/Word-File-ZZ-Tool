@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { getApplicableStores, Store } from "@/lib/storeMaster";
 import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,8 +39,6 @@ function isValidCommission(val: string): boolean {
   if (isNaN(n)) return false;
   return n > 0 && n <= 100;
 }
-
-const ALL_LOCATIONS = ["SWN", "KLJ", "HQ27"];
 
 function buildClause(
   selectedLocations: string[],
@@ -247,20 +246,24 @@ export default function BrandPage() {
     if (!selected.address?.trim()) brandMissingFields.push("Address");
   }
 
+  // Dynamic store resolution for current contract date
+  const applicableStores = useMemo(() => getApplicableStores(new Date()), []);
+  const allLocationCodes = useMemo(() => applicableStores.map((s) => s.storeCode), [applicableStores]);
+
   // commercial inputs
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(["SWN"]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(() => [applicableStores[0]?.storeCode || "SWN"]);
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   const [contractType, setContractType] = useState<ContractType>("MONTH");
   
   const [amountPerMonth, setAmountPerMonth] = useState("");
   const [amountPerSku, setAmountPerSku] = useState("");
-  const [amountsByLoc, setAmountsByLoc] = useState<Record<string, string>>({ SWN: "", KLJ: "", HQ27: "" });
+  const [amountsByLoc, setAmountsByLoc] = useState<Record<string, string>>({});
   
   const [noOfMonths, setNoOfMonths] = useState("");
   const [noOfSku, setNoOfSku] = useState("");
 
   const [commissionPct, setCommissionPct] = useState("");
-  const [commissionsByLoc, setCommissionsByLoc] = useState<Record<string, string>>({ SWN: "", KLJ: "", HQ27: "" });
+  const [commissionsByLoc, setCommissionsByLoc] = useState<Record<string, string>>({});
 
   // generate state
   const [genState, setGenState] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -277,10 +280,10 @@ export default function BrandPage() {
   }
 
   function toggleSelectAll() {
-    if (selectedLocations.length === ALL_LOCATIONS.length) {
-      setSelectedLocations(["SWN"]);
+    if (selectedLocations.length === allLocationCodes.length) {
+      setSelectedLocations([allLocationCodes[0] || "SWN"]);
     } else {
-      setSelectedLocations([...ALL_LOCATIONS]);
+      setSelectedLocations([...allLocationCodes]);
     }
   }
 
@@ -558,7 +561,7 @@ export default function BrandPage() {
                       className="flex h-9 w-full items-center justify-between rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left"
                     >
                       <span className="font-medium truncate">
-                        {selectedLocations.length === ALL_LOCATIONS.length
+                        {selectedLocations.length === allLocationCodes.length && allLocationCodes.length > 1
                           ? "ALL LOCATIONS"
                           : selectedLocations.length === 2 && selectedLocations.includes("SWN") && selectedLocations.includes("KLJ")
                           ? "BOTH (SWN & KLJ)"
@@ -574,22 +577,25 @@ export default function BrandPage() {
                           <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--muted)] rounded cursor-pointer font-semibold border-b border-[var(--border)] pb-1.5 mb-1 select-none">
                             <input
                               type="checkbox"
-                              checked={selectedLocations.length === ALL_LOCATIONS.length}
+                              checked={selectedLocations.length === allLocationCodes.length}
                               onChange={toggleSelectAll}
                               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
                             />
                             <span>Select All Locations</span>
                           </label>
 
-                          {ALL_LOCATIONS.map((loc) => (
-                            <label key={loc} className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--muted)] rounded cursor-pointer font-medium select-none">
-                              <input
-                                type="checkbox"
-                                checked={selectedLocations.includes(loc)}
-                                onChange={() => toggleLocation(loc)}
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
-                              />
-                              <span>{loc}</span>
+                          {applicableStores.map((store) => (
+                            <label key={store.storeCode} className="flex items-center justify-between px-2 py-1.5 hover:bg-[var(--muted)] rounded cursor-pointer font-medium select-none">
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedLocations.includes(store.storeCode)}
+                                  onChange={() => toggleLocation(store.storeCode)}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                                />
+                                <span>{store.storeCode}</span>
+                              </div>
+                              <span className="text-[11px] text-[var(--muted-foreground)] truncate max-w-[140px]">{store.storeName}</span>
                             </label>
                           ))}
                         </div>
