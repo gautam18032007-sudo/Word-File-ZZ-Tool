@@ -19,6 +19,7 @@ const {
   updateStoreStatus,
   removeStoreFromMaster,
   isVercelProduction,
+  getBlobCredentials,
 } = require('./lib/storeMasterStore');
 
 let passed = 0;
@@ -253,6 +254,36 @@ async function runTests() {
     );
   }
   assert(prodErrorThrown, 'Vercel production NEVER falls back silently to local disk when Blob is missing');
+
+  // Test Group 5.1: Phase 12.2 Blob Credential Resolution
+  console.log('\nTest Group 5.1: Phase 12.2 Blob Credential Resolution');
+  // Scenario 1: Standard token
+  process.env.BLOB_READ_WRITE_TOKEN = 'test_token_standard';
+  const credsStandard = getBlobCredentials();
+  assert(credsStandard && credsStandard.token === 'test_token_standard', 'Resolves standard BLOB_READ_WRITE_TOKEN');
+  delete process.env.BLOB_READ_WRITE_TOKEN;
+
+  // Scenario 2: Custom prefix token (e.g. WORD_FILE_ZZ_TOOL_BLOB_READ_WRITE_TOKEN)
+  process.env.WORD_FILE_ZZ_TOOL_BLOB_READ_WRITE_TOKEN = 'test_token_prefixed';
+  const credsPrefixed = getBlobCredentials();
+  assert(credsPrefixed && credsPrefixed.token === 'test_token_prefixed', 'Resolves custom prefixed *_READ_WRITE_TOKEN');
+  delete process.env.WORD_FILE_ZZ_TOOL_BLOB_READ_WRITE_TOKEN;
+
+  // Scenario 3: Standard OIDC storeId
+  process.env.BLOB_STORE_ID = 'store_abc123';
+  const credsOidcStandard = getBlobCredentials();
+  assert(credsOidcStandard && credsOidcStandard.storeId === 'store_abc123', 'Resolves standard BLOB_STORE_ID');
+  delete process.env.BLOB_STORE_ID;
+
+  // Scenario 4: Custom prefix OIDC storeId
+  process.env.WORD_FILE_ZZ_TOOL_BLOB_STORE_ID = 'store_xyz789';
+  const credsOidcPrefixed = getBlobCredentials();
+  assert(credsOidcPrefixed && credsOidcPrefixed.storeId === 'store_xyz789', 'Resolves custom prefixed *_STORE_ID');
+  delete process.env.WORD_FILE_ZZ_TOOL_BLOB_STORE_ID;
+
+  // Scenario 5: No credentials returns null
+  const credsNone = getBlobCredentials();
+  assert(credsNone === null, 'Returns null when no Blob credentials are configured');
 
   // Restore env
   if (prevVercel !== undefined) process.env.VERCEL = prevVercel;
