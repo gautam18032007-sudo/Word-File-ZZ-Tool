@@ -5,6 +5,7 @@ import { Download, FileText, RefreshCw, AlertCircle, LayoutDashboard, FileSpread
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { downloadHistoryFile } from "@/lib/clientDownload";
 import type { ContractRecord } from "@/lib/types";
 
 function fmt(n: number | undefined | null): string {
@@ -101,11 +102,8 @@ export default function DashboardPage() {
     certTemplates[t] = (certTemplates[t] || 0) + 1;
   });
 
-  function downloadFile(filename: string, folder: string) {
-    const a = document.createElement("a");
-    a.href = `/api/download?folder=${folder}&file=${encodeURIComponent(filename)}`;
-    a.download = filename;
-    a.click();
+  function downloadFile(filename: string, folder: string, blobUrl?: string) {
+    downloadHistoryFile(folder, filename, blobUrl);
   }
 
   return (
@@ -249,7 +247,7 @@ export default function DashboardPage() {
                             size="sm"
                             variant="outline"
                             className="h-7 px-2 text-xs"
-                            onClick={() => downloadFile(c.docx, c.folder)}
+                            onClick={() => downloadFile(c.docx, c.folder, c.docx_blob_url)}
                           >
                             <FileText size={11} />
                             DOCX
@@ -260,7 +258,7 @@ export default function DashboardPage() {
                             size="sm"
                             variant="outline"
                             className="h-7 px-2 text-xs"
-                            onClick={() => downloadFile(c.pdf!, c.folder)}
+                            onClick={() => downloadFile(c.pdf!, c.folder, c.pdf_blob_url)}
                           >
                             <Download size={11} />
                             PDF

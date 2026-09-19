@@ -72,12 +72,12 @@ function buildClause(
     if (contractType === "MONTH") {
       return {
         total,
-        clause: `An advanced fixed fee of ${formatINRClient(unitAmt)} per Month for the ${locText}, payable for a period of ${months} month(s), amounting to a total of ${formatINRClient(total)} (exclusive of GST); and`,
+        clause: `An advance fixed fee of ${formatINRClient(unitAmt)} per Month for the ${locText}, payable for a period of ${months} month(s), amounting to a total of ${formatINRClient(total)} (exclusive of GST); and`,
       };
     }
     return {
       total,
-      clause: `An advanced fixed fee of ${formatINRClient(unitAmt)} per SKU for ${sku} SKUs for ${months} months, totalling ${formatINRClient(total)} at our ${locText}.`,
+      clause: `An advance fixed fee of ${formatINRClient(unitAmt)} per SKU for ${sku} SKUs for ${months} months, totalling ${formatINRClient(total)} at our ${locText}.`,
     };
   }
 
@@ -94,7 +94,7 @@ function buildClause(
     const skuClause = contractType === "SKU" ? `, for ${sku} SKUs` : "";
     return {
       total,
-      clause: `An advanced fixed fee of ${formatINRClient(a1)} per ${perUnitLabel} at ${loc1} and ${formatINRClient(a2)} per ${perUnitLabel} at ${loc2}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across both setups.`,
+      clause: `An advance fixed fee of ${formatINRClient(a1)} per ${perUnitLabel} at ${loc1} and ${formatINRClient(a2)} per ${perUnitLabel} at ${loc2}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across both setups.`,
     };
   }
 
@@ -103,7 +103,7 @@ function buildClause(
   const skuClause = contractType === "SKU" ? `, for ${sku} SKUs` : "";
   return {
     total,
-    clause: `An advanced fixed fee of ${allButLast}, and ${parts[parts.length - 1]}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across setups.`,
+    clause: `An advance fixed fee of ${allButLast}, and ${parts[parts.length - 1]}${skuClause} for ${months} months, totalling ${formatINRClient(total)} across setups.`,
   };
 }
 

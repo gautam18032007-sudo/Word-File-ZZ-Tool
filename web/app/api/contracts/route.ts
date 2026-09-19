@@ -15,6 +15,7 @@ export async function GET() {
     docx: '', // no docx for certificates
     pdf: c.pdf,
     folder: 'certificates',
+    pdf_blob_url: c.pdfBlobUrl,
     designation: c.designation,
     certificateType: c.certificateType,
     template: c.template,

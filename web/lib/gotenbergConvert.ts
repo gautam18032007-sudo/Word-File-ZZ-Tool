@@ -10,7 +10,8 @@ export async function convertViaGotenberg(fileBuffer: Buffer, filename: string):
   logger.gen(`[gotenbergConvert] Sending "${filename}" to Gotenberg at: ${endpoint}`);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 50000); // 50s timeout (under Vercel 60s maxDuration)
+  // 25s timeout per attempt to safely stay well within Vercel's 60s serverless maxDuration
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
 
   try {
     const formData = new FormData();
@@ -39,7 +40,7 @@ export async function convertViaGotenberg(fileBuffer: Buffer, filename: string):
   } catch (err: any) {
     clearTimeout(timeoutId);
     if (err.name === 'AbortError') {
-      const msg = `Gotenberg conversion timed out after 50s for file "${filename}". Render service may be cold-starting.`;
+      const msg = `Gotenberg conversion timed out after 25s for file "${filename}". Render service may be cold-starting.`;
       logger.error(`[gotenbergConvert] ${msg}`);
       throw new Error(msg);
     }
