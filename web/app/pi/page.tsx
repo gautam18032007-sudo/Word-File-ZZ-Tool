@@ -66,7 +66,13 @@ export default function ProformaInvoicePage() {
     async function loadStores() {
       try {
         setStoresError("");
-        const res = await fetch("/api/stores?all=true");
+        const res = await fetch("/api/stores?all=true", {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+          },
+        });
         const data = await res.json();
         if (res.ok && data.success && Array.isArray(data.stores)) {
           setDynamicStores(data.stores);

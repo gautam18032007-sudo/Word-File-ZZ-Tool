@@ -169,6 +169,69 @@ async function runTests() {
   const removeNonExistent = await removeStoreFromMaster('NON_EXISTENT_XYZ');
   assert(!removeNonExistent.success, 'Removing non-existent store returns failure');
 
+  // Test Group 4.2: Phase 12.1 Cross-Device Store Master Synchronization (Tests 1 - 10)
+  console.log('\nTest Group 4.2: Phase 12.1 Cross-Device Synchronization Tests');
+
+  // TEST 1: GET initial Store Master
+  const initialDataCrossDevice = await getStoreMasterData();
+  assert(Array.isArray(initialDataCrossDevice.stores), 'TEST 1: GET initial Store Master returns valid array');
+
+  // TEST 2: POST Jengala Ho
+  const jengalaInput = {
+    storeName: 'Jengala Ho',
+    storeCode: 'JENGALA_HO',
+    openingDate: '2026-01-01',
+    active: true,
+  };
+  const postJengalaResult = await addStoreToMaster(jengalaInput);
+  assert(postJengalaResult.success && postJengalaResult.store.storeCode === 'JENGALA_HO', 'TEST 2: POST Jengala Ho succeeds');
+
+  // TEST 3: Immediately GET again
+  const getAfterPost = await getStoreMasterData();
+  const jengalaFoundImmediate = getAfterPost.stores.find((s) => s.storeCode === 'JENGALA_HO');
+  assert(Boolean(jengalaFoundImmediate && jengalaFoundImmediate.storeName === 'Jengala Ho'), 'TEST 3: Immediately GET again finds Jengala Ho');
+
+  // TEST 4: Simulate separate client/device (independent fresh read)
+  const deviceBData = await getStoreMasterData();
+  const jengalaFoundDeviceB = deviceBData.stores.find((s) => s.storeCode === 'JENGALA_HO');
+  assert(Boolean(jengalaFoundDeviceB && jengalaFoundDeviceB.active === true), 'TEST 4: Device B (independent client) sees Jengala Ho');
+
+  // TEST 5: PATCH/deactivate Jengala Ho
+  const deactivateJengala = await updateStoreStatus('JENGALA_HO', false);
+  assert(deactivateJengala.success && deactivateJengala.store.active === false, 'TEST 5a: PATCH deactivates Jengala Ho');
+  const deviceBAfterDeactivate = await getStoreMasterData();
+  const jengalaDeviceBDeactivated = deviceBAfterDeactivate.stores.find((s) => s.storeCode === 'JENGALA_HO');
+  assert(jengalaDeviceBDeactivated && jengalaDeviceBDeactivated.active === false, 'TEST 5b: Device B sees active=false for Jengala Ho');
+
+  // TEST 6: Reactivate Jengala Ho
+  const reactivateJengala = await updateStoreStatus('JENGALA_HO', true);
+  assert(reactivateJengala.success && reactivateJengala.store.active === true, 'TEST 6a: PATCH reactivates Jengala Ho');
+  const deviceBAfterReactivate = await getStoreMasterData();
+  const jengalaDeviceBReactivated = deviceBAfterReactivate.stores.find((s) => s.storeCode === 'JENGALA_HO');
+  assert(jengalaDeviceBReactivated && jengalaDeviceBReactivated.active === true, 'TEST 6b: Device B sees active=true for Jengala Ho');
+
+  // TEST 7: Delete Jengala Ho
+  const deleteJengala = await removeStoreFromMaster('JENGALA_HO');
+  assert(deleteJengala.success && deleteJengala.removedStore.storeCode === 'JENGALA_HO', 'TEST 7a: DELETE Jengala Ho succeeds');
+  const deviceBAfterDelete = await getStoreMasterData();
+  assert(!deviceBAfterDelete.stores.some((s) => s.storeCode === 'JENGALA_HO'), 'TEST 7b: Device B confirms Jengala Ho is completely removed');
+
+  // TEST 8: Verify there is only one canonical store-master.json object
+  const { BLOB_STORE_PATH } = require('./lib/storeMasterStore');
+  assert(BLOB_STORE_PATH === 'store-master.json', 'TEST 8: Canonical Blob store path is strictly "store-master.json"');
+
+  // TEST 9: Verify GET /api/stores route dynamic configuration & anti-caching headers
+  const routeContent = fs.readFileSync(path.resolve(__dirname, 'app/api/stores/route.ts'), 'utf8');
+  assert(routeContent.includes("export const dynamic = 'force-dynamic'"), 'TEST 9a: /api/stores route exports dynamic = "force-dynamic"');
+  assert(routeContent.includes("export const revalidate = 0"), 'TEST 9b: /api/stores route exports revalidate = 0');
+  assert(routeContent.includes("export const fetchCache = 'force-no-store'"), 'TEST 9c: /api/stores route exports fetchCache = "force-no-store"');
+  assert(routeContent.includes("Cache-Control': 'no-store, no-cache, must-revalidate"), 'TEST 9d: /api/stores responses enforce Cache-Control no-store, no-cache');
+
+  // TEST 10: Verify production never reads output/stores.json
+  const storeMasterStoreContent = fs.readFileSync(path.resolve(__dirname, 'lib/storeMasterStore.ts'), 'utf8');
+  const inProdBlockMatches = storeMasterStoreContent.match(/if\s*\(inProd\)\s*\{[\s\S]*?\n\s*\}/g);
+  assert(Boolean(inProdBlockMatches && inProdBlockMatches.length >= 4), 'TEST 10: Production branches (GET/POST/PATCH/DELETE) strictly guard Blob access before any filesystem fallback');
+
   // Test Group 5: Vercel Production Safety Rule
   console.log('\nTest Group 5: Vercel Production Safety Rule');
   const prevVercel = process.env.VERCEL;

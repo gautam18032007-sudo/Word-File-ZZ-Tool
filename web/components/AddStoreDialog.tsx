@@ -55,7 +55,13 @@ export function AddStoreDialog({
   // Fetch fresh store master list when modal opens or tab changes to manage
   useEffect(() => {
     if (isOpen) {
-      fetch('/api/stores?all=true')
+      fetch('/api/stores?all=true', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      })
         .then((r) => r.json())
         .then((d) => {
           if (d.success && Array.isArray(d.stores)) {

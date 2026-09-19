@@ -66,7 +66,9 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
 
     try {
       const { blobs } = await list({ prefix: BLOB_STORE_PATH, token });
-      const blob = blobs.find((b) => b.pathname === BLOB_STORE_PATH);
+      const matchingBlobs = blobs.filter((b) => b.pathname === BLOB_STORE_PATH);
+      matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+      const blob = matchingBlobs[0];
 
       if (!blob) {
         logger.gen('[storeMasterStore] store-master.json not found in Vercel Blob. Seeding initial canonical stores...');
@@ -84,7 +86,14 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
         return initialData;
       }
 
-      const res = await fetch(blob.url, { cache: 'no-store' });
+      const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}`;
+      const res = await fetch(fetchUrl, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (!res.ok) {
         throw new Error(`Failed to fetch store-master.json from Blob (HTTP ${res.status})`);
       }
@@ -103,9 +112,18 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
   if (token) {
     try {
       const { blobs } = await list({ prefix: BLOB_STORE_PATH, token });
-      const blob = blobs.find((b) => b.pathname === BLOB_STORE_PATH);
+      const matchingBlobs = blobs.filter((b) => b.pathname === BLOB_STORE_PATH);
+      matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+      const blob = matchingBlobs[0];
       if (blob) {
-        const res = await fetch(blob.url, { cache: 'no-store' });
+        const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}`;
+        const res = await fetch(fetchUrl, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+          },
+        });
         if (res.ok) {
           const data: StoreMasterData = await res.json();
           if (data && Array.isArray(data.stores)) return data;
