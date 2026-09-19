@@ -131,20 +131,22 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
           applyBlobAuth(creds, {
             access: 'public',
             addRandomSuffix: false,
+            allowOverwrite: true,
             contentType: 'application/json',
           })
         );
         return initialData;
       }
 
-      const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}`;
+      const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}&cache=0`;
       const res = await fetch(fetchUrl, {
         cache: 'no-store',
+        next: { revalidate: 0 },
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
         },
-      });
+      } as any);
       if (!res.ok) {
         throw new Error(`Failed to fetch store-master.json from Blob (HTTP ${res.status})`);
       }
@@ -167,14 +169,15 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
       matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
       const blob = matchingBlobs[0];
       if (blob) {
-        const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}`;
+        const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}&cache=0`;
         const res = await fetch(fetchUrl, {
           cache: 'no-store',
+          next: { revalidate: 0 },
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
           },
-        });
+        } as any);
         if (res.ok) {
           const data: StoreMasterData = await res.json();
           if (data && Array.isArray(data.stores)) return data;
@@ -316,6 +319,7 @@ export async function addStoreToMaster(newStoreInput: Partial<Store>): Promise<{
       applyBlobAuth(creds, {
         access: 'public',
         addRandomSuffix: false,
+        allowOverwrite: true,
         contentType: 'application/json',
       })
     );
@@ -332,6 +336,7 @@ export async function addStoreToMaster(newStoreInput: Partial<Store>): Promise<{
         applyBlobAuth(creds, {
           access: 'public',
           addRandomSuffix: false,
+          allowOverwrite: true,
           contentType: 'application/json',
         })
       );
@@ -397,6 +402,7 @@ export async function updateStoreStatus(
       applyBlobAuth(creds, {
         access: 'public',
         addRandomSuffix: false,
+        allowOverwrite: true,
         contentType: 'application/json',
       })
     );
@@ -412,6 +418,7 @@ export async function updateStoreStatus(
         applyBlobAuth(creds, {
           access: 'public',
           addRandomSuffix: false,
+          allowOverwrite: true,
           contentType: 'application/json',
         })
       );
@@ -470,6 +477,7 @@ export async function removeStoreFromMaster(
       applyBlobAuth(creds, {
         access: 'public',
         addRandomSuffix: false,
+        allowOverwrite: true,
         contentType: 'application/json',
       })
     );
@@ -485,6 +493,7 @@ export async function removeStoreFromMaster(
         applyBlobAuth(creds, {
           access: 'public',
           addRandomSuffix: false,
+          allowOverwrite: true,
           contentType: 'application/json',
         })
       );

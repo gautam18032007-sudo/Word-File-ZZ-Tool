@@ -233,7 +233,110 @@ async function runTests() {
   const inProdBlockMatches = storeMasterStoreContent.match(/if\s*\(inProd\)\s*\{[\s\S]*?\n\s*\}/g);
   assert(Boolean(inProdBlockMatches && inProdBlockMatches.length >= 4), 'TEST 10: Production branches (GET/POST/PATCH/DELETE) strictly guard Blob access before any filesystem fallback');
 
-  // Test Group 5: Vercel Production Safety Rule
+  // Test Group 4.3: Phase 12.3 Canonical Store Master Overwrite Fix (Tests 1 - 12)
+  console.log('\nTest Group 4.3: Phase 12.3 Canonical Store Master Overwrite Fix');
+
+  // TEST 1: First Store Master write succeeds
+  const p123StoreCode1 = 'OVERWRITE_TEST_1';
+  const write1 = await addStoreToMaster({
+    storeName: 'Overwrite Test Store 1',
+    storeCode: p123StoreCode1,
+    openingDate: '2026-01-01',
+    active: true,
+  });
+  assert(write1.success && write1.store && write1.store.storeCode === p123StoreCode1, 'TEST 1: First Store Master write succeeds');
+
+  // TEST 2: Second Store Master write to the same pathname succeeds
+  const p123StoreCode2 = 'OVERWRITE_TEST_2';
+  const write2 = await addStoreToMaster({
+    storeName: 'Overwrite Test Store 2',
+    storeCode: p123StoreCode2,
+    openingDate: '2026-01-01',
+    active: true,
+  });
+  assert(write2.success && write2.store && write2.store.storeCode === p123StoreCode2, 'TEST 2: Second Store Master write to the same pathname succeeds');
+
+  // TEST 3: Third Store Master write succeeds
+  const write3 = await updateStoreStatus(p123StoreCode1, false);
+  assert(write3.success && write3.store && write3.store.active === false, 'TEST 3: Third Store Master write succeeds');
+
+  // TEST 4: POST store succeeds
+  const p123PostCode = 'P123_POST_STORE';
+  const postTest = await addStoreToMaster({
+    storeName: 'P123 Post Store',
+    storeCode: p123PostCode,
+    openingDate: '2026-02-01',
+    active: true,
+  });
+  assert(postTest.success && postTest.store.storeCode === p123PostCode, 'TEST 4: POST store succeeds');
+
+  // TEST 5: PATCH store succeeds
+  const patchTest = await updateStoreStatus(p123PostCode, false);
+  assert(patchTest.success && patchTest.store.active === false, 'TEST 5: PATCH store succeeds');
+
+  // TEST 6: DELETE store succeeds
+  const deleteTest = await removeStoreFromMaster(p123PostCode);
+  assert(deleteTest.success && deleteTest.removedStore.storeCode === p123PostCode, 'TEST 6: DELETE store succeeds');
+
+  // Clean up p123StoreCode1 and p123StoreCode2
+  await removeStoreFromMaster(p123StoreCode1);
+  await removeStoreFromMaster(p123StoreCode2);
+
+  // TEST 7: Canonical pathname remains exactly: store-master.json
+  const { BLOB_STORE_PATH: canonicalPath } = require('./lib/storeMasterStore');
+  assert(canonicalPath === 'store-master.json', 'TEST 7: Canonical pathname remains exactly: store-master.json');
+
+  // TEST 8: No random suffix is generated (addRandomSuffix: true NEVER used, allowOverwrite: true used)
+  const storeMasterCode = fs.readFileSync(path.resolve(__dirname, 'lib/storeMasterStore.ts'), 'utf8');
+  assert(!storeMasterCode.includes('addRandomSuffix: true'), 'TEST 8a: addRandomSuffix: true is NOT present in storeMasterStore.ts');
+  const putCalls = storeMasterCode.match(/await\s+put\([\s\S]*?\);/g) || [];
+  assert(putCalls.length > 0, 'TEST 8b: Found put() calls in storeMasterStore.ts');
+  const allPutsHaveAllowOverwrite = putCalls.every((call) => call.includes('allowOverwrite: true'));
+  assert(allPutsHaveAllowOverwrite, 'TEST 8c: Every put() call in storeMasterStore.ts specifies allowOverwrite: true');
+  const allPutsHaveNoRandomSuffix = putCalls.every((call) => call.includes('addRandomSuffix: false'));
+  assert(allPutsHaveNoRandomSuffix, 'TEST 8d: Every put() call in storeMasterStore.ts specifies addRandomSuffix: false');
+
+  // TEST 9: Latest Store Master is returned after overwrite
+  const latestData = await getStoreMasterData();
+  assert(!latestData.stores.some((s) => s.storeCode === p123PostCode), 'TEST 9: Latest Store Master reflects deleted store immediately');
+
+  // TEST 10: Independent GET sees the latest state
+  const independentData = await getStoreMasterData();
+  assert(Array.isArray(independentData.stores) && independentData.stores.length >= 4, 'TEST 10: Independent GET sees the latest state');
+
+  // TEST 11: Production missing credentials still returns 503
+  const prevVercelEnv = process.env.VERCEL;
+  const prevBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  const prevStoreId = process.env.BLOB_STORE_ID;
+  process.env.VERCEL = '1';
+  delete process.env.BLOB_READ_WRITE_TOKEN;
+  delete process.env.BLOB_STORE_ID;
+  let missingCredsError = false;
+  try {
+    await getStoreMasterData();
+  } catch (e) {
+    missingCredsError = e.message.includes('Store Master unavailable') || e.message.includes('BLOB_READ_WRITE_TOKEN is not configured');
+  }
+  assert(missingCredsError, 'TEST 11: Production missing credentials still returns 503');
+
+  // TEST 12: Production never falls back to output/stores.json
+  let prodFallbackOccurred = false;
+  try {
+    await addStoreToMaster({ storeName: 'Fail Test', storeCode: 'FAIL_TEST', openingDate: '2026-01-01', active: true });
+  } catch (e) {
+    prodFallbackOccurred = !e.message.includes('Store Master unavailable') && !e.message.includes('BLOB_READ_WRITE_TOKEN');
+  }
+  assert(!prodFallbackOccurred, 'TEST 12: Production write strictly throws without falling back to output/stores.json');
+
+  // Restore env
+  if (prevVercelEnv !== undefined) process.env.VERCEL = prevVercelEnv;
+  else delete process.env.VERCEL;
+  if (prevBlobToken !== undefined) process.env.BLOB_READ_WRITE_TOKEN = prevBlobToken;
+  else delete process.env.BLOB_READ_WRITE_TOKEN;
+  if (prevStoreId !== undefined) process.env.BLOB_STORE_ID = prevStoreId;
+  else delete process.env.BLOB_STORE_ID;
+
+
   console.log('\nTest Group 5: Vercel Production Safety Rule');
   const prevVercel = process.env.VERCEL;
   const prevToken = process.env.BLOB_READ_WRITE_TOKEN;
