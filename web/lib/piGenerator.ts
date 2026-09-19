@@ -151,9 +151,39 @@ export async function generatePiWorkbook(input: PiGeneratorInput): Promise<PiGen
     }
   }
 
-  // Set vertical alignment to 'middle' (center) for all data cells in rows 25-28
+  // Set vertical alignment and dynamic row height for data rows 25-28
+  // Column widths (in characters): B=49.125, C=13.75
+  // Font sizes: B=Tahoma 10pt, C=Calibri 10pt
+  const COL_B_CHARS = 45; // usable chars per line in col B (accounting for padding)
+  const COL_C_CHARS = 12; // usable chars per line in col C (accounting for padding)
+  const LINE_HEIGHT_PT = 14; // approximate height per line of text at 10pt font
+  const MIN_ROW_HEIGHT = 20; // minimum row height for empty/short rows
+  const ROW_PADDING = 8; // extra vertical padding per row
+
   for (let r = 25; r <= 28; r++) {
     const row = sheet.getRow(r);
+    const descText = String(sheet.getCell(`B${r}`).value || '');
+    const notesText = String(sheet.getCell(`C${r}`).value || '');
+
+    // Calculate lines needed for Description (col B)
+    const descLines = descText ? Math.ceil(descText.length / COL_B_CHARS) : 1;
+
+    // Calculate lines needed for Notes/Remarks (col C) — includes explicit \n line breaks
+    let notesLines = 1;
+    if (notesText) {
+      const explicitLines = notesText.split('\n');
+      notesLines = 0;
+      for (const line of explicitLines) {
+        notesLines += Math.max(1, Math.ceil(line.length / COL_C_CHARS));
+      }
+    }
+
+    // Row height = max lines needed across all wrapping columns
+    const maxLines = Math.max(descLines, notesLines);
+    const calculatedHeight = Math.max(MIN_ROW_HEIGHT, maxLines * LINE_HEIGHT_PT + ROW_PADDING);
+
+    row.height = calculatedHeight;
+
     row.eachCell({ includeEmpty: true }, (cell) => {
       cell.alignment = { ...cell.alignment, vertical: 'middle' };
     });
