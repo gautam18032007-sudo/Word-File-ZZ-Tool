@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { getApplicableStores, Store } from "@/lib/storeMaster";
-import { CheckCircle2, AlertCircle, Download, FileText, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Download, FileText, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AddStoreDialog } from "@/components/AddStoreDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -246,9 +247,43 @@ export default function BrandPage() {
     if (!selected.address?.trim()) brandMissingFields.push("Address");
   }
 
-  // Dynamic store resolution for current contract date
-  const applicableStores = useMemo(() => getApplicableStores(new Date()), []);
+  // Dynamic store resolution from canonical Store Master
+  const [dynamicStores, setDynamicStores] = useState<Store[]>(() => getApplicableStores(new Date()));
+  const [isAddStoreOpen, setIsAddStoreOpen] = useState(false);
+  const [storesError, setStoresError] = useState("");
+
+  useEffect(() => {
+    async function loadStores() {
+      try {
+        setStoresError("");
+        const res = await fetch("/api/stores?all=true");
+        const data = await res.json();
+        if (res.ok && data.success && Array.isArray(data.stores)) {
+          setDynamicStores(data.stores);
+        } else if (!res.ok) {
+          setStoresError(data.error || "Store Master unavailable");
+        }
+      } catch (err: any) {
+        setStoresError(err?.message || "Store Master unavailable");
+      }
+    }
+    loadStores();
+  }, []);
+
+  const applicableStores = useMemo(() => getApplicableStores(new Date(), dynamicStores), [dynamicStores]);
   const allLocationCodes = useMemo(() => applicableStores.map((s) => s.storeCode), [applicableStores]);
+
+  function handleStoreAdded(newStore: Store) {
+    setDynamicStores((prev) => {
+      if (prev.some((s) => s.storeCode.toUpperCase() === newStore.storeCode.toUpperCase())) {
+        return prev;
+      }
+      return [...prev, newStore];
+    });
+    if (newStore.active) {
+      setSelectedLocations((prev) => [...prev, newStore.storeCode]);
+    }
+  }
 
   // commercial inputs
   const [selectedLocations, setSelectedLocations] = useState<string[]>(() => [applicableStores[0]?.storeCode || "SWN"]);
@@ -598,6 +633,20 @@ export default function BrandPage() {
                               <span className="text-[11px] text-[var(--muted-foreground)] truncate max-w-[140px]">{store.storeName}</span>
                             </label>
                           ))}
+
+                          <div className="pt-1.5 border-t border-[var(--border)] mt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLocationDropdownOpen(false);
+                                setIsAddStoreOpen(true);
+                              }}
+                              className="w-full flex items-center justify-center gap-1.5 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded transition-colors"
+                            >
+                              <Plus size={13} />
+                              <span>+ Add New Store</span>
+                            </button>
+                          </div>
                         </div>
                       </>
                     )}
@@ -787,6 +836,23 @@ export default function BrandPage() {
           </Card>
         </div>
       </div>
+
+      <AddStoreDialog
+        isOpen={isAddStoreOpen}
+        onClose={() => setIsAddStoreOpen(false)}
+        existingStores={dynamicStores}
+        onStoreAdded={handleStoreAdded}
+        onStoresUpdated={(updated) => {
+          setDynamicStores(updated);
+          // If any currently selected location was deactivated, deselect it
+          setSelectedLocations((prev) => {
+            const valid = prev.filter((code) =>
+              updated.some((s) => s.storeCode.toUpperCase() === code.toUpperCase() && s.active)
+            );
+            return valid.length > 0 ? valid : [updated.find((s) => s.active)?.storeCode || 'SWN'];
+          });
+        }}
+      />
     </div>
   );
 }

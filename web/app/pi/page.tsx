@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { getApplicableStores, Store } from "@/lib/storeMaster";
 import { CheckCircle2, AlertCircle, Download, FileText, Loader2, Receipt, Trash2, AlertTriangle, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AddStoreDialog } from "@/components/AddStoreDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,8 +57,39 @@ export default function ProformaInvoicePage() {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  // Dynamic store resolution based on Proforma Date
-  const applicableStores = useMemo(() => getApplicableStores(proformaDate), [proformaDate]);
+  // Dynamic store resolution based on Proforma Date from canonical Store Master
+  const [dynamicStores, setDynamicStores] = useState<Store[]>(() => getApplicableStores(new Date()));
+  const [isAddStoreOpen, setIsAddStoreOpen] = useState(false);
+  const [storesError, setStoresError] = useState("");
+
+  useEffect(() => {
+    async function loadStores() {
+      try {
+        setStoresError("");
+        const res = await fetch("/api/stores?all=true");
+        const data = await res.json();
+        if (res.ok && data.success && Array.isArray(data.stores)) {
+          setDynamicStores(data.stores);
+        } else if (!res.ok) {
+          setStoresError(data.error || "Store Master unavailable");
+        }
+      } catch (err: any) {
+        setStoresError(err?.message || "Store Master unavailable");
+      }
+    }
+    loadStores();
+  }, []);
+
+  const applicableStores = useMemo(() => getApplicableStores(proformaDate, dynamicStores), [proformaDate, dynamicStores]);
+
+  function handleStoreAdded(newStore: Store) {
+    setDynamicStores((prev) => {
+      if (prev.some((s) => s.storeCode.toUpperCase() === newStore.storeCode.toUpperCase())) {
+        return prev;
+      }
+      return [...prev, newStore];
+    });
+  }
 
   // Line Items (Defaults to 2 initial rows, expandable up to 4)
   const [items, setItems] = useState<LineItem[]>(() => {
@@ -685,6 +717,15 @@ export default function ProformaInvoicePage() {
                             {store.storeCode}
                           </button>
                         ))}
+                        <button
+                          type="button"
+                          onClick={() => setIsAddStoreOpen(true)}
+                          className="text-[10px] px-1.5 py-0.5 rounded border border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 transition-colors font-medium flex items-center gap-0.5"
+                          title="Add New Store to Master"
+                        >
+                          <Plus size={10} />
+                          <span>Add Store</span>
+                        </button>
                       </div>
                     </div>
                     <Input
@@ -984,6 +1025,14 @@ export default function ProformaInvoicePage() {
           )}
         </CardContent>
       </Card>
+
+      <AddStoreDialog
+        isOpen={isAddStoreOpen}
+        onClose={() => setIsAddStoreOpen(false)}
+        onStoreAdded={handleStoreAdded}
+        existingStores={dynamicStores}
+        onStoresUpdated={(updated) => setDynamicStores(updated)}
+      />
     </div>
   );
 }

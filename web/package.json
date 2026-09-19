@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:stores": "tsx test_phase10_stores.js"
+    "test:stores": "tsx test_phase10_stores.js",
+    "test:phase12": "tsx test_phase12_stores.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
