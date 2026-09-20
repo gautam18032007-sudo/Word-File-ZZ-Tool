@@ -336,6 +336,84 @@ async function runTests() {
   if (prevStoreId !== undefined) process.env.BLOB_STORE_ID = prevStoreId;
   else delete process.env.BLOB_STORE_ID;
 
+  // Test Group 4.4: Phase 12.4 Private Vercel Blob Read & Write Fix
+  console.log('\nTest Group 4.4: Phase 12.4 Private Vercel Blob Read & Write Fix');
+
+  // TEST 1: storeMasterStore.ts contains zero anonymous fetch(blob.url) calls
+  const smCode = fs.readFileSync(path.resolve(__dirname, 'lib/storeMasterStore.ts'), 'utf8');
+  const fetchMatches = smCode.match(/fetch\(/g) || [];
+  assert(fetchMatches.length === 0, 'TEST 1: No anonymous fetch(blob.url) calls exist in storeMasterStore.ts');
+
+  // TEST 2: readStoreMasterFromBlob uses get() with access: 'private' and useCache: false
+  assert(smCode.includes("access: 'private'") && smCode.includes('useCache: false'), 'TEST 2: Authenticated get() specifies access: "private" and useCache: false');
+
+  // TEST 3: All put() calls use access: 'private', allowOverwrite: true, and addRandomSuffix: false
+  const allPutCalls = smCode.match(/await\s+put\([\s\S]*?\);/g) || [];
+  assert(allPutCalls.length > 0 && allPutCalls.every((c) => c.includes("access: 'private'")), 'TEST 3a: Every put() call specifies access: "private"');
+  assert(allPutCalls.every((c) => c.includes('allowOverwrite: true')), 'TEST 3b: Every put() call specifies allowOverwrite: true');
+  assert(allPutCalls.every((c) => c.includes('addRandomSuffix: false')), 'TEST 3c: Every put() call specifies addRandomSuffix: false');
+
+  // TEST 4: Canonical pathname remains strictly store-master.json
+  assert(canonicalPath === 'store-master.json', 'TEST 4: Canonical pathname is strictly "store-master.json"');
+
+  // TEST 5: Complete Cross-Device lifecycle with JENGALA (POST -> GET -> PATCH -> GET -> DELETE -> GET)
+  const jengalaInputP124 = {
+    storeName: 'Jengala Ho',
+    storeCode: 'JENGALA',
+    openingDate: '2024-01-01',
+    active: true,
+  };
+  // Device A: POST Jengala Ho
+  const devAPost = await addStoreToMaster(jengalaInputP124);
+  assert(devAPost.success && devAPost.store.storeCode === 'JENGALA', 'TEST 5a: Device A POST Jengala Ho succeeds');
+
+  // Device A GET -> Jengala Ho exists
+  const devAGet1 = await getStoreMasterData();
+  const jengalaA = devAGet1.stores.find((s) => s.storeCode === 'JENGALA');
+  assert(Boolean(jengalaA && jengalaA.active === true), 'TEST 5b: Device A GET sees Jengala Ho (active=true)');
+
+  // Device B GET -> Jengala Ho exists
+  const devBGet1 = await getStoreMasterData();
+  const jengalaB = devBGet1.stores.find((s) => s.storeCode === 'JENGALA');
+  assert(Boolean(jengalaB && jengalaB.active === true), 'TEST 5c: Device B GET sees Jengala Ho (active=true)');
+
+  // Device A: PATCH active=false
+  const devAPatchDeact = await updateStoreStatus('JENGALA', false);
+  assert(devAPatchDeact.success && devAPatchDeact.store.active === false, 'TEST 5d: PATCH deactivates Jengala Ho');
+
+  // Device B GET -> Jengala Ho is inactive
+  const devBGet2 = await getStoreMasterData();
+  const jengalaBDeact = devBGet2.stores.find((s) => s.storeCode === 'JENGALA');
+  assert(Boolean(jengalaBDeact && jengalaBDeact.active === false), 'TEST 5e: Device B GET sees Jengala Ho (active=false)');
+
+  // Device A: PATCH active=true
+  const devAPatchReact = await updateStoreStatus('JENGALA', true);
+  assert(devAPatchReact.success && devAPatchReact.store.active === true, 'TEST 5f: PATCH reactivates Jengala Ho');
+
+  // Device B GET -> Jengala Ho is active
+  const devBGet3 = await getStoreMasterData();
+  const jengalaBReact = devBGet3.stores.find((s) => s.storeCode === 'JENGALA');
+  assert(Boolean(jengalaBReact && jengalaBReact.active === true), 'TEST 5g: Device B GET sees Jengala Ho (active=true)');
+
+  // Device A: DELETE Jengala Ho
+  const devADelete = await removeStoreFromMaster('JENGALA');
+  assert(devADelete.success && devADelete.removedStore.storeCode === 'JENGALA', 'TEST 5h: DELETE Jengala Ho succeeds');
+
+  // Device B GET -> Jengala Ho no longer exists
+  const devBGet4 = await getStoreMasterData();
+  assert(!devBGet4.stores.some((s) => s.storeCode === 'JENGALA'), 'TEST 5i: Device B GET confirms Jengala Ho removed');
+
+  // TEST 6: Subsequent repeated write to SAME store-master.json succeeds without "blob already exists" error
+  const repeatWrite = await addStoreToMaster({
+    storeName: 'Jengala Ho New',
+    storeCode: 'JENGALA',
+    openingDate: '2024-01-01',
+    active: true,
+  });
+  assert(repeatWrite.success && repeatWrite.store.storeCode === 'JENGALA', 'TEST 6: Overwrite write to same store-master.json succeeds without error');
+  // Clean up
+  await removeStoreFromMaster('JENGALA');
+
 
   console.log('\nTest Group 5: Vercel Production Safety Rule');
   const prevVercel = process.env.VERCEL;

@@ -1,4 +1,4 @@
-import { list, put } from '@vercel/blob';
+import { list, put, get } from '@vercel/blob';
 import path from 'path';
 import fs from 'fs';
 import { logger } from './logger';
@@ -97,6 +97,83 @@ function applyBlobAuth<T extends Record<string, any>>(creds: BlobCredentials, op
 }
 
 /**
+ * Reads canonical store-master.json from Vercel Blob using authenticated get() with access='private' and useCache=false.
+ * Returns null if the blob does not exist (404 / BlobNotFoundError).
+ */
+export async function readStoreMasterFromBlob(creds: BlobCredentials): Promise<StoreMasterData | null> {
+  const getOptions = applyBlobAuth(creds, {
+    access: 'private' as const,
+    useCache: false,
+  });
+
+  try {
+    logger.gen(`[storeMasterStore] Fetching canonical ${BLOB_STORE_PATH} via @vercel/blob get(access='private', useCache=false)...`);
+    let result = await get(BLOB_STORE_PATH, getOptions);
+
+    // If get by pathname returned null, check list() and try get(blob.url) as fallback
+    if (!result) {
+      const { blobs } = await list(applyBlobAuth(creds, { prefix: BLOB_STORE_PATH }));
+      const matchingBlobs = blobs.filter((b) => b.pathname === BLOB_STORE_PATH);
+      if (matchingBlobs.length > 0) {
+        matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+        const blob = matchingBlobs[0];
+        result = await get(blob.url, getOptions);
+      }
+    }
+
+    if (!result) {
+      return null;
+    }
+
+    if (result.statusCode === 200 && result.stream) {
+      const data: StoreMasterData = await new Response(result.stream).json();
+      if (!data || !Array.isArray(data.stores)) {
+        throw new Error('Corrupted store-master.json payload in Vercel Blob (stores array missing).');
+      }
+      return data;
+    }
+
+    throw new Error(`Unexpected statusCode ${result.statusCode} from Blob get()`);
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    if (msg.includes('404') || msg.includes('not found') || msg.includes('BlobNotFoundError')) {
+      return null;
+    }
+
+    // Safe error diagnostics (distinguishes error category without logging sensitive tokens)
+    let diagCategory = 'Blob SDK/API failure';
+    if (msg.includes('credentials') || msg.includes('token') || msg.includes('unauthorized') || msg.includes('401') || msg.includes('403')) {
+      diagCategory = 'Blob authentication failure';
+    } else if (msg.includes('access must be') || msg.includes('access mismatch')) {
+      diagCategory = 'private/public access mismatch';
+    } else if (msg.includes('JSON') || msg.includes('SyntaxError')) {
+      diagCategory = 'JSON parse failure';
+    } else if (msg.includes('Invalid URL')) {
+      diagCategory = 'malformed Blob URL';
+    }
+    logger.error(`[storeMasterStore] [${diagCategory}] error reading ${BLOB_STORE_PATH} (access='private'): ${msg}`);
+    throw err;
+  }
+}
+
+/**
+ * Writes canonical store-master.json to Vercel Blob using put() with access='private', addRandomSuffix=false, allowOverwrite=true.
+ */
+export async function writeStoreMasterToBlob(data: StoreMasterData, creds: BlobCredentials): Promise<void> {
+  logger.gen(`[storeMasterStore] Writing canonical ${BLOB_STORE_PATH} (version=${data.version}, stores=${data.stores.length}) with access='private', allowOverwrite=true...`);
+  await put(
+    BLOB_STORE_PATH,
+    JSON.stringify(data, null, 2),
+    applyBlobAuth(creds, {
+      access: 'private' as const,
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: 'application/json',
+    })
+  );
+}
+
+/**
  * Reads the canonical Store Master data.
  * - In Vercel production: ONLY reads from Vercel Blob. Throws 503 error if Blob is missing/unreachable.
  * - In local dev: Uses Vercel Blob if credentials are provided; otherwise falls back to output/stores.json.
@@ -113,46 +190,16 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
     }
 
     try {
-      const { blobs } = await list(applyBlobAuth(creds, { prefix: BLOB_STORE_PATH }));
-      const matchingBlobs = blobs.filter((b) => b.pathname === BLOB_STORE_PATH);
-      matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-      const blob = matchingBlobs[0];
-
-      if (!blob) {
+      const data = await readStoreMasterFromBlob(creds);
+      if (!data) {
         logger.gen('[storeMasterStore] store-master.json not found in Vercel Blob. Seeding initial canonical stores...');
         const initialData: StoreMasterData = {
           version: 1,
           updatedAt: new Date().toISOString(),
           stores: CANONICAL_INITIAL_STORES,
         };
-        await put(
-          BLOB_STORE_PATH,
-          JSON.stringify(initialData, null, 2),
-          applyBlobAuth(creds, {
-            access: 'public',
-            addRandomSuffix: false,
-            allowOverwrite: true,
-            contentType: 'application/json',
-          })
-        );
+        await writeStoreMasterToBlob(initialData, creds);
         return initialData;
-      }
-
-      const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}&cache=0`;
-      const res = await fetch(fetchUrl, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-        },
-      } as any);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch store-master.json from Blob (HTTP ${res.status})`);
-      }
-      const data: StoreMasterData = await res.json();
-      if (!data || !Array.isArray(data.stores)) {
-        throw new Error('Corrupted store-master.json payload in Vercel Blob.');
       }
       return data;
     } catch (err: any) {
@@ -164,25 +211,8 @@ export async function getStoreMasterData(): Promise<StoreMasterData> {
   // Local development / testing mode
   if (creds) {
     try {
-      const { blobs } = await list(applyBlobAuth(creds, { prefix: BLOB_STORE_PATH }));
-      const matchingBlobs = blobs.filter((b) => b.pathname === BLOB_STORE_PATH);
-      matchingBlobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-      const blob = matchingBlobs[0];
-      if (blob) {
-        const fetchUrl = `${blob.url}${blob.url.includes('?') ? '&' : '?'}t=${new Date(blob.uploadedAt).getTime()}&cache=0`;
-        const res = await fetch(fetchUrl, {
-          cache: 'no-store',
-          next: { revalidate: 0 },
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-          },
-        } as any);
-        if (res.ok) {
-          const data: StoreMasterData = await res.json();
-          if (data && Array.isArray(data.stores)) return data;
-        }
-      }
+      const data = await readStoreMasterFromBlob(creds);
+      if (data) return data;
     } catch (err: any) {
       logger.gen(`[storeMasterStore] Local Blob check failed, falling back to local file: ${err?.message}`);
     }
@@ -313,16 +343,7 @@ export async function addStoreToMaster(newStoreInput: Partial<Store>): Promise<{
     if (!creds) {
       throw new Error('Store Master unavailable: BLOB_READ_WRITE_TOKEN is not configured in Vercel production.');
     }
-    await put(
-      BLOB_STORE_PATH,
-      JSON.stringify(updatedData, null, 2),
-      applyBlobAuth(creds, {
-        access: 'public',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: 'application/json',
-      })
-    );
+    await writeStoreMasterToBlob(updatedData, creds);
     logger.gen(`[storeMasterStore] Successfully saved new store "${newStore.storeCode}" to Vercel Blob.`);
     return { success: true, store: newStore, stores: updatedStores };
   }
@@ -330,16 +351,7 @@ export async function addStoreToMaster(newStoreInput: Partial<Store>): Promise<{
   // Local development mode: if creds available, update Blob as well
   if (creds) {
     try {
-      await put(
-        BLOB_STORE_PATH,
-        JSON.stringify(updatedData, null, 2),
-        applyBlobAuth(creds, {
-          access: 'public',
-          addRandomSuffix: false,
-          allowOverwrite: true,
-          contentType: 'application/json',
-        })
-      );
+      await writeStoreMasterToBlob(updatedData, creds);
     } catch (e: any) {
       logger.gen(`[storeMasterStore] Local Blob write skipped/failed: ${e?.message}`);
     }
@@ -396,32 +408,14 @@ export async function updateStoreStatus(
     if (!creds) {
       throw new Error('Store Master unavailable: BLOB_READ_WRITE_TOKEN is not configured in Vercel production.');
     }
-    await put(
-      BLOB_STORE_PATH,
-      JSON.stringify(updatedData, null, 2),
-      applyBlobAuth(creds, {
-        access: 'public',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: 'application/json',
-      })
-    );
+    await writeStoreMasterToBlob(updatedData, creds);
     logger.gen(`[storeMasterStore] Successfully updated status of store "${updatedStore.storeCode}" to active=${active} in Vercel Blob.`);
     return { success: true, store: updatedStore, stores: updatedStores };
   }
 
   if (creds) {
     try {
-      await put(
-        BLOB_STORE_PATH,
-        JSON.stringify(updatedData, null, 2),
-        applyBlobAuth(creds, {
-          access: 'public',
-          addRandomSuffix: false,
-          allowOverwrite: true,
-          contentType: 'application/json',
-        })
-      );
+      await writeStoreMasterToBlob(updatedData, creds);
     } catch (e: any) {
       logger.gen(`[storeMasterStore] Local Blob write skipped/failed: ${e?.message}`);
     }
@@ -471,32 +465,14 @@ export async function removeStoreFromMaster(
     if (!creds) {
       throw new Error('Store Master unavailable: BLOB_READ_WRITE_TOKEN is not configured in Vercel production.');
     }
-    await put(
-      BLOB_STORE_PATH,
-      JSON.stringify(updatedData, null, 2),
-      applyBlobAuth(creds, {
-        access: 'public',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: 'application/json',
-      })
-    );
+    await writeStoreMasterToBlob(updatedData, creds);
     logger.gen(`[storeMasterStore] Successfully removed store "${upper}" from Vercel Blob.`);
     return { success: true, removedStore, stores: updatedStores };
   }
 
   if (creds) {
     try {
-      await put(
-        BLOB_STORE_PATH,
-        JSON.stringify(updatedData, null, 2),
-        applyBlobAuth(creds, {
-          access: 'public',
-          addRandomSuffix: false,
-          allowOverwrite: true,
-          contentType: 'application/json',
-        })
-      );
+      await writeStoreMasterToBlob(updatedData, creds);
     } catch (e: any) {
       logger.gen(`[storeMasterStore] Local Blob write skipped/failed: ${e?.message}`);
     }
