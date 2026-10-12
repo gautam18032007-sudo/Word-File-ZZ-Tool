@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { employee: e, annualCTC, joiningDate, gender } = payload;
-  const pfEnabled = true; // Enforced company policy: PF is always YES
+  const { employee: e, annualCTC, joiningDate, gender, pfEnabled: payloadPf } = payload;
+  const pfEnabled = payloadPf !== false;
 
   if (!annualCTC || annualCTC <= 0) {
     logger.error(`[API/generate/employee] Invalid Annual CTC: ${annualCTC}`);
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       ANN_CONVEYANCE_ANNUAL: formatINR(s.conveyanceAnnual),
       ANN_PF_EMPLOYER_ANNUAL: formatINR(s.pfEmployerAnnual),
       ANN_SPECIAL_ALLOWANCE_ANNUAL: formatINR(s.specialAllowanceAnnual),
-      ANN_TOTAL_CTC_ANNUAL: formatINR(s.annualCTC),
+      ANN_TOTAL_CTC_ANNUAL: formatINR(s.totalCTCAnnual ?? s.annualCTC),
       ANN_PF_EMPLOYEE_ANNUAL: formatINR(s.pfEmployeeAnnual),
       ANN_SALARY_IN_HAND_ANNUAL: formatINR(s.salaryInHandAnnual),
     };

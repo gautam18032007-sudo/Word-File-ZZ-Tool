@@ -14,24 +14,23 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
   const monthlyCTC = roundHalfUp(annualCTC / 12);
   const g3 = annualCTC / 12; // unrounded monthly CTC
 
-  // 1. BASIC
+  // 1. BASIC: =IF(G3<=42000, MIN(21500, G3), G3/2)
   const basic = g3 <= 42000 ? Math.min(21500, g3) : g3 / 2;
-
-  // 2. PF EMPLOYER (must be before HRA as HRA subtracts it)
-  const pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
-
-  // 3. CONVEYANCE
-  const conveyance = roundHalfUp(g3 < 42000 ? 0 : g3 * 0.10);
-
-  // 4. HRA
-  const hra = g3 < 42000 ? (g3 - basic - pfEmployer) : basic / 2;
-
   const rBasic = roundHalfUp(basic);
-  const rHra = roundHalfUp(hra);
-  const rConveyance = roundHalfUp(conveyance);
-  const rPfEmployer = roundHalfUp(pfEmployer);
 
-  // 5. SPECIAL ALLOWANCE — balancing figure
+  // 2. PF EMPLOYER: =ROUND(IF(C5>25000, 3000, C5*12%), 0) if pfEnabled, else 0
+  const rPfEmployer = pfEnabled
+    ? roundHalfUp(rBasic > 25000 ? 3000 : rBasic * 0.12)
+    : 0;
+
+  // 3. CONVEYANCE ALLOWANCE: =ROUND(IF(G3<42000, 0, G3*10%), 0)
+  const rConveyance = roundHalfUp(g3 < 42000 ? 0 : g3 * 0.10);
+
+  // 4. HRA: =IF(G3<42000, G3-C5-C8, C5/2)
+  const hra = g3 < 42000 ? (monthlyCTC - rBasic - rPfEmployer) : rBasic / 2;
+  const rHra = roundHalfUp(hra);
+
+  // 5. SPECIAL ALLOWANCE — balancing figure: =(G3-SUM(C5:C8))
   const rSpecialAllowance = monthlyCTC - (rBasic + rHra + rConveyance + rPfEmployer);
 
   // Math Balance Check Assert
@@ -40,20 +39,21 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
     throw new Error(`Salary Engine Error: Component sum (${sum}) does not match Monthly CTC (${monthlyCTC}) exactly.`);
   }
 
-  // 6. PF EMPLOYEE — same as employer contribution
+  // 6. PF EMPLOYEE — same as employer contribution: =C12
   const pfEmployee = rPfEmployer;
 
-  // 7. SALARY IN HAND
+  // 7. SALARY IN HAND: =C10-SUM(C12:C13)
   const salaryInHand = monthlyCTC - rPfEmployer - pfEmployee;
 
-  // --- Annual components matching spreadsheet's exact float/rounding logic ---
-  const basicAnnual = roundHalfUp(basic * 12);
-  const hraAnnual = roundHalfUp(hra * 12);
+  // --- Annual components matching spreadsheet formulas (D = C * 12) ---
+  const basicAnnual = rBasic * 12;
+  const hraAnnual = rHra * 12;
   const conveyanceAnnual = rConveyance * 12;
   const pfEmployerAnnual = rPfEmployer * 12;
-  const specialAllowanceAnnual = annualCTC - (basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual);
+  const specialAllowanceAnnual = rSpecialAllowance * 12;
+  const totalCTCAnnual = basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual + specialAllowanceAnnual;
   const pfEmployeeAnnual = pfEmployee * 12;
-  const salaryInHandAnnual = annualCTC - pfEmployerAnnual - pfEmployeeAnnual;
+  const salaryInHandAnnual = totalCTCAnnual - pfEmployerAnnual - pfEmployeeAnnual;
 
   return {
     monthlyCTC,
@@ -65,7 +65,7 @@ export function calcSalary(annualCTC: number, pfEnabled: boolean): SalaryBreakup
     pfEmployee,
     specialAllowance: rSpecialAllowance,
     salaryInHand,
-    pfEnabled: true,
+    pfEnabled,
     basicAnnual,
     hraAnnual,
     conveyanceAnnual,

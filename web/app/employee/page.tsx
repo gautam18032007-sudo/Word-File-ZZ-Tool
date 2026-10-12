@@ -9,66 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { EmployeeRow, SalaryBreakup, GenerateResult } from "@/lib/types";
 import { downloadBase64, downloadHistoryFile, MIME } from "@/lib/clientDownload";
 import { ExportButton } from "@/components/export-button";
+import { calcSalary } from "@/lib/salary";
 
 import { SheetLoader } from "@/components/shared/SheetLoader";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-// ─── Client-side salary engine (mirrors lib/salary.ts) ───────────────────────
-
-function roundHalfUp(x: number): number { return Math.floor(x + 0.5); }
+// ─── Client-side salary helper ───────────────────────────────────────────────
 
 function calcSalaryClient(annualCTC: number, pfEnabled: boolean): SalaryBreakup {
-  const monthlyCTC = roundHalfUp(annualCTC / 12);
-  const g3 = annualCTC / 12;
-  const basic = g3 <= 42000 ? Math.min(21500, g3) : g3 / 2;
-  const pfEmployer = roundHalfUp(basic > 15000 ? 1800 : basic * 0.12);
-  const conveyance = roundHalfUp(g3 < 42000 ? 0 : g3 * 0.10);
-  const hra = g3 < 42000 ? g3 - basic - pfEmployer : basic / 2;
-
-  const rBasic = roundHalfUp(basic);
-  const rHra = roundHalfUp(hra);
-  const rConveyance = roundHalfUp(conveyance);
-  const rPfEmployer = roundHalfUp(pfEmployer);
-  const rSpecialAllowance = monthlyCTC - (rBasic + rHra + rConveyance + rPfEmployer);
-
-  // Math Balance Check Assert
-  const sum = rBasic + rHra + rConveyance + rPfEmployer + rSpecialAllowance;
-  if (sum !== monthlyCTC) {
-    throw new Error(`Salary Engine Error: Component sum (${sum}) does not match Monthly CTC (${monthlyCTC}) exactly.`);
-  }
-
-  const pfEmployee = rPfEmployer;
-
-  const basicAnnual = roundHalfUp(basic * 12);
-  const hraAnnual = roundHalfUp(hra * 12);
-  const conveyanceAnnual = rConveyance * 12;
-  const pfEmployerAnnual = rPfEmployer * 12;
-  const specialAllowanceAnnual = annualCTC - (basicAnnual + hraAnnual + conveyanceAnnual + pfEmployerAnnual);
-  
-  const pfEmployeeAnnual = pfEmployee * 12;
-  const salaryInHandAnnual = annualCTC - pfEmployerAnnual - pfEmployeeAnnual;
-
-  return {
-    monthlyCTC,
-    annualCTC,
-    basic: rBasic,
-    hra: rHra,
-    conveyance: rConveyance,
-    pfEmployer: rPfEmployer,
-    pfEmployee,
-    specialAllowance: rSpecialAllowance,
-    salaryInHand: monthlyCTC - rPfEmployer - pfEmployee,
-    pfEnabled: true,
-    basicAnnual,
-    hraAnnual,
-    conveyanceAnnual,
-    pfEmployerAnnual,
-    pfEmployeeAnnual,
-    specialAllowanceAnnual,
-    salaryInHandAnnual,
-  };
+  return calcSalary(annualCTC, pfEnabled);
 }
 
 function fmt(n: number): string {
@@ -143,49 +94,84 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
-  const rows: [string, number, string?][] = [
-    ["Basic", salary.basic],
-    ["HRA", salary.hra],
-    ["Conveyance", salary.conveyance],
-    ["PF Employer", salary.pfEmployer],
-    ["Special Allowance", salary.specialAllowance],
+  const components: [string, number, number][] = [
+    ["BASIC", salary.basic, salary.basicAnnual],
+    ["HRA", salary.hra, salary.hraAnnual],
+    ["CONVEYANCE ALLOWANCE", salary.conveyance, salary.conveyanceAnnual],
+    ["PF EMPLOYER", salary.pfEmployer, salary.pfEmployerAnnual],
+    ["SPECIAL ALLOWANCE", salary.specialAllowance, salary.specialAllowanceAnnual],
   ];
+
+  const totalCTCAnnual = salary.totalCTCAnnual ?? salary.annualCTC;
+
   return (
-    <div className="border border-[var(--border)] rounded-md overflow-hidden text-sm">
-      <div className="px-4 py-2.5 bg-[var(--muted)]/40 border-b border-[var(--border)]">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Annexure A — Salary Breakup</p>
+    <div className="border border-[var(--border)] rounded-lg overflow-hidden text-sm bg-[var(--card)] shadow-xs">
+      <div className="px-4 py-3 bg-[var(--muted)]/50 border-b border-[var(--border)] flex items-center justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Annexure-A</p>
+          <p className="text-[11px] text-[var(--muted-foreground)]">Salary Components Breakup</p>
+        </div>
+        <Badge variant={salary.pfEnabled ? "default" : "secondary"} className="text-[10px] font-mono">
+          {salary.pfEnabled ? "PF Applied" : "Opt out from PF"}
+        </Badge>
       </div>
-      <div className="px-4 py-2">
-        {rows.map(([label, val]) => (
-          <div key={label} className="salary-row">
-            <span className="text-[var(--muted-foreground)]">{label}</span>
-            <span className="font-mono text-xs">{fmt(val)}</span>
-          </div>
-        ))}
-        <div className="salary-row subtotal">
-          <span>Monthly CTC</span>
-          <span className="font-mono text-xs">{fmt(salary.monthlyCTC)}</span>
-        </div>
-        {salary.pfEnabled && (
-          <div className="salary-row deduction">
-            <span>(−) PF Employee</span>
-            <span className="font-mono text-xs">− {fmt(salary.pfEmployee)}</span>
-          </div>
-        )}
-        <div className="salary-row inhand">
-          <span>Salary In Hand</span>
-          <span className="font-mono">{fmt(salary.salaryInHand)}</span>
-        </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs text-left">
+          <thead>
+            <tr className="border-b border-[var(--border)] bg-[var(--muted)]/20 font-semibold text-[var(--muted-foreground)]">
+              <th className="px-4 py-2">Salary Components</th>
+              <th className="px-4 py-2 text-right">Monthly</th>
+              <th className="px-4 py-2 text-right">Annual</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border)] font-mono">
+            {components.map(([name, monthly, annual]) => (
+              <tr key={name} className="hover:bg-[var(--muted)]/20 transition-colors">
+                <td className="px-4 py-1.5 font-sans font-medium text-[var(--foreground)]">{name}</td>
+                <td className="px-4 py-1.5 text-right text-[var(--foreground)]">{fmt(monthly)}</td>
+                <td className="px-4 py-1.5 text-right text-[var(--muted-foreground)]">{fmt(annual)}</td>
+              </tr>
+            ))}
+            <tr className="bg-[var(--muted)]/40 font-bold border-t-2 border-[var(--border)]">
+              <td className="px-4 py-2 font-sans text-[var(--foreground)]">Total CTC</td>
+              <td className="px-4 py-2 text-right text-[var(--foreground)]">{fmt(salary.monthlyCTC)}</td>
+              <td className="px-4 py-2 text-right text-[var(--foreground)]">{fmt(totalCTCAnnual)}</td>
+            </tr>
+            <tr className="bg-[var(--muted)]/10 font-semibold text-[var(--muted-foreground)] border-t border-[var(--border)]">
+              <td colSpan={3} className="px-4 py-1.5 font-sans uppercase text-[10px] tracking-wider">
+                Less: Deductions
+              </td>
+            </tr>
+            <tr className="hover:bg-[var(--muted)]/20 transition-colors">
+              <td className="px-4 py-1.5 font-sans font-medium text-[var(--foreground)] pl-6">PF EMPLOYER</td>
+              <td className="px-4 py-1.5 text-right text-rose-600 dark:text-rose-400">
+                {salary.pfEmployer > 0 ? `− ${fmt(salary.pfEmployer)}` : fmt(0)}
+              </td>
+              <td className="px-4 py-1.5 text-right text-rose-600/70 dark:text-rose-400/70">
+                {salary.pfEmployerAnnual > 0 ? `− ${fmt(salary.pfEmployerAnnual)}` : fmt(0)}
+              </td>
+            </tr>
+            <tr className="hover:bg-[var(--muted)]/20 transition-colors">
+              <td className="px-4 py-1.5 font-sans font-medium text-[var(--foreground)] pl-6">PF EMPLOYEE</td>
+              <td className="px-4 py-1.5 text-right text-rose-600 dark:text-rose-400">
+                {salary.pfEmployee > 0 ? `− ${fmt(salary.pfEmployee)}` : fmt(0)}
+              </td>
+              <td className="px-4 py-1.5 text-right text-rose-600/70 dark:text-rose-400/70">
+                {salary.pfEmployeeAnnual > 0 ? `− ${fmt(salary.pfEmployeeAnnual)}` : fmt(0)}
+              </td>
+            </tr>
+            <tr className="bg-emerald-500/10 font-bold border-t-2 border-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+              <td className="px-4 py-2 font-sans">SALARY IN HAND</td>
+              <td className="px-4 py-2 text-right">{fmt(salary.salaryInHand)}</td>
+              <td className="px-4 py-2 text-right">{fmt(salary.salaryInHandAnnual)}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div className="px-4 py-2 border-t border-[var(--border)] bg-[var(--muted)]/40">
-        <div className="flex justify-between text-xs text-[var(--muted-foreground)]">
-          <span>Annual CTC</span>
-          <span className="font-mono font-semibold text-[var(--foreground)]">{fmt(salary.annualCTC)}</span>
-        </div>
-        <div className="flex justify-between text-xs text-[var(--muted-foreground)] mt-1">
-          <span>Annual In-Hand</span>
-          <span className="font-mono font-semibold text-[var(--foreground)]">{fmt(salary.salaryInHandAnnual)}</span>
-        </div>
+
+      <div className="px-4 py-2.5 bg-[var(--muted)]/30 border-t border-[var(--border)] text-[10px] text-[var(--muted-foreground)] italic">
+        Note: Salary will be further subject to TDS deduction as per applicable provisions.
       </div>
     </div>
   );
@@ -232,6 +218,8 @@ export default function EmployeePage() {
   const departmentIdx = findColumnIndex(headers, ['Department']);
   const designationIdx = findColumnIndex(headers, ['Designation']);
   const joiningDateIdx = findColumnIndex(headers, ['Joining Date', 'JoiningDate', 'Date of Joining']);
+  const annualCtcIdx = findColumnIndex(headers, ['Annual CTC', 'CTC', 'AnnualCTC', 'Salary']);
+  const pfIdx = findColumnIndex(headers, ['PF Required', 'PF', 'PF (Yes/No)', 'PF Applied', 'PF Status', 'PF Option']);
 
   // Compute employees dynamically from rawRows
   const employees: EmployeeRow[] = rawRows.map((r, i) => ({
@@ -247,13 +235,16 @@ export default function EmployeePage() {
     department: departmentIdx >= 0 ? (r[departmentIdx] ?? '').trim() : '',
     designation: designationIdx >= 0 ? (r[designationIdx] ?? '').trim() : '',
     joiningDate: joiningDateIdx >= 0 ? (r[joiningDateIdx] ?? '').trim() : '',
+    annualCTC: annualCtcIdx >= 0 ? (r[annualCtcIdx] ?? '').trim() : '',
+    pfRequired: pfIdx >= 0 ? (r[pfIdx] ?? '').trim() : '',
   })).filter(e => e.name);
 
   const selected = employees[selectedIdx] ?? null;
 
   const [annualCTC, setAnnualCTC] = useState("");
   const [joiningDate, setJoiningDate] = useState("");
-  const pfEnabled = true; // PF is fixed to YES
+  const [pfOption, setPfOption] = useState<"YES" | "NO">("YES");
+  const pfEnabled = pfOption === "YES";
   const [gender, setGender] = useState<"Male" | "Female" | "">("");
 
   const [genState, setGenState] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -313,6 +304,20 @@ export default function EmployeePage() {
         setJoiningDate(normalizeDateToYYYYMMDD(e.joiningDate));
       } else {
         setJoiningDate("");
+      }
+
+      if (e.annualCTC) {
+        const cleanCtc = e.annualCTC.replace(/[^0-9.]/g, '');
+        if (cleanCtc) setAnnualCTC(cleanCtc);
+      }
+
+      if (e.pfRequired) {
+        const p = e.pfRequired.trim().toLowerCase();
+        if (p === 'no' || p === 'opt out' || p === 'false' || p === 'n' || p === '0') {
+          setPfOption("NO");
+        } else {
+          setPfOption("YES");
+        }
       }
     }
   }
@@ -554,7 +559,7 @@ export default function EmployeePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Field label="Annual CTC (₹)">
                   <Input
                     type="number"
@@ -575,6 +580,16 @@ export default function EmployeePage() {
                     <option value="">— select gender —</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                  </select>
+                </Field>
+                <Field label="PF Scheme">
+                  <select
+                    value={pfOption}
+                    onChange={(e) => setPfOption(e.target.value as "YES" | "NO")}
+                    className="flex h-9 w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 font-medium"
+                  >
+                    <option value="YES">PF Applied</option>
+                    <option value="NO">Opt out from PF</option>
                   </select>
                 </Field>
               </div>

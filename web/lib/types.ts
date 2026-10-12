@@ -23,6 +23,8 @@ export interface EmployeeRow {
   department: string;
   gender: string;
   joiningDate?: string;
+  annualCTC?: string;
+  pfRequired?: string;
 }
 
 export interface SalaryBreakup {
@@ -42,6 +44,7 @@ export interface SalaryBreakup {
   pfEmployerAnnual: number;
   pfEmployeeAnnual: number;
   specialAllowanceAnnual: number;
+  totalCTCAnnual?: number;
   salaryInHandAnnual: number;
 }
 
