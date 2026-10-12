@@ -103,20 +103,22 @@ The employee template has pronouns hardcoded in prose (`his heirs`, `terminate h
 `his/him/he` (+ capitalized) for `{{PRONOUN_*}}` tags, later filled from Male/Female maps.
 
 ### PF salary engine (`lib/salary.ts`)
-Verified line-by-line against `templates/PF.xlsx`, rupee-exact on both the `YES` (₹5,12,000 CTC)
-and `NO` (₹2,76,000 CTC) PF examples:
+Verified line-by-line against `templates/PF.xlsx`, rupee-exact on both `PF Applied` (₹5,04,000 CTC)
+and `Out out from PF` (₹2,76,000 CTC) examples:
 
 ```
-Monthly CTC = Annual CTC / 12                              (g3 = unrounded)
-Basic       = if g3 < 42000: min(21500, g3)  else: g3 / 2
-PF Employer = if pfEnabled:  (1800 if Basic > 15000 else Basic × 12%)  else: 0
-Conveyance  = if g3 < 42000: 0  else: g3 × 10%
-HRA         = if g3 < 42000: g3 − Basic − PF Employer  else: Basic / 2
-Special     = Monthly CTC − (Basic + HRA + Conveyance + PF Employer)   [balancing figure]
-PF Employee = PF Employer (if PF enabled, else 0)
-Salary In Hand = Monthly CTC − PF Employer − PF Employee
+Monthly CTC    = roundHalfUp(Annual CTC / 12)
+Basic          = if g3 <= 42000: min(21500, g3)  else: g3 / 2
+PF Employer    = if pfEnabled:  (3000 if Basic > 25000 else roundHalfUp(Basic × 12%))  else: 0
+Conveyance     = if g3 < 42000: 0  else: roundHalfUp(g3 × 10%)
+HRA            = if g3 < 42000: (Monthly CTC − Basic − PF Employer)  else: Basic / 2
+Special        = Monthly CTC − (Basic + HRA + Conveyance + PF Employer)   [balancing figure]
+Total CTC      = Basic + HRA + Conveyance + PF Employer + Special (= Monthly CTC)
+PF Employee    = PF Employer (if PF enabled, else 0)
+Salary In Hand = Total CTC − (PF Employer + PF Employee)
+Annual Breakup = Each monthly component × 12
 ```
-Rounding uses round-half-up (`Math.floor(x + 0.5)`) to match the original Python.
+Rounding uses round-half-up (`Math.floor(x + 0.5)`). Both `PF Applied` and `Out out from PF` are supported.
 
 ## 4. Google Sheets integration
 
