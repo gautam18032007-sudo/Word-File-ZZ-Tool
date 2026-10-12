@@ -139,8 +139,8 @@ function SalaryPreview({ salary }: { salary: SalaryBreakup }) {
               <td className="px-4 py-2 text-right text-[var(--foreground)]">{fmt(totalCTCAnnual)}</td>
             </tr>
             <tr className="bg-[var(--muted)]/10 font-semibold text-[var(--muted-foreground)] border-t border-[var(--border)]">
-              <td colSpan={3} className="px-4 py-1.5 font-sans uppercase text-[10px] tracking-wider">
-                Less: Deductions
+              <td colSpan={3} className="px-4 py-1.5 font-sans">
+                <span className="underline font-bold text-[var(--foreground)] text-[11px]">Less: Deductions</span>
               </td>
             </tr>
             <tr className="hover:bg-[var(--muted)]/20 transition-colors">
