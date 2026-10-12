@@ -99,7 +99,7 @@ export async function generatePiPdfNative(input: PiGeneratorInput): Promise<Buff
   y -= 10;
   centered('GST NO. 07AAMCB2083P1Z5', y, 8.5, font);
   y -= 10;
-  centered('Plot No. 96, Pocket-2, Jasola, New Delhi-110025', y, 8.5, font);
+  centered('Zenzebra, 2nd Floor, A-11, A Block Rd, DDA Sheds, Pocket A, Okhla Phase I, Okhla Industrial Estate, New Delhi, Delhi 110020', y, 8.5, font);
   y -= 10;
   centered('Mobile No. 9910605187, 9958680856', y, 8.5, font);
   y -= 10;
